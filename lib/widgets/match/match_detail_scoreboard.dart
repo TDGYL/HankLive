@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
+import '../../pages/match/team_detail_page.dart';
 
 /// MatchDetailScoreboard: 比赛详情顶部计分板组件
 /// 展示比赛状态、对阵双方、比分、进球事件摘要
@@ -56,7 +57,7 @@ class MatchDetailScoreboard extends StatelessWidget {
         children: [
           _buildStatusRow(),
           const SizedBox(height: 12),
-          _buildTeamsAndScore(),
+          _buildTeamsAndScore(context),
           const SizedBox(height: 12),
           _buildGoalEvents(),
         ],
@@ -121,13 +122,14 @@ class MatchDetailScoreboard extends StatelessWidget {
   }
 
   /// 主队 vs 客队 + 比分
-  Widget _buildTeamsAndScore() {
+  Widget _buildTeamsAndScore(BuildContext context) {
     return Row(
       children: [
         // 主队
         Expanded(
           flex: 3,
           child: _buildTeamColumn(
+            context,
             match.homeTeam.teamName,
             match.homeTeam.logoUrl,
             isHome: true,
@@ -142,6 +144,7 @@ class MatchDetailScoreboard extends StatelessWidget {
         Expanded(
           flex: 3,
           child: _buildTeamColumn(
+            context,
             match.awayTeam.teamName,
             match.awayTeam.logoUrl,
             isHome: false,
@@ -152,30 +155,34 @@ class MatchDetailScoreboard extends StatelessWidget {
   }
 
   /// 球队列：Logo + 名称
+  /// 点击Logo跳转球队详情页面
   /// 优先加载网络Logo图片，加载失败时显示首字母占位
-  Widget _buildTeamColumn(String name, String? logoUrl, {required bool isHome}) {
+  Widget _buildTeamColumn(BuildContext context, String name, String? logoUrl, {required bool isHome}) {
     return Column(
       children: [
-        // Logo
-        Container(
-          width: 52,
-          height: 52,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.3)),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: logoUrl != null && logoUrl.isNotEmpty
-                ? Image.network(
-                    logoUrl,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildLogoPlaceholder(name);
-                    },
-                  )
-                : _buildLogoPlaceholder(name),
+        // Logo（可点击跳转球队详情）
+        GestureDetector(
+          onTap: () => _navigateToTeamDetail(context, name, logoUrl),
+          child: Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withOpacity(0.3)),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: logoUrl != null && logoUrl.isNotEmpty
+                  ? Image.network(
+                      logoUrl,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return _buildLogoPlaceholder(name);
+                      },
+                    )
+                  : _buildLogoPlaceholder(name),
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -203,6 +210,30 @@ class MatchDetailScoreboard extends StatelessWidget {
           fontSize: 18,
           fontWeight: FontWeight.w800,
           color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  /// 跳转到球队详情页面
+  /// [teamName] 球队名称
+  /// [logoUrl] 球队Logo URL
+  void _navigateToTeamDetail(BuildContext context, String teamName, String? logoUrl) {
+    int teamId = 0;
+    if (teamName == match.homeTeam.teamName) {
+      teamId = int.tryParse(match.homeTeam.teamId) ?? 0;
+    } else if (teamName == match.awayTeam.teamName) {
+      teamId = int.tryParse(match.awayTeam.teamId) ?? 0;
+    }
+    if (teamId == 0) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HankTeamDetailPage(
+          teamId: teamId,
+          teamName: teamName,
+          teamLogo: logoUrl,
         ),
       ),
     );

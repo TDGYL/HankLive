@@ -79,24 +79,23 @@ class FeaturedMatchCard extends StatelessWidget {
   Widget _buildHeader() {
     return Row(
       children: [
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.violet700.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFFA78BFA).withOpacity(0.3),
-              ),
+        // 联赛名背景宽度自适应文字长度
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppColors.violet700.withOpacity(0.6),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFA78BFA).withOpacity(0.3),
             ),
-            child: Text(
-              match.leagueName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 10,
-                color: Color(0xFFDDD6FE),
-              ),
+          ),
+          child: Text(
+            match.leagueName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 10,
+              color: Color(0xFFDDD6FE),
             ),
           ),
         ),

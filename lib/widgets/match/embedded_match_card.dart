@@ -83,26 +83,38 @@ class EmbeddedMatchCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    TeamLogoWidget(team: match.homeTeam, size: 20),
-                    const SizedBox(width: 4),
-                    Text(
-                      match.homeTeam.teamName,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    // 主队（左对齐）
+                    Expanded(
+                      child: Row(
+                        children: [
+                          TeamLogoWidget(team: match.homeTeam, size: 20),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              match.homeTeam.teamName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    // 比分居中
                     if (match.status != MatchStatus.upcoming) ...[
-                      const SizedBox(width: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 1),
+                            horizontal: 6, vertical: 2),
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
                         decoration: BoxDecoration(
                           color: isLive
                               ? const Color(0xFF7C3AED).withOpacity(0.8)
                               : Colors.black26,
-                          borderRadius: BorderRadius.circular(3),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           isLive
@@ -119,27 +131,41 @@ class EmbeddedMatchCard extends StatelessWidget {
                         ),
                       ),
                     ] else ...[
-                      const SizedBox(width: 4),
-                      const Text(
-                        'VS',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white70,
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        child: const Text(
+                          'VS',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white70,
+                          ),
                         ),
                       ),
                     ],
-                    const SizedBox(width: 6),
-                    Text(
-                      match.awayTeam.teamName,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                    // 客队（右对齐）
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              match.awayTeam.teamName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          TeamLogoWidget(team: match.awayTeam, size: 20),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    TeamLogoWidget(team: match.awayTeam, size: 20),
                   ],
                 ),
               ],
