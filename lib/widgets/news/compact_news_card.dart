@@ -80,7 +80,7 @@ class CompactNewsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        news.source,
+                        news.timeDesc,
                         style: const TextStyle(
                           fontSize: 10,
                           color: Color(0xFF94A3B8),

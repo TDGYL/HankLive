@@ -1,7 +1,10 @@
 
 
 ==============================网络请求---社区列表
-community_page。界面的数据请求url=/api/livespeed/community/list，请求方式为get请求，
+
+在community_page做两步操作：
+第一：将顶部菜单修改成：推荐，最近，关注
+第二：界面的数据请求url=/api/livespeed/community/list，请求方式为get请求，
 请求参数为：
 params = {
       "type": 2, 
@@ -9,14 +12,31 @@ params = {
       "size": 10,
       "match_type": 1,
     };
-参数说明：只有type 是动态的，type=1是推荐，type=1是最近，type=1是关注
+参数说明：只有type 是动态的，type=1是推荐，type=2是最近，type=3是关注
+
+UI改造：请求的数据image代表有话题，将话题布局在列表比赛上边，过滤数据参考/Users/guyilin/Desktop/ZogoLive/lib/pages/community_page.dart
+
+
+==========================修改社区
+将news_page卡片的左下角修改成发布时间
 
 
 
 ==============================网络请求---资讯
+做两个步骤：
+第一：将news_page右上角的深度战术和快速删除掉
+
+第二：
 news_page界面的数据请求url=/api/livespeed/info/list，请求方式为get请求，
 数据请求参考/Users/guyilin/Desktop/ZogoLive/lib/pages/news_page.dart相同接口
 
+数据安排：将第一个数据放在顶部banner、将第四个数据放在底部banner，剩下的数据用中间的卡片展示列表，做下拉刷新和上拉加载功能
+
+
+
+
+========================优化比赛列表
+第一，match_page列表底部约束下，不能让tab遮住列表；第二，列表增加下拉刷新和上拉加载功能
 
 ==============================网络请求--比赛列表
 请求首页比赛列表的数据：接口url=/api/livespeed/football/matches，请求方式为Post请求

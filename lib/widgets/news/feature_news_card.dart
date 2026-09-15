@@ -108,7 +108,7 @@ class FeatureNewsCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              news.source,
+                              news.timeDesc,
                               style: const TextStyle(
                                 fontSize: 10,
                                 color: Color(0xFFC4B5FD),

@@ -24,6 +24,7 @@ enum MatchSubTab {
 /// 含4个二级Tab：关注/推荐/赛程/赛果
 /// 赛程和赛果Tab含日历选择按钮 + 7天日期横滑条
 /// 数据通过 HankMatchApiService 请求接口获取
+/// 支持下拉刷新 + 上拉加载更多
 class MatchPage extends StatefulWidget {
   const MatchPage({Key? key}) : super(key: key);
 
@@ -41,8 +42,14 @@ class _MatchPageState extends State<MatchPage> {
   /// 比赛数据列表
   List<MatchModel> _matches = [];
 
-  /// 是否正在加载
+  /// 是否正在加载（首次加载 / 上拉加载）
   bool _isLoading = false;
+
+  /// 是否正在下拉刷新
+  bool _isRefreshing = false;
+
+  /// 是否没有更多数据
+  bool _hasNoMore = false;
 
   /// 分页页码
   int _page = 1;
@@ -53,10 +60,31 @@ class _MatchPageState extends State<MatchPage> {
   /// API服务实例
   final HankMatchApiService _apiService = HankMatchApiService();
 
+  /// 滚动控制器（用于上拉加载监听）
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _fetchMatches(isRefresh: true);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// 滚动监听：到达底部触发加载更多
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      if (!_isLoading && !_isRefreshing && !_hasNoMore) {
+        _fetchMatches(isRefresh: false);
+      }
+    }
   }
 
   /// 将 MatchSubTab 转换为接口对应的 HankMatchTab
@@ -81,20 +109,26 @@ class _MatchPageState extends State<MatchPage> {
   /// 请求比赛列表数据
   /// [isRefresh] - true=刷新（重置page=1），false=加载更多
   Future<void> _fetchMatches({required bool isRefresh}) async {
-    if (_isLoading) return;
+    if (_isLoading || _isRefreshing) return;
 
-    setState(() {
-      _isLoading = true;
-      if (isRefresh) {
+    if (isRefresh) {
+      setState(() {
+        _isRefreshing = true;
         _page = 1;
-      }
-    });
+        _hasNoMore = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+      });
+    }
 
     final timestamp = _getSelectedTimestamp();
+    final requestPage = isRefresh ? 1 : _page + 1;
 
     final result = await _apiService.fetchMatchModels(
       tab: _getApiTab(_currentSubTab),
-      page: _page,
+      page: requestPage,
       size: _size,
       timestamp: timestamp,
     );
@@ -103,10 +137,17 @@ class _MatchPageState extends State<MatchPage> {
       setState(() {
         if (isRefresh) {
           _matches = result;
+          _page = 1;
+          _isRefreshing = false;
         } else {
           _matches.addAll(result);
+          _page = requestPage;
+          _isLoading = false;
         }
-        _isLoading = false;
+        // 返回数据不足一页，标记没有更多
+        if (result.length < _size) {
+          _hasNoMore = true;
+        }
       });
     }
   }
@@ -128,6 +169,7 @@ class _MatchPageState extends State<MatchPage> {
       _currentSubTab = tab;
       _selectedDate = DateTime.now();
       _matches = [];
+      _hasNoMore = false;
     });
     _fetchMatches(isRefresh: true);
   }
@@ -204,9 +246,11 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 比赛列表区域（含加载态 + 空态）
+  /// 比赛列表区域（含下拉刷新 + 上拉加载 + 加载态 + 空态）
+  /// 底部 padding 留出底部导航栏空间，防止Tab遮挡列表
   Widget _buildMatchList() {
-    if (_isLoading && _matches.isEmpty) {
+    // 首次加载中
+    if (_isRefreshing && _matches.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(
           color: AppColors.violet600,
@@ -215,6 +259,7 @@ class _MatchPageState extends State<MatchPage> {
       );
     }
 
+    // 空数据
     if (_matches.isEmpty) {
       return Center(
         child: Column(
@@ -235,12 +280,86 @@ class _MatchPageState extends State<MatchPage> {
       );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      child: Column(
-        children: _buildMatchCards(),
+    return RefreshIndicator(
+      color: AppColors.violet600,
+      onRefresh: () => _fetchMatches(isRefresh: true),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
+        itemCount: _matches.length + 1, // +1 for footer
+        itemBuilder: (ctx, index) {
+          // 底部加载/没有更多指示器
+          if (index == _matches.length) {
+            return _buildFooter();
+          }
+
+          final match = _matches[index];
+          if (match.isFeatured) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: FeaturedMatchCard(match: match),
+            );
+          }
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: StandardMatchCard(match: match),
+          );
+        },
       ),
     );
+  }
+
+  /// 列表底部指示器（加载中 / 没有更多）
+  Widget _buildFooter() {
+    if (_hasNoMore) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 24,
+                height: 1,
+                color: AppColors.violet200,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                '没有更多了',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.slate500,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 24,
+                height: 1,
+                color: AppColors.violet200,
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              color: AppColors.violet600,
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
   }
 
   Widget _buildHeader() {
@@ -636,42 +755,5 @@ class _MatchPageState extends State<MatchPage> {
         },
       ),
     );
-  }
-
-  /// 构建比赛卡片列表
-  List<Widget> _buildMatchCards() {
-    final List<Widget> widgets = [];
-
-    final featured = _matches.where((m) => m.isFeatured).toList();
-    final standard = _matches.where((m) => !m.isFeatured).toList();
-
-    for (final m in featured) {
-      widgets.add(FeaturedMatchCard(match: m));
-      widgets.add(const SizedBox(height: 12));
-    }
-
-    for (final m in standard) {
-      widgets.add(StandardMatchCard(match: m));
-      widgets.add(const SizedBox(height: 12));
-    }
-
-    // 加载中指示器
-    if (_isLoading && _matches.isNotEmpty) {
-      widgets.add(const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Center(
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              color: AppColors.violet600,
-              strokeWidth: 2,
-            ),
-          ),
-        ),
-      ));
-    }
-
-    return widgets;
   }
 }

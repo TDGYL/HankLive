@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/news_model.dart';
-import '../../services/mock_data_service.dart';
+import '../../services/hank_news_api_service.dart';
 import '../../widgets/news/feature_news_card.dart';
 import '../../widgets/news/compact_news_card.dart';
 
-/// NewsCategory: 资讯分类枚举
-/// tactics: 深度战术 | newsflash: 快讯
-enum NewsCategory { tactics, newsflash }
-
 /// NewsPage: 绿荫资讯页面
-/// 顶部两种分类切换，列表混合展示 Feature 大图卡片和 Compact 左右结构卡片
+/// 顶部Banner（第1条）+ 中间列表卡片 + 底部Banner（第4条）
+/// 数据通过 HankNewsApiService 请求接口获取
+/// 支持下拉刷新 + 上拉加载更多
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
 
@@ -19,27 +17,112 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  /// 当前选中的分类
-  NewsCategory _currentCategory = NewsCategory.tactics;
-
   /// 资讯数据列表
-  late List<NewsModel> _newsList;
+  List<NewsModel> _newsList = [];
+
+  /// 是否正在下拉刷新
+  bool _isRefreshing = false;
+
+  /// 是否正在上拉加载
+  bool _isLoading = false;
+
+  /// 是否没有更多数据
+  bool _hasNoMore = false;
+
+  /// 分页页码
+  int _page = 1;
+
+  /// 每页条数
+  final int _size = 10;
+
+  /// API服务实例
+  final HankNewsApiService _apiService = HankNewsApiService();
+
+  /// 滚动控制器（用于上拉加载监听）
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _newsList = MockDataService.getNewsList();
+    _scrollController.addListener(_onScroll);
+    _fetchNews(isRefresh: true);
   }
 
-  void _switchCategory(NewsCategory c) {
-    setState(() {
-      _currentCategory = c;
-    });
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
   }
 
-  List<NewsModel> _getFilteredList() {
-    // 此处展示全部资讯，两种分类仅切换顶部高亮
-    return _newsList;
+  /// 滚动监听：到达底部触发加载更多
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 100) {
+      if (!_isLoading && !_isRefreshing && !_hasNoMore) {
+        _fetchNews(isRefresh: false);
+      }
+    }
+  }
+
+  /// 请求资讯列表数据
+  /// [isRefresh] - true=刷新（重置page=1），false=加载更多
+  Future<void> _fetchNews({required bool isRefresh}) async {
+    if (_isLoading || _isRefreshing) return;
+
+    if (isRefresh) {
+      setState(() {
+        _isRefreshing = true;
+        _page = 1;
+        _hasNoMore = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
+    final requestPage = isRefresh ? 1 : _page + 1;
+
+    final result = await _apiService.fetchNewsModels(
+      page: requestPage,
+      size: _size,
+    );
+
+    if (mounted) {
+      setState(() {
+        if (isRefresh) {
+          _newsList = result;
+          _page = 1;
+          _isRefreshing = false;
+        } else {
+          _newsList.addAll(result);
+          _page = requestPage;
+          _isLoading = false;
+        }
+        if (result.length < _size) {
+          _hasNoMore = true;
+        }
+      });
+    }
+  }
+
+  /// 顶部Banner数据（第1条）
+  NewsModel? get _topBanner => _newsList.isNotEmpty ? _newsList[0] : null;
+
+  /// 底部Banner数据（第4条）
+  NewsModel? get _bottomBanner =>
+      _newsList.length >= 4 ? _newsList[3] : null;
+
+  /// 中间列表数据（第2、3条 + 第5条以后）
+  List<NewsModel> get _middleList {
+    if (_newsList.length <= 1) return [];
+    final list = <NewsModel>[];
+    for (int i = 1; i < _newsList.length; i++) {
+      if (i == 3) continue; // 第4条（索引3）作为底部Banner，跳过
+      list.add(_newsList[i]);
+    }
+    return list;
   }
 
   @override
@@ -58,12 +141,7 @@ class _NewsPageState extends State<NewsPage> {
           children: [
             _buildHeader(),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: Column(
-                  children: _buildNewsCards(),
-                ),
-              ),
+              child: _buildContent(),
             ),
           ],
         ),
@@ -71,6 +149,7 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
+  /// 头部：仅保留标题，去掉深度战术/快讯分类Tab
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -83,8 +162,8 @@ class _NewsPageState extends State<NewsPage> {
       child: SafeArea(
         bottom: false,
         child: Row(
-          children: [
-            const Text(
+          children: const [
+            Text(
               '绿荫资讯',
               style: TextStyle(
                 fontSize: 18,
@@ -92,96 +171,160 @@ class _NewsPageState extends State<NewsPage> {
                 color: AppColors.violet900,
               ),
             ),
-            const Spacer(),
-            Row(
-              children: [
-                _buildCategoryPill(
-                  label: '深度战术',
-                  isSelected: _currentCategory == NewsCategory.tactics,
-                  onTap: () => _switchCategory(NewsCategory.tactics),
-                ),
-                const SizedBox(width: 8),
-                _buildCategoryPill(
-                  label: '快讯',
-                  isSelected: _currentCategory == NewsCategory.newsflash,
-                  onTap: () => _switchCategory(NewsCategory.newsflash),
-                ),
-              ],
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildCategoryPill({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.violet600 : Colors.white.withOpacity(0.7),
-          borderRadius: BorderRadius.circular(999),
-          boxShadow: isSelected
-              ? const [
-                  BoxShadow(
-                    color: Color(0x307C3AED),
-                    blurRadius: 4,
-                    offset: Offset(0, 1),
-                  ),
-                ]
-              : null,
+  /// 内容区域
+  Widget _buildContent() {
+    // 首次加载中
+    if (_isRefreshing && _newsList.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.violet600,
+          strokeWidth: 2,
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : AppColors.slate500,
-          ),
+      );
+    }
+
+    // 空数据
+    if (_newsList.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(
+              Icons.newspaper_outlined,
+              size: 48,
+              color: AppColors.violet300,
+            ),
+            SizedBox(height: 12),
+            Text(
+              '暂无资讯数据',
+              style: TextStyle(color: AppColors.slate500, fontSize: 12),
+            ),
+          ],
         ),
+      );
+    }
+
+    return RefreshIndicator(
+      color: AppColors.violet600,
+      onRefresh: () => _fetchNews(isRefresh: true),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+        itemCount: _buildItemCount(),
+        itemBuilder: (ctx, index) {
+          // 顶部Banner
+          if (index == 0 && _topBanner != null) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: FeatureNewsCard(
+                news: _topBanner!,
+                onTap: () => _onNewsTap(_topBanner!),
+              ),
+            );
+          }
+
+          // 底部Banner（最后一条）
+          if (index == _buildItemCount() - 1 && _bottomBanner != null) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: FeatureNewsCard(
+                news: _bottomBanner!,
+                onTap: () => _onNewsTap(_bottomBanner!),
+              ),
+            );
+          }
+
+          // 中间列表卡片
+          final middleIndex = _getMiddleIndex(index);
+          if (middleIndex < _middleList.length) {
+            final news = _middleList[middleIndex];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CompactNewsCard(
+                news: news,
+                onTap: () => _onNewsTap(news),
+              ),
+            );
+          }
+
+          // 底部加载指示器
+          return _buildFooter();
+        },
       ),
     );
   }
 
-  List<Widget> _buildNewsCards() {
-    final list = _getFilteredList();
-    final List<Widget> out = [];
-    for (int i = 0; i < list.length; i++) {
-      final n = list[i];
-      if (n.type == NewsType.feature) {
-        out.add(FeatureNewsCard(
-          news: n,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('阅读战术深度文章'),
-                duration: Duration(seconds: 1),
+  /// 计算列表总条数：顶部Banner + 中间列表 + 底部Banner + footer
+  int _buildItemCount() {
+    int count = 0;
+    if (_topBanner != null) count++; // 顶部Banner
+    count += _middleList.length; // 中间列表
+    if (_bottomBanner != null) count++; // 底部Banner
+    if (!_hasNoMore || _isLoading) count++; // footer
+    return count;
+  }
+
+  /// 根据ListView索引计算中间列表的索引
+  int _getMiddleIndex(int listViewIndex) {
+    int offset = _topBanner != null ? 1 : 0;
+    return listViewIndex - offset;
+  }
+
+  /// 列表底部指示器（加载中 / 没有更多）
+  Widget _buildFooter() {
+    if (_hasNoMore) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(width: 24, height: 1, color: AppColors.violet200),
+              const SizedBox(width: 8),
+              const Text(
+                '没有更多了',
+                style: TextStyle(fontSize: 11, color: AppColors.slate500),
               ),
-            );
-          },
-        ));
-      } else {
-        out.add(CompactNewsCard(
-          news: n,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('阅读资讯：${n.title.substring(0, n.title.length > 10 ? 10 : n.title.length)}...'),
-                duration: const Duration(seconds: 1),
-              ),
-            );
-          },
-        ));
-      }
-      if (i != list.length - 1) {
-        out.add(const SizedBox(height: 16));
-      }
+              const SizedBox(width: 8),
+              Container(width: 24, height: 1, color: AppColors.violet200),
+            ],
+          ),
+        ),
+      );
     }
-    return out;
+
+    if (_isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              color: AppColors.violet600,
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  /// 点击资讯回调
+  void _onNewsTap(NewsModel news) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('阅读资讯：${news.title.substring(0, news.title.length > 10 ? 10 : news.title.length)}...'),
+        duration: const Duration(seconds: 1),
+      ),
+    );
   }
 }

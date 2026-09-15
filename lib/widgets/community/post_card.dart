@@ -88,7 +88,11 @@ class _PostCardState extends State<PostCard> {
           children: [
             _buildUserHeader(),
             const SizedBox(height: 10),
-            _buildContentWithTags(),
+            if (widget.post.hashtags.isNotEmpty) ...[
+              _buildHashtagWrap(),
+              const SizedBox(height: 8),
+            ],
+            _buildContentText(),
             if (widget.post.embeddedMatch != null) ...[
               const SizedBox(height: 10),
               EmbeddedMatchCard(
@@ -222,31 +226,52 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  Widget _buildContentWithTags() {
-    final List<InlineSpan> spans = [];
-    for (final tag in widget.post.hashtags) {
-      spans.add(
-        TextSpan(
-          text: '$tag ',
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: AppColors.violet600,
-          ),
-        ),
-      );
-    }
-    spans.add(
-      TextSpan(
-        text: widget.post.content,
-        style: const TextStyle(
-          fontSize: 12,
-          height: 1.6,
-          color: AppColors.slate700,
-        ),
+  /// 话题标签Wrap布局（参考ZogoLive，独立标签容器展示在比赛上方）
+  Widget _buildHashtagWrap() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxTagWidth = constraints.maxWidth * 0.75;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.post.hashtags.map((tag) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.violet100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.violet300.withOpacity(0.3)),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxTagWidth),
+                child: Text(
+                  tag,
+                  style: const TextStyle(
+                    color: AppColors.violet600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  /// 正文内容（纯文本）
+  Widget _buildContentText() {
+    return Text(
+      widget.post.content,
+      style: const TextStyle(
+        fontSize: 12,
+        height: 1.6,
+        color: AppColors.slate700,
       ),
     );
-    return RichText(text: TextSpan(children: spans));
   }
 
   Widget _buildActionBar() {
@@ -260,12 +285,6 @@ class _PostCardState extends State<PostCard> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildActionButton(
-            icon: Icons.share_outlined,
-            label: '${widget.post.shareCount}',
-            activeColor: AppColors.violet600,
-            onTap: widget.onShareTap,
-          ),
           _buildActionButton(
             icon: Icons.comment_outlined,
             label: '${widget.post.commentCount}',
