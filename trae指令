@@ -1,0 +1,58 @@
+
+
+==============================网络请求---社区列表
+community_page。界面的数据请求url=/api/livespeed/community/list，请求方式为get请求，
+请求参数为：
+params = {
+      "type": 2, 
+      "page": 1,
+      "size": 10,
+      "match_type": 1,
+    };
+参数说明：只有type 是动态的，type=1是推荐，type=1是最近，type=1是关注
+
+
+
+==============================网络请求---资讯
+news_page界面的数据请求url=/api/livespeed/info/list，请求方式为get请求，
+数据请求参考/Users/guyilin/Desktop/ZogoLive/lib/pages/news_page.dart相同接口
+
+
+==============================网络请求--比赛列表
+请求首页比赛列表的数据：接口url=/api/livespeed/football/matches，请求方式为Post请求
+请求参数：
+
+   params = {
+      "tab": 0,
+      "page": 1,
+      "size": 10,
+      "timestamp": 1747464738,
+      "competition_ids": []
+    };
+参数说明：tab为菜单类型：关注tap=4,推荐type=5，赛程type=2，赛果type=3；
+timestamp是当天的时间戳，赛程和赛果的时间戳传入日历选中的时间戳；
+competition_ids传空数据即可
+
+返回的数据模型和数据结构：/Users/guyilin/Desktop/ZogoLive/lib/pages/matches_page.dart相同接口，
+
+
+
+
+
+==============================网络请求
+按照/Users/guyilin/Desktop/ZogoLive/lib/utils/g5_network_manager.dart请求工具框架，给我封装一个逻辑一样的请求框架，要求文件名和方法名都有所区别，但是逻辑不变
+
+
+
+==============================比赛详情
+按照/Users/guyilin/Desktop/HankLive/index.html的内容样式，给我生成一个比赛详情UI,要求界面顶部是一个比赛信息和关注按钮，中间是一个菜单，菜单为（实时，指数，历史交锋，帖子），实时包括事件和红黄牌等数据比例，指数包括公司的初始，赛前，即时数据，历史交锋你给我自定义，帖子包括关联该比赛的帖子列表
+
+
+
+==============================tabbar首页
+
+严格按照index.html界面，给我生成flutter代码界面
+
+将match_page赛程和赛果下边：仅可选当天及以后，仅可选当天及历史替换成一个日历图片按钮，点击之后底部弹出一个日历选项卡，按照规则，如果是从赛程菜单点击的日历，日期只可选择今天和以后的日期，如果是从赛果菜单点击的日历，日期只可选择今天和之前的日期
+
+赛程和赛果的选择日期按钮下边依然要保留日期横滑条，展示7天，横条的日期按钮高亮和选择日期选项卡日期联动，选择好的日期时间动态传入界面接口；接口url=

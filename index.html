@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Violet Pitch - 足球赛事App原型与UI/PRD文档</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        violetBrand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar hiding */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Ambient purple backdrop animation */
+        @keyframes ambientPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.05); }
+        }
+        .bg-ambient-1 {
+            animation: ambientPulse 8s ease-in-out infinite alternate;
+        }
+        .bg-ambient-2 {
+            animation: ambientPulse 10s ease-in-out infinite alternate-reverse;
+        }
+        
+        /* Glassmorphism visual elements */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(221, 214, 254, 0.65);
+        }
+        
+        .glass-dark {
+            background: rgba(30, 27, 75, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        /* Smooth spinner animation */
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spinSlow 12s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 font-sans text-slate-800 antialiased min-h-screen flex flex-col justify-center items-center p-2 sm:p-6 relative overflow-x-hidden selection:bg-violet-500 selection:text-white">
+
+    <div class="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/30 rounded-full blur-[120px] pointer-events-none bg-ambient-1"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-700/20 rounded-full blur-[140px] pointer-events-none bg-ambient-2"></div>
+
+    <header class="w-full max-w-5xl flex flex-col md:flex-row justify-between items-center mb-4 z-20 gap-3 px-2">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-violet-500/30">
+                <i class="fa-solid fa-futbol text-xl animate-spin-slow"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-violet-200 via-purple-100 to-white bg-clip-text text-transparent">
+                    紫极足球 Violet Pitch
+                </h1>
+                <p class="text-xs text-violet-300/70">高保真交互原型 & 完整产品 UI/PRD 设计规范</p>
+            </div>
+        </div>
+
+        <!-- Mode Toggle Switcher -->
+        <div class="flex items-center bg-slate-900/80 p-1 rounded-full border border-violet-500/30 shadow-inner">
+            <button id="btn-toggle-app" onclick="switchMainView('app')" class="px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300 bg-violet-600 text-white shadow-md">
+                <i class="fa-solid fa-mobile-screen mr-1.5"></i> App 高保真原型
+            </button>
+            <button id="btn-toggle-doc" onclick="switchMainView('doc')" class="px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-300">
+                <i class="fa-solid fa-file-contract mr-1.5"></i> PRD & UI 产品文档
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="w-full max-w-5xl flex justify-center items-center z-10 my-auto">
+
+        <div id="view-app-container" class="relative transition-all duration-500">
+            <!-- iPhone Frame Container -->
+            <div class="w-[380px] sm:w-[400px] h-[820px] bg-slate-900 rounded-[52px] p-3 shadow-[0_25px_60px_-15px_rgba(124,58,237,0.35)] border-[5px] border-slate-700/80 relative overflow-hidden flex flex-col ring-1 ring-violet-500/30">
+                
+                <!-- iPhone Dynamic Island -->
+                <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-between px-2.5 shadow-md">
+                    <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center">
+                        <div class="w-1 h-1 rounded-full bg-violet-900/50"></div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span class="text-[9px] font-mono text-violet-300">LIVE</span>
+                    </div>
+                </div>
+
+                <!-- Phone Internal Body (Light Violet Lavender Theme Backdrop) -->
+                <div class="w-full h-full bg-gradient-to-b from-violet-100 via-purple-50 to-indigo-100 rounded-[42px] overflow-hidden flex flex-col relative select-none">
+
+                    <div class="pt-3 px-7 pb-1 flex justify-between items-center text-xs font-semibold text-violet-950 z-40">
+                        <span id="current-time">09:41</span>
+                        <div class="flex items-center space-x-1.5 text-[10px]">
+                            <i class="fa-solid fa-signal"></i>
+                            <i class="fa-solid fa-wifi"></i>
+                            <i class="fa-solid fa-battery-three-quarters text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- SCREEN CONTENT AREA (Scrollable) -->
+                    <div id="app-screen-body" class="flex-1 overflow-y-auto no-scrollbar relative pb-20">
+
+                        <div id="tab-matches" class="tab-content transition-opacity duration-300">
+                            <!-- Header with Search -->
+                            <div class="sticky top-0 z-30 bg-gradient-to-b from-violet-100/95 via-violet-100/90 to-transparent backdrop-blur-md px-4 pt-2 pb-1">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-violet-600"></span>
+                                        <h2 class="text-lg font-bold text-violet-950 tracking-tight">紫极球坛</h2>
+                                    </div>
+
+                                    <!-- Middle Search Trigger Button -->
+                                    <button onclick="openSearchModal()" class="flex-1 max-w-[170px] mx-2 bg-white/80 hover:bg-white text-violet-800/70 text-xs px-3 py-1.5 rounded-full border border-violet-200 shadow-sm flex items-center justify-between transition-all group">
+                                        <span class="truncate"><i class="fa-solid fa-magnifying-glass text-violet-500 mr-1.5"></i>搜索球队/联赛</span>
+                                        <kbd class="text-[9px] bg-violet-100 text-violet-600 px-1 rounded group-hover:bg-violet-200">⌘K</kbd>
+                                    </button>
+
+                                    <!-- Quick Alerts Button -->
+                                    <button onclick="showToast('无未读通知')" class="w-8 h-8 rounded-full bg-white/80 border border-violet-200 flex items-center justify-center text-violet-700 hover:bg-violet-50 relative">
+                                        <i class="fa-regular fa-bell text-sm"></i>
+                                        <span class="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+                                    </button>
+                                </div>
+
+                                <!-- Sub-tabs: 关注, 推荐, 赛程, 赛果 -->
+                                <div class="flex items-center justify-around border-b border-violet-200/60 pb-1">
+                                    <button onclick="switchMatchSubTab('follow')" id="subtab-follow" class="subtab-btn text-xs font-semibold text-slate-500 px-2 py-1.5 rounded-lg relative">
+                                        关注
+                                    </button>
+                                    <button onclick="switchMatchSubTab('recommend')" id="subtab-recommend" class="subtab-btn text-xs font-bold text-violet-700 bg-white/70 px-3 py-1 rounded-full shadow-sm relative border border-violet-200/50">
+                                        推荐
+                                        <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-violet-600 rounded-full"></span>
+                                    </button>
+                                    <button onclick="switchMatchSubTab('schedule')" id="subtab-schedule" class="subtab-btn text-xs font-semibold text-slate-500 px-2 py-1.5 rounded-lg relative">
+                                        赛程
+                                    </button>
+                                    <button onclick="switchMatchSubTab('results')" id="subtab-results" class="subtab-btn text-xs font-semibold text-slate-500 px-2 py-1.5 rounded-lg relative">
+                                        赛果
+                                    </button>
+                                </div>
+
+                                <!-- Interactive Date Selector Strip (Shown for Schedule & Results) -->
+                                <div id="date-picker-strip" class="hidden mt-2 pt-1 border-t border-violet-200/40">
+                                    <div class="flex items-center justify-between text-[11px] text-violet-900 font-medium mb-1 px-1">
+                                        <span id="date-strip-title" class="flex items-center gap-1">
+                                            <i class="fa-regular fa-calendar-days text-violet-600"></i> 日期选择器
+                                        </span>
+                                        <span id="date-rule-hint" class="text-[10px] text-violet-600 bg-violet-200/60 px-1.5 py-0.5 rounded font-semibold">仅可选当天及以后</span>
+                                    </div>
+                                    <div id="date-strip-items" class="flex space-x-2 overflow-x-auto no-scrollbar py-1">
+                                        <!-- Dynamically generated via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Match Cards Feed -->
+                            <div class="p-4 space-y-3" id="match-cards-container">
+                                <!-- Featured Banner Match Highlight -->
+                                <div class="bg-gradient-to-br from-violet-900 via-indigo-900 to-purple-900 rounded-2xl p-3.5 text-white shadow-md relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 opacity-10 text-8xl font-black italic select-none">UCL</div>
+                                    <div class="flex items-center justify-between text-[10px] text-violet-200 mb-2">
+                                        <span class="bg-violet-700/60 px-2 py-0.5 rounded-full border border-violet-400/30">欧洲冠军联赛 · 1/4决赛</span>
+                                        <span class="flex items-center text-emerald-400 font-mono font-bold animate-pulse">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span> LIVE 78'
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center justify-between my-1">
+                                        <div class="flex flex-col items-center w-1/3">
+                                            <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full object-cover ring-2 ring-violet-400 shadow" alt="Real Madrid">
+                                            <span class="text-xs font-bold mt-1 text-center truncate w-full">皇家马德里</span>
+                                        </div>
+                                        <div class="flex flex-col items-center">
+                                            <div class="text-2xl font-black font-mono tracking-wider text-amber-300">2 - 1</div>
+                                            <span class="text-[9px] text-violet-300 mt-0.5">半场 (1-0)</span>
+                                        </div>
+                                        <div class="flex flex-col items-center w-1/3">
+                                            <img src="https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full object-cover ring-2 ring-violet-400 shadow" alt="Manchester City">
+                                            <span class="text-xs font-bold mt-1 text-center truncate w-full">曼彻斯特城</span>
+                                        </div>
+                                    </div>
+                                    <!-- Goal events summary -->
+                                    <div class="mt-2 pt-2 border-t border-violet-700/50 flex items-center justify-between text-[10px] text-violet-300">
+                                        <span>⚽ 34' 贝林厄姆</span>
+                                        <span class="text-rose-400">⚽ 62' 哈兰德 (P)</span>
+                                    </div>
+                                </div>
+
+                                <!-- Standard Match Card 1 -->
+                                <div class="glass-card rounded-2xl p-3.5 shadow-sm hover:shadow-md transition-all border border-violet-100">
+                                    <div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">
+                                        <span class="font-medium text-violet-900 flex items-center gap-1">
+                                            <i class="fa-solid fa-trophy text-amber-500 text-[10px]"></i> 英格兰足球超级联赛
+                                        </span>
+                                        <span class="text-slate-500 font-mono">20:00 未开赛</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-1">
+                                        <div class="flex items-center space-x-2.5">
+                                            <div class="w-8 h-8 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-800">
+                                                ARS
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">阿森纳</span>
+                                        </div>
+                                        <div class="text-xs font-semibold text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-200">
+                                            VS
+                                        </div>
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="text-xs font-bold text-slate-800">切尔西</span>
+                                            <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center text-xs font-bold text-blue-800">
+                                                CHE
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- AI Win Rate Indicator Bar -->
+                                    <div class="mt-2.5 pt-2 border-t border-violet-100/80 flex items-center justify-between text-[10px]">
+                                        <span class="text-slate-400">AI预测胜率</span>
+                                        <div class="flex-1 mx-3 h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
+                                            <div class="bg-violet-600 h-full" style="width: 52%"></div>
+                                            <div class="bg-amber-400 h-full" style="width: 26%"></div>
+                                            <div class="bg-blue-500 h-full" style="width: 22%"></div>
+                                        </div>
+                                        <span class="font-bold text-violet-700">主胜 52%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Standard Match Card 2 -->
+                                <div class="glass-card rounded-2xl p-3.5 shadow-sm hover:shadow-md transition-all border border-violet-100">
+                                    <div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">
+                                        <span class="font-medium text-violet-900 flex items-center gap-1">
+                                            <i class="fa-solid fa-trophy text-violet-600 text-[10px]"></i> 西班牙足球甲级联赛
+                                        </span>
+                                        <span class="text-slate-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">已完赛</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-1">
+                                        <div class="flex items-center space-x-2.5">
+                                            <div class="w-8 h-8 rounded-full bg-red-100 border border-red-200 flex items-center justify-center text-xs font-bold text-red-800">
+                                                BAR
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">巴塞罗那</span>
+                                        </div>
+                                        <div class="text-sm font-black font-mono text-slate-900 px-3">
+                                            3 - 0
+                                        </div>
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="text-xs font-bold text-slate-800">马德里竞技</span>
+                                            <div class="w-8 h-8 rounded-full bg-red-900/10 border border-red-300 flex items-center justify-center text-xs font-bold text-red-900">
+                                                ATM
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-[10px] text-slate-400 flex items-center justify-between">
+                                        <span>集锦 / 战术复盘已上线</span>
+                                        <button onclick="showToast('加载复盘分析...')" class="text-violet-600 font-semibold hover:underline">查看数据 &gt;</button>
+                                    </div>
+                                </div>
+
+                                <!-- Standard Match Card 3 -->
+                                <div class="glass-card rounded-2xl p-3.5 shadow-sm border border-violet-100">
+                                    <div class="flex items-center justify-between text-[11px] text-slate-500 mb-2">
+                                        <span class="font-medium text-violet-900 flex items-center gap-1">
+                                            <i class="fa-solid fa-trophy text-emerald-600 text-[10px]"></i> 意大利足球甲级联赛
+                                        </span>
+                                        <span class="text-slate-400 font-mono">明日 03:45</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-1">
+                                        <div class="flex items-center space-x-2.5">
+                                            <div class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-xs font-bold">
+                                                INT
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">国际米兰</span>
+                                        </div>
+                                        <div class="text-xs font-semibold text-violet-600 bg-violet-50 px-2.5 py-1 rounded-full border border-violet-200">
+                                            VS
+                                        </div>
+                                        <div class="flex items-center space-x-2.5">
+                                            <span class="text-xs font-bold text-slate-800">AC米兰</span>
+                                            <div class="w-8 h-8 rounded-full bg-red-600 text-black flex items-center justify-center text-xs font-bold">
+                                                MIL
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-news" class="tab-content hidden transition-opacity duration-300">
+                            <!-- Header -->
+                            <div class="sticky top-0 z-30 bg-violet-100/90 backdrop-blur-md px-4 pt-3 pb-2 border-b border-violet-200/50">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-lg font-bold text-violet-950">绿荫资讯</h2>
+                                    <div class="flex items-center space-x-2 text-xs">
+                                        <span class="px-2.5 py-1 rounded-full bg-violet-600 text-white font-semibold shadow-sm">深度战术</span>
+                                        <span class="px-2.5 py-1 rounded-full bg-white/70 text-slate-600">快讯</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-4 space-y-4">
+                                <!-- NEWS CARD STYLE 1: Large Featured Hero Overlay Card -->
+                                <div onclick="showToast('阅读战术深度文章')" class="rounded-2xl overflow-hidden shadow-md relative group cursor-pointer border border-violet-200/60">
+                                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600&auto=format&fit=crop&q=80" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" alt="Tactics Article">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex flex-col justify-end p-3.5">
+                                        <span class="inline-block px-2 py-0.5 bg-violet-600 text-white text-[9px] font-bold rounded-md w-max mb-1.5">
+                                            深度战术拆解
+                                        </span>
+                                        <h3 class="text-sm font-bold text-white leading-snug line-clamp-2">
+                                            【解析】高位逼抢的解毒剂：看安切洛蒂如何利用中场摆脱破解全场人盯人
+                                        </h3>
+                                        <div class="flex items-center justify-between text-[10px] text-violet-200 mt-2">
+                                            <span class="flex items-center gap-1"><i class="fa-solid fa-pen-nib text-violet-400"></i> 紫极战术室</span>
+                                            <span>2小时前 · 1.8万阅读</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- NEWS CARD STYLE 2: Horizontal Compact Media Card -->
+                                <div onclick="showToast('阅读转会报道')" class="glass-card rounded-2xl p-3 flex gap-3 items-center shadow-sm border border-violet-100 hover:border-violet-300 transition-all cursor-pointer">
+                                    <div class="flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <span class="text-[10px] font-bold text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded">转会风云</span>
+                                            <h4 class="text-xs font-bold text-slate-800 leading-snug mt-1 line-clamp-2">
+                                                重磅！姆巴佩正式完成签约仪式，身披9号球衣亮相伯纳乌
+                                            </h4>
+                                        </div>
+                                        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+                                            <span>天空体育</span>
+                                            <span class="flex items-center gap-1"><i class="fa-regular fa-comment text-violet-500"></i> 432</span>
+                                        </div>
+                                    </div>
+                                    <img src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=200&auto=format&fit=crop&q=80" class="w-24 h-20 rounded-xl object-cover flex-shrink-0" alt="Mbappe Transfer">
+                                </div>
+
+                                <!-- NEWS CARD STYLE 2 (Instance 2) -->
+                                <div onclick="showToast('阅读伤情报告')" class="glass-card rounded-2xl p-3 flex gap-3 items-center shadow-sm border border-violet-100 hover:border-violet-300 transition-all cursor-pointer">
+                                    <div class="flex-1 flex flex-col justify-between">
+                                        <div>
+                                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">伤情更新</span>
+                                            <h4 class="text-xs font-bold text-slate-800 leading-snug mt-1 line-clamp-2">
+                                                阿森纳伤情报告：萨卡已恢复全队合练，有望在本周末北伦敦德比首发
+                                            </h4>
+                                        </div>
+                                        <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2">
+                                            <span>队医前线</span>
+                                            <span class="flex items-center gap-1"><i class="fa-regular fa-comment text-violet-500"></i> 189</span>
+                                        </div>
+                                    </div>
+                                    <img src="https://images.unsplash.com/photo-1560272564-669520742494?w=200&auto=format&fit=crop&q=80" class="w-24 h-20 rounded-xl object-cover flex-shrink-0" alt="Injury Report">
+                                </div>
+
+                                <!-- NEWS CARD STYLE 1 (Instance 2) -->
+                                <div onclick="showToast('阅读金童观察')" class="rounded-2xl overflow-hidden shadow-md relative group cursor-pointer border border-violet-200/60">
+                                    <img src="https://images.unsplash.com/photo-1511886929837-354d827aae26?w=600&auto=format&fit=crop&q=80" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500" alt="Youth Football">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent flex flex-col justify-end p-3.5">
+                                        <span class="inline-block px-2 py-0.5 bg-amber-500 text-slate-950 text-[9px] font-extrabold rounded-md w-max mb-1">
+                                            金童奖观察
+                                        </span>
+                                        <h3 class="text-sm font-bold text-white leading-snug">
+                                            亚马尔的蜕变之路：从拉玛西亚神童到国家队核心
+                                        </h3>
+                                        <div class="flex items-center justify-between text-[10px] text-violet-200 mt-1">
+                                            <span>世界体育报</span>
+                                            <span>5小时前</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-community" class="tab-content hidden transition-opacity duration-300">
+                            <!-- Header -->
+                            <div class="sticky top-0 z-30 bg-violet-100/90 backdrop-blur-md px-4 pt-3 pb-2 border-b border-violet-200/50">
+                                <div class="flex items-center justify-between">
+                                    <h2 class="text-lg font-bold text-violet-950">球友社区</h2>
+                                    <button onclick="showToast('打开发帖编辑器')" class="bg-violet-600 text-white text-xs px-3 py-1 rounded-full shadow flex items-center gap-1 hover:bg-violet-700">
+                                        <i class="fa-solid fa-plus"></i> 发帖
+                                    </button>
+                                </div>
+                                <!-- Topics Pill Horizontal Bar -->
+                                <div class="flex space-x-2 overflow-x-auto no-scrollbar mt-2 pt-1">
+                                    <span class="px-2.5 py-1 bg-violet-600 text-white rounded-full text-[10px] font-semibold whitespace-nowrap shadow-sm">🔥 热门讨论</span>
+                                    <span class="px-2.5 py-1 bg-white/80 text-violet-900 rounded-full text-[10px] font-medium whitespace-nowrap border border-violet-200">#欧冠巅峰对决</span>
+                                    <span class="px-2.5 py-1 bg-white/80 text-violet-900 rounded-full text-[10px] font-medium whitespace-nowrap border border-violet-200">#英超争冠</span>
+                                    <span class="px-2.5 py-1 bg-white/80 text-violet-900 rounded-full text-[10px] font-medium whitespace-nowrap border border-violet-200">#战术演练</span>
+                                </div>
+                            </div>
+
+                            <div class="p-4 space-y-4">
+                                <!-- Post Card 1 (Features Required Embedded Match Card) -->
+                                <div class="glass-card rounded-2xl p-3.5 shadow-sm border border-violet-100 space-y-2.5">
+                                    <!-- User info header -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover ring-2 ring-violet-300" alt="User Avatar">
+                                            <div>
+                                                <div class="flex items-center gap-1">
+                                                    <span class="text-xs font-bold text-slate-800">伯纳乌饮水机</span>
+                                                    <span class="bg-violet-100 text-violet-700 text-[9px] px-1 rounded font-bold">LV.8</span>
+                                                </div>
+                                                <span class="text-[10px] text-slate-400">15分钟前 · 来自马德里</span>
+                                            </div>
+                                        </div>
+                                        <button onclick="showToast('已关注该球友')" class="text-violet-600 border border-violet-300 hover:bg-violet-50 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+                                            + 关注
+                                        </button>
+                                    </div>
+
+                                    <!-- Hashtag & Body text -->
+                                    <div>
+                                        <a href="#" class="text-xs font-bold text-violet-600 hover:underline mr-1">#欧冠半决赛</a>
+                                        <p class="text-xs text-slate-700 leading-relaxed mt-0.5">
+                                            今天皇马的中场转换真的太丝滑了！贝林厄姆的无球跑动拉开了巨大的空间，曼城后防完全被牵着走。大伙觉得次回合谁能晋级？
+                                        </p>
+                                    </div>
+
+                                    <!-- EMBEDDED ASSOCIATED MATCH CARD (REQUIRED UNIQUE FEATURE) -->
+                                    <div class="bg-gradient-to-r from-violet-900 to-indigo-950 text-white rounded-xl p-2.5 border border-violet-500/40 shadow-inner flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                            <span class="text-[10px] font-semibold text-violet-200">关联赛事: 欧冠 1/4决赛</span>
+                                        </div>
+                                        <div class="flex items-center space-x-2 text-xs font-bold">
+                                            <span>皇马 2</span>
+                                            <span class="text-amber-400 font-mono text-[10px] px-1 bg-violet-800/80 rounded">LIVE</span>
+                                            <span>1 曼城</span>
+                                        </div>
+                                        <button onclick="showToast('切换至直播界面')" class="text-[10px] bg-violet-600 hover:bg-violet-500 px-2 py-0.5 rounded-md text-white font-medium">
+                                            看直播 &gt;
+                                        </button>
+                                    </div>
+
+                                    <!-- Interaction Action Bar -->
+                                    <div class="flex items-center justify-between text-slate-400 text-xs pt-1 border-t border-violet-100/80">
+                                        <button onclick="showToast('分享成功')" class="flex items-center space-x-1 hover:text-violet-600">
+                                            <i class="fa-regular fa-share-from-square"></i>
+                                            <span class="text-[10px]">12</span>
+                                        </button>
+                                        <button onclick="showToast('评论区展开')" class="flex items-center space-x-1 hover:text-violet-600">
+                                            <i class="fa-regular fa-comment"></i>
+                                            <span class="text-[10px]">84</span>
+                                        </button>
+                                        <button onclick="toggleLike(this)" class="flex items-center space-x-1 hover:text-rose-500 transition-colors">
+                                            <i class="fa-regular fa-heart"></i>
+                                            <span class="text-[10px] like-count">352</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Post Card 2 -->
+                                <div class="glass-card rounded-2xl p-3.5 shadow-sm border border-violet-100 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover ring-2 ring-violet-300" alt="User Avatar 2">
+                                            <div>
+                                                <div class="flex items-center gap-1">
+                                                    <span class="text-xs font-bold text-slate-800">战术板大师</span>
+                                                    <span class="bg-amber-100 text-amber-800 text-[9px] px-1 rounded font-bold">VIP</span>
+                                                </div>
+                                                <span class="text-[10px] text-slate-400">1小时前</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-700 leading-relaxed">
+                                        <a href="#" class="text-violet-600 font-bold">#英超争冠#</a> 阿森纳今晚的角球战术布置，近角抢点掩护后点，战术配合极其严密。
+                                    </p>
+                                    <!-- Embedded Match Card 2 -->
+                                    <div class="bg-violet-900/90 text-white rounded-xl p-2.5 border border-violet-400/30 flex items-center justify-between">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-[10px] font-semibold text-violet-200">关联赛事: 英超 第32轮</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 text-xs font-bold">
+                                            <span>阿森纳 VS 切尔西</span>
+                                        </div>
+                                        <span class="text-[10px] text-violet-300">今晚 20:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-profile" class="tab-content hidden transition-opacity duration-300">
+                            <!-- Top Profile Banner Header -->
+                            <div class="bg-gradient-to-br from-violet-800 via-purple-800 to-indigo-900 text-white p-5 pt-7 rounded-b-[32px] shadow-lg relative overflow-hidden">
+                                <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none"></div>
+
+                                <!-- User Header Row (Avatar & Signature) -->
+                                <div class="flex items-center space-x-3.5 relative z-10">
+                                    <div class="relative">
+                                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80" class="w-16 h-16 rounded-full object-cover ring-4 ring-violet-300/50 shadow-md" alt="Profile Avatar">
+                                        <span class="absolute bottom-0 right-0 bg-amber-400 text-slate-950 text-[9px] font-extrabold px-1 rounded-full border border-white">PRO</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-base font-extrabold tracking-wide">Alex Vance</h3>
+                                            <button onclick="showToast('展示个人名片')" class="text-violet-200 hover:text-white text-xs bg-white/10 px-2.5 py-1 rounded-full border border-white/20">
+                                                <i class="fa-solid fa-qrcode mr-1"></i> 名片
+                                            </button>
+                                        </div>
+                                        <!-- Bio Signature -->
+                                        <p class="text-[11px] text-violet-200 mt-1 line-clamp-1 italic">
+                                            ⚽ 枪手20年老球迷 | 深度足球战术分析师
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- User Quick Stats Bar -->
+                                <div class="grid grid-cols-4 gap-2 mt-5 pt-3 border-t border-violet-500/30 text-center text-xs">
+                                    <div>
+                                        <div class="font-black text-sm text-white">128</div>
+                                        <div class="text-[10px] text-violet-300">关注</div>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-sm text-white">2.4k</div>
+                                        <div class="text-[10px] text-violet-300">粉丝</div>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-sm text-white">86</div>
+                                        <div class="text-[10px] text-violet-300">帖子</div>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-sm text-amber-300">68%</div>
+                                        <div class="text-[10px] text-violet-300">预测胜率</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Function List Cards -->
+                            <div class="p-4 space-y-3">
+                                <div class="glass-card rounded-2xl p-1 shadow-sm border border-violet-100 overflow-hidden divide-y divide-violet-100/80">
+                                    <!-- Item 1: Edit Profile -->
+                                    <button onclick="showToast('打开编辑个人信息界面')" class="w-full flex items-center justify-between p-3.5 hover:bg-violet-50/80 transition-colors text-left group">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-xl bg-violet-100 text-violet-700 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">
+                                                <i class="fa-solid fa-user-pen"></i>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">编辑个人信息</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-slate-400">
+                                            <span class="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium">完善度85%</span>
+                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                        </div>
+                                    </button>
+
+                                    <!-- Item 2: About Us -->
+                                    <button onclick="showToast('紫极足球 v3.2.0 (Build 2026)')" class="w-full flex items-center justify-between p-3.5 hover:bg-violet-50/80 transition-colors text-left group">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">
+                                                <i class="fa-solid fa-circle-info"></i>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">关于我们</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-slate-400">
+                                            <span class="text-[10px] text-slate-400">v3.2.0</span>
+                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                        </div>
+                                    </button>
+
+                                    <!-- Item 3: Online Customer Support -->
+                                    <button onclick="showToast('连接在线客服中...')" class="w-full flex items-center justify-between p-3.5 hover:bg-violet-50/80 transition-colors text-left group">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">
+                                                <i class="fa-solid fa-headset"></i>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">在线客服</span>
+                                        </div>
+                                        <div class="flex items-center space-x-1 text-slate-400">
+                                            <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">24h 在线</span>
+                                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                                        </div>
+                                    </button>
+
+                                    <!-- Item 4: Settings -->
+                                    <button onclick="showToast('打开系统设置')" class="w-full flex items-center justify-between p-3.5 hover:bg-violet-50/80 transition-colors text-left group">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">
+                                                <i class="fa-solid fa-gear"></i>
+                                            </div>
+                                            <span class="text-xs font-bold text-slate-800">设置</span>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- End Scrollable App Body -->
+
+                    <nav class="absolute bottom-0 inset-x-0 bg-white/90 backdrop-blur-xl border-t border-violet-200/80 px-6 py-2 flex justify-between items-center z-40 shadow-lg">
+                        <!-- Tab 1: Matches -->
+                        <button onclick="switchTab('matches')" id="nav-btn-matches" class="nav-btn flex flex-col items-center text-violet-700 transition-transform active:scale-95">
+                            <i class="fa-solid fa-trophy text-lg"></i>
+                            <span class="text-[10px] font-bold mt-0.5">比赛</span>
+                        </button>
+
+                        <!-- Tab 2: News -->
+                        <button onclick="switchTab('news')" id="nav-btn-news" class="nav-btn flex flex-col items-center text-slate-400 hover:text-violet-600 transition-transform active:scale-95">
+                            <i class="fa-solid fa-newspaper text-lg"></i>
+                            <span class="text-[10px] font-medium mt-0.5">资讯</span>
+                        </button>
+
+                        <!-- Tab 3: Community -->
+                        <button onclick="switchTab('community')" id="nav-btn-community" class="nav-btn flex flex-col items-center text-slate-400 hover:text-violet-600 transition-transform active:scale-95">
+                            <i class="fa-solid fa-comments text-lg"></i>
+                            <span class="text-[10px] font-medium mt-0.5">社区</span>
+                        </button>
+
+                        <!-- Tab 4: Profile -->
+                        <button onclick="switchTab('profile')" id="nav-btn-profile" class="nav-btn flex flex-col items-center text-slate-400 hover:text-violet-600 transition-transform active:scale-95">
+                            <i class="fa-solid fa-user text-lg"></i>
+                            <span class="text-[10px] font-medium mt-0.5">我的</span>
+                        </button>
+                    </nav>
+
+                    <!-- Search Modal Overlay -->
+                    <div id="search-modal" class="hidden absolute inset-0 bg-slate-950/85 backdrop-blur-md z-50 p-4 flex flex-col transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex-1 bg-white/10 rounded-full flex items-center px-3 py-2 border border-violet-400/30">
+                                <i class="fa-solid fa-magnifying-glass text-violet-300 mr-2 text-xs"></i>
+                                <input type="text" placeholder="搜索球队/联赛 (如: 阿森纳, 皇马...)" class="bg-transparent text-xs text-white placeholder-violet-300/60 focus:outline-none w-full">
+                            </div>
+                            <button onclick="closeSearchModal()" class="ml-3 text-xs text-violet-200 font-semibold">取消</button>
+                        </div>
+                        <div class="text-xs text-violet-300 mb-2 font-bold">热门搜索</div>
+                        <div class="flex flex-wrap gap-2">
+                            <span onclick="showToast('筛选: 皇家马德里')" class="bg-violet-900/60 text-violet-100 text-[11px] px-2.5 py-1 rounded-full border border-violet-500/30 cursor-pointer">皇家马德里</span>
+                            <span onclick="showToast('筛选: 阿森纳')" class="bg-violet-900/60 text-violet-100 text-[11px] px-2.5 py-1 rounded-full border border-violet-500/30 cursor-pointer">阿森纳</span>
+                            <span onclick="showToast('筛选: 迈阿密国际')" class="bg-violet-900/60 text-violet-100 text-[11px] px-2.5 py-1 rounded-full border border-violet-500/30 cursor-pointer">迈阿密国际</span>
+                            <span onclick="showToast('筛选: 巴塞罗那')" class="bg-violet-900/60 text-violet-100 text-[11px] px-2.5 py-1 rounded-full border border-violet-500/30 cursor-pointer">巴塞罗那</span>
+                        </div>
+                    </div>
+
+                    <!-- Toast Notice Container -->
+                    <div id="toast-msg" class="hidden absolute top-12 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs px-4 py-2 rounded-full shadow-2xl z-50 border border-violet-400/40 animate-bounce">
+                        提示消息
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="view-doc-container" class="hidden w-full max-w-4xl bg-slate-900/90 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-violet-500/30 shadow-2xl text-slate-200 max-h-[820px] overflow-y-auto no-scrollbar">
+            <div class="border-b border-violet-500/30 pb-4 mb-6">
+                <span class="text-xs font-mono text-violet-400 uppercase tracking-widest">PRODUCT &amp; DESIGN SPECIFICATION DOCUMENT</span>
+                <h2 class="text-2xl font-black text-white mt-1">紫极足球 (Violet Pitch) 产品功能与 UI 设计规范</h2>
+                <p class="text-xs text-violet-300/80 mt-1">版本: v3.2.0 | 主题色系: 浅紫/薰衣草紫 (Light Violet &amp; Lavender) | 适用平台: iOS / Android</p>
+            </div>
+
+            <div class="space-y-8 text-xs leading-relaxed">
+                <!-- Section 1 -->
+                <div>
+                    <h3 class="text-sm font-bold text-violet-300 border-l-4 border-violet-500 pl-2.5 mb-2">1. 用户体验与需求分析</h3>
+                    <div class="bg-slate-800/60 rounded-xl p-3.5 space-y-2 border border-violet-500/10">
+                        <p><strong class="text-white">核心痛点:</strong> 传统足球赛事App信息杂乱过载、缺乏战术深度，且论坛社区讨论与比赛实时比分割裂。</p>
+                        <p><strong class="text-white">独特机制:</strong> 引入“AI胜率动量分析”与“发帖挂载关联比赛卡片”机制，使用户在社交讨论时能一键引入实时比分与战术板，打造深度的去中心化足球社群氛围。</p>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div>
+                    <h3 class="text-sm font-bold text-violet-300 border-l-4 border-violet-500 pl-2.5 mb-2">2. 4大核心界面规划与交互逻辑</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-violet-500/10">
+                            <h4 class="font-bold text-violet-400 mb-1">页面 1: 比赛列表 (Match Center)</h4>
+                            <p class="text-slate-300">· 顶部导航中间嵌入全局搜索；`[关注, 推荐, 赛程, 赛果]` 4级二级菜单。<br>· 严格日历约束：【赛程】仅支持选择当天及未来日期；【赛果】仅支持选择当天及历史日期。</p>
+                        </div>
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-violet-500/10">
+                            <h4 class="font-bold text-violet-400 mb-1">页面 2: 绿荫资讯 (News Hub)</h4>
+                            <p class="text-slate-300">· 包含双重卡片展现形式：样式1为全铺式渐变背景图战术深度解读，样式2为左右结构高密度的图文快讯，阅读视觉体验舒适。</p>
+                        </div>
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-violet-500/10">
+                            <h4 class="font-bold text-violet-400 mb-1">页面 3: 球友社区 (Community)</h4>
+                            <p class="text-slate-300">· 包含话题标签(#话题)、富文本及交互点赞。核心创新在于“内嵌关联比赛卡片”，实现社群讨论与实时比赛数据的无缝串联。</p>
+                        </div>
+                        <div class="bg-slate-800/60 p-3 rounded-xl border border-violet-500/10">
+                            <h4 class="font-bold text-violet-400 mb-1">页面 4: 个人中心 (Profile)</h4>
+                            <p class="text-slate-300">· 包含精美头像、签名及预测胜率数据盘。<br>· 提供编辑个人信息、关于我们、24h在线客服、系统设置四大功能板块。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div>
+                    <h3 class="text-sm font-bold text-violet-300 border-l-4 border-violet-500 pl-2.5 mb-2">3. 高保真 UI 设计规范 (Design Tokens)</h3>
+                    <div class="bg-slate-800/60 p-3.5 rounded-xl border border-violet-500/10 space-y-1.5">
+                        <p><strong class="text-white">主色调 (Primary Colors):</strong> Lavender &amp; Light Violet (`#8B5CF6` / `#7C3AED` / `#EDE9FE` / `#F5F3FF` 渐变色系)</p>
+                        <p><strong class="text-white">材质与阴影 (Material &amp; Elevation):</strong> 半透明毛玻璃 (`rgba(255, 255, 255, 0.88)`) 配合紫微光边框 (`rgba(221, 214, 254, 0.65)`)</p>
+                        <p><strong class="text-white">圆角系统 (Border Radius):</strong> iPhone 52px, 卡片 16px/20px, 控件 Full/Rounded</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentTab = 'matches';
+        let matchSubTab = 'recommend';
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function switchMainView(mode) {
+            const appContainer = document.getElementById('view-app-container');
+            const docContainer = document.getElementById('view-doc-container');
+            const btnApp = document.getElementById('btn-toggle-app');
+            const btnDoc = document.getElementById('btn-toggle-doc');
+
+            if (mode === 'app') {
+                appContainer.classList.remove('hidden');
+                docContainer.classList.add('hidden');
+                btnApp.className = 'px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300 bg-violet-600 text-white shadow-md';
+                btnDoc.className = 'px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-300';
+            } else {
+                appContainer.classList.add('hidden');
+                docContainer.classList.remove('hidden');
+                btnDoc.className = 'px-5 py-2 rounded-full text-xs font-semibold transition-all duration-300 bg-violet-600 text-white shadow-md';
+                btnApp.className = 'px-5 py-2 rounded-full text-xs font-semibold text-slate-400 hover:text-white transition-all duration-300';
+            }
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Hide all tab screens
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected tab screen
+            const targetTab = document.getElementById(`tab-${tabName}`);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+            }
+
+            // Update tab icon styles
+            const navButtons = ['matches', 'news', 'community', 'profile'];
+            navButtons.forEach(btn => {
+                const el = document.getElementById(`nav-btn-${btn}`);
+                if (btn === tabName) {
+                    el.className = 'nav-btn flex flex-col items-center text-violet-700 transition-transform active:scale-95';
+                    el.querySelector('span').classList.replace('font-medium', 'font-bold');
+                } else {
+                    el.className = 'nav-btn flex flex-col items-center text-slate-400 hover:text-violet-600 transition-transform active:scale-95';
+                    el.querySelector('span').classList.replace('font-bold', 'font-medium');
+                }
+            });
+        }
+
+        function switchMatchSubTab(subTabName) {
+            matchSubTab = subTabName;
+            
+            // Reset subtab button styles
+            const subtabs = ['follow', 'recommend', 'schedule', 'results'];
+            subtabs.forEach(name => {
+                const btn = document.getElementById(`subtab-${name}`);
+                if (name === subTabName) {
+                    btn.className = 'subtab-btn text-xs font-bold text-violet-700 bg-white/80 px-3 py-1 rounded-full shadow-sm relative border border-violet-200/50';
+                } else {
+                    btn.className = 'subtab-btn text-xs font-semibold text-slate-500 px-2 py-1.5 rounded-lg relative';
+                }
+            });
+
+            const datePickerStrip = document.getElementById('date-picker-strip');
+            const dateHint = document.getElementById('date-rule-hint');
+
+            // Apply calendar restrictions based on prompt rules
+            if (subTabName === 'schedule') {
+                // 赛程：只能选当天和当天之后的日期 (Today and Future)
+                datePickerStrip.classList.remove('hidden');
+                dateHint.textContent = '仅可选当天及以后';
+                renderDatePickerStrip('future');
+            } else if (subTabName === 'results') {
+                // 赛果：只能选当天和当天历史的日期 (Today and Past)
+                datePickerStrip.classList.remove('hidden');
+                dateHint.textContent = '仅可选当天及历史';
+                renderDatePickerStrip('past');
+            } else {
+                datePickerStrip.classList.add('hidden');
+            }
+        }
+
+        function renderDatePickerStrip(direction) {
+            const container = document.getElementById('date-strip-items');
+            container.innerHTML = '';
+            
+            const today = new Date();
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            
+            let dateList = [];
+
+            if (direction === 'future') {
+                // Today + 5 Days Future
+                for (let i = 0; i < 6; i++) {
+                    let d = new Date();
+                    d.setDate(today.getDate() + i);
+                    dateList.push({
+                        label: i === 0 ? '今天' : days[d.getDay()],
+                        dateStr: `${d.getMonth() + 1}/${d.getDate()}`,
+                        isToday: i === 0
+                    });
+                }
+            } else {
+                // Today + 5 Days Past
+                for (let i = 5; i >= 0; i--) {
+                    let d = new Date();
+                    d.setDate(today.getDate() - i);
+                    dateList.push({
+                        label: i === 0 ? '今天' : days[d.getDay()],
+                        dateStr: `${d.getMonth() + 1}/${d.getDate()}`,
+                        isToday: i === 0
+                    });
+                }
+            }
+
+            dateList.forEach((item) => {
+                const itemEl = document.createElement('button');
+                const active = item.isToday;
+                itemEl.className = `flex-shrink-0 flex flex-col items-center px-2.5 py-1 rounded-xl text-center transition-all ${
+                    active 
+                    ? 'bg-violet-600 text-white font-bold shadow-md ring-2 ring-violet-300' 
+                    : 'bg-white/60 text-slate-700 hover:bg-white text-xs'
+                }`;
+                itemEl.onclick = function() {
+                    container.querySelectorAll('button').forEach(b => {
+                        b.className = 'flex-shrink-0 flex flex-col items-center px-2.5 py-1 rounded-xl text-center transition-all bg-white/60 text-slate-700 hover:bg-white text-xs';
+                    });
+                    this.className = 'flex-shrink-0 flex flex-col items-center px-2.5 py-1 rounded-xl text-center transition-all bg-violet-600 text-white font-bold shadow-md ring-2 ring-violet-300';
+                    showToast(`已筛选日期: ${item.dateStr}`);
+                };
+
+                itemEl.innerHTML = `
+                    <span class="text-[9px] opacity-80">${item.label}</span>
+                    <span class="text-xs font-mono font-bold">${item.dateStr}</span>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+
+        function openSearchModal() {
+            document.getElementById('search-modal').classList.remove('hidden');
+        }
+        function closeSearchModal() {
+            document.getElementById('search-modal').classList.add('hidden');
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast-msg');
+            toast.textContent = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2000);
+        }
+
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            const countSpan = btn.querySelector('.like-count');
+            let count = parseInt(countSpan.textContent);
+
+            if (icon.classList.contains('fa-regular')) {
+                icon.classList.replace('fa-regular', 'fa-solid');
+                btn.classList.add('text-rose-500');
+                countSpan.textContent = count + 1;
+            } else {
+                icon.classList.replace('fa-solid', 'fa-regular');
+                btn.classList.remove('text-rose-500');
+                countSpan.textContent = count - 1;
+            }
+        }
+    </script>
+</body>
+</html>
