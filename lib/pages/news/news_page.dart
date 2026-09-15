@@ -107,22 +107,17 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  /// 顶部Banner数据（第1条）
-  NewsModel? get _topBanner => _newsList.isNotEmpty ? _newsList[0] : null;
+  /// 顶部Banner数据（前3条）
+  List<NewsModel> get _bannerList {
+    if (_newsList.isEmpty) return [];
+    final count = _newsList.length < 3 ? _newsList.length : 3;
+    return _newsList.sublist(0, count);
+  }
 
-  /// 底部Banner数据（第4条）
-  NewsModel? get _bottomBanner =>
-      _newsList.length >= 4 ? _newsList[3] : null;
-
-  /// 中间列表数据（第2、3条 + 第5条以后）
+  /// 中间列表数据（第4条以后）
   List<NewsModel> get _middleList {
-    if (_newsList.length <= 1) return [];
-    final list = <NewsModel>[];
-    for (int i = 1; i < _newsList.length; i++) {
-      if (i == 3) continue; // 第4条（索引3）作为底部Banner，跳过
-      list.add(_newsList[i]);
-    }
-    return list;
+    if (_newsList.length <= 3) return [];
+    return _newsList.sublist(3);
   }
 
   @override
@@ -215,37 +210,23 @@ class _NewsPageState extends State<NewsPage> {
       onRefresh: () => _fetchNews(isRefresh: true),
       child: ListView.builder(
         controller: _scrollController,
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
+        padding: const EdgeInsets.fromLTRB(0, 16, 0, 88),
         itemCount: _buildItemCount(),
         itemBuilder: (ctx, index) {
-          // 顶部Banner
-          if (index == 0 && _topBanner != null) {
+          // 顶部横向滑动Banner
+          if (index == 0 && _bannerList.isNotEmpty) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: FeatureNewsCard(
-                news: _topBanner!,
-                onTap: () => _onNewsTap(_topBanner!),
-              ),
-            );
-          }
-
-          // 底部Banner（最后一条）
-          if (index == _buildItemCount() - 1 && _bottomBanner != null) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: FeatureNewsCard(
-                news: _bottomBanner!,
-                onTap: () => _onNewsTap(_bottomBanner!),
-              ),
+              child: _buildHorizontalBanner(),
             );
           }
 
           // 中间列表卡片
-          final middleIndex = _getMiddleIndex(index);
+          final middleIndex = index - 1;
           if (middleIndex < _middleList.length) {
             final news = _middleList[middleIndex];
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
               child: CompactNewsCard(
                 news: news,
                 onTap: () => _onNewsTap(news),
@@ -260,20 +241,36 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// 计算列表总条数：顶部Banner + 中间列表 + 底部Banner + footer
-  int _buildItemCount() {
-    int count = 0;
-    if (_topBanner != null) count++; // 顶部Banner
-    count += _middleList.length; // 中间列表
-    if (_bottomBanner != null) count++; // 底部Banner
-    if (!_hasNoMore || _isLoading) count++; // footer
-    return count;
+  /// 横向滑动Banner（前3条数据）
+  Widget _buildHorizontalBanner() {
+    return SizedBox(
+      height: 160,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(left: 16),
+        itemCount: _bannerList.length,
+        itemBuilder: (ctx, index) {
+          final news = _bannerList[index];
+          return Container(
+            width: 280,
+            margin: const EdgeInsets.only(right: 12),
+            child: FeatureNewsCard(
+              news: news,
+              onTap: () => _onNewsTap(news),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  /// 根据ListView索引计算中间列表的索引
-  int _getMiddleIndex(int listViewIndex) {
-    int offset = _topBanner != null ? 1 : 0;
-    return listViewIndex - offset;
+  /// 计算列表总条数：横向Banner + 中间列表 + footer
+  int _buildItemCount() {
+    int count = 0;
+    if (_bannerList.isNotEmpty) count++; // 横向Banner
+    count += _middleList.length; // 中间列表
+    if (!_hasNoMore || _isLoading) count++; // footer
+    return count;
   }
 
   /// 列表底部指示器（加载中 / 没有更多）

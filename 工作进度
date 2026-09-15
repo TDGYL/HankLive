@@ -2,3 +2,19 @@
 offical@livespeeds.com 默认验证码 1086
 
 api.livespeeds.com
+
+
+
+1、在比赛详情菜单加一个社区菜单选项
+在match_detail_page的菜单的指数分析后边加一个社区菜单分类，五个元素均分宽度
+第一步：
+第二：界面的数据请求url=/api/livespeed/community/list，请求方式为get请求，
+请求参数为：
+params = {
+      "type": 2, 
+      "page": 1,
+      "size": 10,
+      "match_type": 1,
+    };
+参数说明：只有type 是动态的，type=1是推荐，type=2是最近，type=3是关注
+

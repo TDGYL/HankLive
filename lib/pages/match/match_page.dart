@@ -6,6 +6,7 @@ import '../../widgets/match/featured_match_card.dart';
 import '../../widgets/match/standard_match_card.dart';
 import '../../widgets/common/search_modal.dart';
 import '../../widgets/common/calendar_bottom_sheet.dart';
+import 'match_detail_page.dart';
 
 /// MatchSubTab: 比赛列表二级Tab枚举
 /// 对应接口 tab 参数：关注=4，推荐=5，赛程=2，赛果=3
@@ -174,6 +175,16 @@ class _MatchPageState extends State<MatchPage> {
     _fetchMatches(isRefresh: true);
   }
 
+  /// 跳转到比赛详情页
+  void _navigateToDetail(MatchModel match) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MatchDetailPage(match: match),
+      ),
+    );
+  }
+
   void _openSearch() {
     showDialog(
       context: context,
@@ -297,12 +308,18 @@ class _MatchPageState extends State<MatchPage> {
           if (match.isFeatured) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: FeaturedMatchCard(match: match),
+              child: FeaturedMatchCard(
+                match: match,
+                onTap: () => _navigateToDetail(match),
+              ),
             );
           }
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: StandardMatchCard(match: match),
+            child: StandardMatchCard(
+              match: match,
+              onTap: () => _navigateToDetail(match),
+            ),
           );
         },
       ),
