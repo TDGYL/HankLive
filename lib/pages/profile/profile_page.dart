@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/user_profile_model.dart';
 import '../../services/mock_data_service.dart';
+import '../../utils/hank_auth_manager.dart';
+import '../../models/hank_user_model.dart';
+import '../login/login_page.dart';
 
 /// ProfilePage: 个人中心页面
 /// 包含渐变头部（头像、签名、统计数据）和功能列表（编辑信息、关于我们、客服、设置）
+/// 未登录时点击头像push到登录界面，登录后展示用户信息
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -13,13 +17,53 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  /// 用户信息
+  /// 本地Mock用户信息（未登录时展示）
   late UserProfileModel _user;
+
+  /// 是否已登录
+  bool _isLoggedIn = false;
+
+  /// 当前登录用户信息
+  HankUserModel? _currentUser;
 
   @override
   void initState() {
     super.initState();
     _user = MockDataService.getUserProfile();
+    _refreshLoginState();
+  }
+
+  /// 刷新登录状态
+  void _refreshLoginState() {
+    setState(() {
+      _isLoggedIn = HankAuthManager().isLoggedIn;
+      _currentUser = HankAuthManager().currentUser;
+    });
+  }
+
+  /// 点击头像：未登录则push到登录界面，登录成功后刷新
+  void _onAvatarTap() {
+    if (_isLoggedIn) {
+      // 已登录，展示个人名片
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('展示个人名片'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+
+    // 未登录，push到登录界面
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HankLoginPage()),
+    ).then((result) {
+      // 登录成功返回后刷新状态
+      if (result == true) {
+        _refreshLoginState();
+      }
+    });
   }
 
   @override
@@ -98,49 +142,82 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildUserRow() {
+    // 显示昵称：已登录用接口数据，未登录用Mock
+    final displayName = _isLoggedIn
+        ? (_currentUser?.nickname ?? '未知用户')
+        : '点击登录';
+    // 显示签名：已登录用接口数据，未登录用Mock
+    final displaySignature = _isLoggedIn
+        ? (_currentUser?.signature ?? '这家伙很懒，什么都没留下')
+        : '登录后解锁更多功能';
+
     return Row(
       children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: AppColors.violet300,
-              child: ClipOval(
-                child: _user.avatarUrl != null
-                    ? Image.network(
-                        _user.avatarUrl!,
-                        width: 64,
-                        height: 64,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            _buildDefaultAvatar(),
-                      )
-                    : _buildDefaultAvatar(),
+        GestureDetector(
+          onTap: _onAvatarTap,
+          child: Stack(
+            children: [
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: AppColors.violet300,
+                child: ClipOval(
+                  child: _isLoggedIn && _currentUser?.avatar != null
+                      ? Image.network(
+                          _currentUser!.avatar!,
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) =>
+                              _buildDefaultAvatar(displayName),
+                        )
+                      : _buildDefaultAvatar(displayName),
+                ),
               ),
-            ),
-            if (_user.isPro)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: AppColors.amber400,
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(color: Colors.white, width: 1),
-                  ),
-                  child: const Text(
-                    'PRO',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.slate900,
+              if (_isLoggedIn && _user.isPro)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: AppColors.amber400,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: Colors.white, width: 1),
+                    ),
+                    child: const Text(
+                      'PRO',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.slate900,
+                      ),
                     ),
                   ),
                 ),
-              ),
-          ],
+              if (!_isLoggedIn)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      color: AppColors.violet600,
+                      shape: BoxShape.circle,
+                      border: Border.fromBorderSide(
+                        BorderSide(color: Colors.white, width: 1.5),
+                      ),
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -151,7 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Expanded(
                     child: Text(
-                      _user.nickname,
+                      displayName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -160,49 +237,50 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('展示个人名片'),
-                          duration: Duration(seconds: 1),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: Colors.white.withOpacity(0.2),
-                        ),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.qr_code,
-                            size: 12,
-                            color: Color(0xFFC4B5FD),
+                  if (_isLoggedIn)
+                    GestureDetector(
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('展示个人名片'),
+                            duration: Duration(seconds: 1),
                           ),
-                          SizedBox(width: 4),
-                          Text(
-                            '名片',
-                            style: TextStyle(
-                              fontSize: 12,
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.2),
+                          ),
+                        ),
+                        child: Row(
+                          children: const [
+                            Icon(
+                              Icons.qr_code,
+                              size: 12,
                               color: Color(0xFFC4B5FD),
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 4),
+                            Text(
+                              '名片',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFFC4B5FD),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 4),
               Text(
-                _user.signature,
+                displaySignature,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
@@ -218,7 +296,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildDefaultAvatar() {
+  Widget _buildDefaultAvatar([String? name]) {
+    final displayName = name ?? _user.nickname;
     return Container(
       width: 64,
       height: 64,
@@ -229,7 +308,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
       child: Text(
-        _user.nickname.isNotEmpty ? _user.nickname.characters.first : '?',
+        displayName.isNotEmpty ? displayName.characters.first : '?',
         style: const TextStyle(
           color: Colors.white,
           fontSize: 24,
@@ -240,6 +319,16 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildStatsBar() {
+    // 已登录时使用接口数据，未登录使用Mock
+    final following = _isLoggedIn
+        ? '${_currentUser?.followers ?? 0}'
+        : '${_user.followingCount}';
+    final fans = _isLoggedIn
+        ? '${_currentUser?.fansCount ?? 0}'
+        : _user.followerDisplay;
+    final posts = '${_user.postCount}';
+    final winRate = '${_user.predictWinRate}%';
+
     return Container(
       padding: const EdgeInsets.only(top: 12),
       decoration: const BoxDecoration(
@@ -250,19 +339,19 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Row(
         children: [
           _buildStatItem(
-            value: '${_user.followingCount}',
+            value: following,
             label: '关注',
           ),
           _buildStatItem(
-            value: _user.followerDisplay,
+            value: fans,
             label: '粉丝',
           ),
           _buildStatItem(
-            value: '${_user.postCount}',
+            value: posts,
             label: '帖子',
           ),
           _buildStatItem(
-            value: '${_user.predictWinRate}%',
+            value: winRate,
             label: '预测胜率',
             valueColor: AppColors.amber400,
           ),

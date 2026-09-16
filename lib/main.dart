@@ -7,8 +7,9 @@ import 'pages/match/match_page.dart';
 import 'pages/news/news_page.dart';
 import 'pages/community/community_page.dart';
 import 'pages/profile/profile_page.dart';
+import 'utils/hank_auth_manager.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 设置状态栏样式
   SystemChrome.setSystemUIOverlayStyle(
@@ -17,6 +18,8 @@ void main() {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  // 初始化用户登录状态（恢复本地缓存的Token和用户信息）
+  await HankAuthManager().init();
   runApp(const HankLiveApp());
 }
 

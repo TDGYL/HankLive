@@ -1,5 +1,21 @@
 
+captcha_plugin_flutter: '1.2.6'
+ /// 网易易盾Code业务ID - String类型，易盾后台分配的VerifyCode
+  static const String _captchaVerifyCode = '69d5b2ee3fec46658e01c0b45fc381af';
 
+
+在login_page登录界面的获取验证码点击事件时候，调起网易易信的人机验证功能，网易三方库为：captcha_plugin_flutter
+
+_captchaVerifyCode= 69d5b2ee3fec46658e01c0b45fc381af，功能配置和逻辑参照/Users/guyilin/Desktop/ZogoLive/lib/pages/login_page.dart的点击获取获取验证码事件
+
+
+=======================================UI优化
+profile_page
+
+=======================================UI参照--登录界面
+在profile_page界面，点击头像时候push到登录界面：界面UI参照/Users/guyilin/Desktop/ZogoLive/lib/pages/login_page.dart的大致布局，最好能写出不一样的布局，，修改界面元素，界面做差异化，但是数据能对的上，主题颜色还是参照index.html的浅紫色加白色
+
+登录界面的的流程和功能和/Users/guyilin/Desktop/ZogoLive/lib/pages/login_page.dart一样，用户登录之后也要缓存本地，用一个管理类来判断用户登录状态，登录之后刷新请求头等等
 
 
 
