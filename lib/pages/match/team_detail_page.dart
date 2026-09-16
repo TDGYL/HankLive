@@ -393,6 +393,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
   /// 阵容分组卡片（位置标题 + 球员逐行排列）
   Widget _buildLineupGroupCard(HankTeamLineupGroup group) {
     final players = group.personList ?? [];
+    final isCoach = group.position == 'Coach';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -433,25 +434,29 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
                     color: AppColors.violet700,
                   ),
                 ),
-                Text(
-                  '进球/出场',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.slate500,
+                if (!isCoach)
+                  Text(
+                    '进球/出场',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: AppColors.slate500,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
           // 球员列表（全宽逐行排列）
-          ...players.map((player) => _buildPlayerChip(player)).toList(),
+          ...players
+              .map((player) => _buildPlayerChip(player, isCoach))
+              .toList(),
         ],
       ),
     );
   }
 
   /// 球员信息行（全宽，头像 + 姓名 + 号码 + 数据右对齐）
-  Widget _buildPlayerChip(HankTeamPlayer player) {
+  /// [isCoach] - true时隐藏进球/出场数据
+  Widget _buildPlayerChip(HankTeamPlayer player, bool isCoach) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
       decoration: const BoxDecoration(
@@ -522,13 +527,14 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
             ),
           ),
           // 进球/出场（右对齐，与标题"进球/出场"垂直对齐）
-          Text(
-            '${player.goals ?? 0}球 / ${player.matches ?? 0}场',
-            style: const TextStyle(
-              fontSize: 10,
-              color: AppColors.slate500,
+          if (!isCoach)
+            Text(
+              '${player.goals ?? 0}球 / ${player.matches ?? 0}场',
+              style: const TextStyle(
+                fontSize: 10,
+                color: AppColors.slate500,
+              ),
             ),
-          ),
         ],
       ),
     );

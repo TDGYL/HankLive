@@ -34,6 +34,9 @@ class HankSearchMatch {
   /// 客队比分
   final int? awayTeamScore;
 
+  /// 比赛分类ID（1=足球，用于过滤）
+  final int? categoryId;
+
   HankSearchMatch({
     this.matchId,
     this.matchTime,
@@ -46,6 +49,7 @@ class HankSearchMatch {
     this.awayTeamName,
     this.awayTeamLogo,
     this.awayTeamScore,
+    this.categoryId,
   });
 
   /// 从JSON映射（snake_case → camelCase）
@@ -62,6 +66,7 @@ class HankSearchMatch {
       awayTeamName: json['away_team_name'] as String?,
       awayTeamLogo: json['away_team_logo'] as String?,
       awayTeamScore: json['away_team_score'] != null ? (json['away_team_score'] as num).toInt() : null,
+      categoryId: json['category'] != null ? (json['category'] as num).toInt() : null,
     );
   }
 }
@@ -70,22 +75,22 @@ class HankSearchMatch {
 /// 对应 /api/livespeed/index/search 返回的 users 数组元素
 class HankSearchUser {
   /// 用户ID
-  final int? id;
+  int? id;
 
   /// 用户头像URL
-  final String? avatar;
+  String? avatar;
 
   /// 用户昵称
-  final String? nickname;
+  String? nickname;
 
   /// 是否直播中（1=直播中）
-  final int? isLiving;
+  int? isLiving;
 
   /// 是否专家（1=专家）
-  final int? isExpert;
+  int? isExpert;
 
   /// 关注状态（0或2=未关注，1或3=已关注）
-  final int? followType;
+  int? followType;
 
   HankSearchUser({
     this.id,

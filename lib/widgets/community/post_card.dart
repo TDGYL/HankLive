@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/post_model.dart';
+import '../../utils/hank_auth_manager.dart';
 import '../match/embedded_match_card.dart';
 
 /// PostCard: 社区帖子卡片
@@ -21,6 +22,9 @@ class PostCard extends StatefulWidget {
   /// 点击用户/关注回调
   final VoidCallback? onFollowTap;
 
+  /// 点击拉黑回调
+  final VoidCallback? onBlockTap;
+
   /// 点击帖子正文回调
   final VoidCallback? onTap;
 
@@ -31,6 +35,7 @@ class PostCard extends StatefulWidget {
     this.onCommentTap,
     this.onShareTap,
     this.onFollowTap,
+    this.onBlockTap,
     this.onTap,
   }) : super(key: key);
 
@@ -41,6 +46,12 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   late bool _isLiked;
   late int _likeCount;
+
+  /// 是否为自己的帖子 - bool类型，作者本人时隐藏拉黑按钮
+  bool get _isOwnPost {
+    final currentUserId = HankAuthManager().currentUser?.id;
+    return currentUserId != null && widget.post.userId == currentUserId.toString();
+  }
 
   @override
   void initState() {
@@ -182,24 +193,25 @@ class _PostCardState extends State<PostCard> {
             ],
           ),
         ),
-        GestureDetector(
-          onTap: widget.onFollowTap,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: AppColors.violet300),
-            ),
-            child: const Text(
-              '+ 关注',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: AppColors.violet600,
+        if (!_isOwnPost)
+          GestureDetector(
+            onTap: widget.onBlockTap,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(color: AppColors.slate400),
+              ),
+              child: const Text(
+                '拉黑',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.slate500,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/post_model.dart';
 import '../../services/hank_community_api_service.dart';
+import '../../utils/hank_auth_manager.dart';
+import '../../utils/hank_network_manager.dart';
 import '../../widgets/community/post_card.dart';
+import 'community_detail_page.dart';
+import 'post_community_page.dart';
+import '../login/login_page.dart';
 
 /// CommunitySubTab: 社区列表二级Tab枚举
 /// 对应接口 type 参数：推荐=1，最近=2，关注=3
@@ -143,6 +148,66 @@ class _CommunityPageState extends State<CommunityPage> {
     _fetchPosts(isRefresh: true);
   }
 
+  /// 拉黑帖子（二次确认弹窗 + 接口请求）
+  /// [post] - 被拉黑的帖子模型
+  /// 接口：POST /api/livespeed/community/block_post
+  Future<void> _blockPost(PostModel post) async {
+    if (!HankAuthManager().isLoggedIn) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HankLoginPage()),
+      );
+      return;
+    }
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('拉黑帖子', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text('确定要拉黑这篇帖子吗？拉黑后将不再显示该帖子。', style: TextStyle(fontSize: 13, color: AppColors.slate600)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('取消', style: TextStyle(color: AppColors.slate500)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('拉黑', style: TextStyle(color: AppColors.rose500)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final postId = int.tryParse(post.postId) ?? 0;
+    final response = await HankNetworkManager().postRequest(
+      '/api/livespeed/community/block_post',
+      data: {
+        'post_id': postId,
+        'type': 1,
+      },
+    );
+
+    if (response.isSuccess && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已拉黑'), duration: Duration(seconds: 1)),
+      );
+      // 从列表中过滤掉被拉黑的帖子
+      setState(() {
+        _posts.removeWhere((p) => int.tryParse(p.postId) == postId);
+      });
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response.message ?? '拉黑失败，请重试'),
+          duration: const Duration(seconds: 1),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -194,12 +259,16 @@ class _CommunityPageState extends State<CommunityPage> {
                 const Spacer(),
                 GestureDetector(
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('打开发帖编辑器'),
-                        duration: Duration(seconds: 1),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => HankPostCommunityPage(),
                       ),
-                    );
+                    ).then((published) {
+                      if (published == true) {
+                        _fetchPosts(isRefresh: true);
+                      }
+                    });
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -375,14 +444,25 @@ class _CommunityPageState extends State<CommunityPage> {
             padding: const EdgeInsets.only(bottom: 16),
             child: PostCard(
               post: _posts[index],
-              onFollowTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('已关注该球友: ${_posts[index].userName}'),
-                    duration: const Duration(seconds: 1),
+              onTap: () {
+                final postId = int.tryParse(_posts[index].postId) ?? 0;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => HankCommunityDetailPage(postId: postId),
                   ),
-                );
+                ).then((deleted) {
+                  if (deleted == true) {
+                    setState(() {
+                      _posts.removeWhere(
+                        (p) => int.tryParse(p.postId) == postId,
+                      );
+                    });
+                    _fetchPosts(isRefresh: true);
+                  }
+                });
               },
+              onBlockTap: () => _blockPost(_posts[index]),
               onCommentTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

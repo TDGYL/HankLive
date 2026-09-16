@@ -1,12 +1,104 @@
 
-captcha_plugin_flutter: '1.2.6'
- /// 网易易盾Code业务ID - String类型，易盾后台分配的VerifyCode
-  static const String _captchaVerifyCode = '69d5b2ee3fec46658e01c0b45fc381af';
 
 
-在login_page登录界面的获取验证码点击事件时候，调起网易易信的人机验证功能，网易三方库为：captcha_plugin_flutter
 
-_captchaVerifyCode= 69d5b2ee3fec46658e01c0b45fc381af，功能配置和逻辑参照/Users/guyilin/Desktop/ZogoLive/lib/pages/login_page.dart的点击获取获取验证码事件
+优化：
+1、比赛详情右上角的订阅按钮，未登录时候点击直接push到登录界面，取消toast提示
+2、首页帖子列表的拉黑帖子功能也是未登录时候点击直接push到登录界面，取消toast提示
+
+
+
+修改逻辑：
+个人中心，当点击设置，退出登录之后，删除了本地用户数据的缓存，个人中心刷新界面，头像用灰色的背景色代替，手机号换成登录/注册
+点击编辑个人信息跳转到登录界面，点击设置也跳转到登录界面
+
+
+
+
+profile_page列表关于我们右边的版本号删除掉
+
+
+
+优化profile_page界面：
+1、将右上角的个人名片删除
+2、点击头像时候不要出现toast
+3、设置里边增加一个退出登录按钮，点击有二次弹窗提示，逻辑参考：/Users/guyilin/Desktop/ZogoLive/lib/pages/profile_page.dart点击退出登录的逻辑
+
+
+优化profile_page界面：
+1、将右上角的名片删除
+2、头像下边的帖子和帖子个数删除，三个菜单均分宽度
+3、做一个用户未登录的界面状态
+
+
+当点击列表：编辑个人信息、关于我们、在线客服、设置，功能和接口参照/Users/guyilin/Desktop/ZogoLive/lib/pages/profile_page.dart点击push进去的功能，最好能写出不一样的布局，但是数据能对的上，主题颜色还是参照index.html的浅紫色加白色
+
+
+
+
+在search_page搜索的用户添加关注接口请求：参照：/Users/guyilin/Desktop/ZogoLive/lib/pages/search_page的关注按钮事件的网络请求
+
+
+
+match_detail_lineup_tab的替补席的队名和队员之间的距离约束参考伤停名单队名和队员的约束，要求队员和队名紧贴一些
+
+将match_detail_lineup_tab的替补席队员由2行展示修改成1行展示，在球衣号码后加队员logo，后边再展示球员名字
+
+match_detail_lineup_tab替补队员之间修改成间隔8个像素
+
+match_detail_lineup_tab替补席的队名和队员之间间隔的太大，优化下，让队员和队名之间的约束为15像素
+
+
+在match_detail_page的菜单的图文赛况后边增加一个 帖子 一共就5个菜单选项了
+该帖子菜单的展示和community_page一样，接口参数数据请求url=/api/livespeed/community/list，请求方式为get请求，
+请求参数为：
+params = {
+      "type": 1, 
+      "page": 1,
+      "size": 10,
+      "match_type": 1,
+    };
+参数说明：type固定=1
+
+在该界面的右下角增加一个大加号的按钮，按钮是浅紫色主题色圆形的，宽高=40像素，中间是+号，点击按钮push到发布帖子的界面，然后传入该比赛详情的比赛模型，发布帖子界面关联了此比赛
+
+
+match_detail_page右上角的订阅和取消订阅参照：/Users/guyilin/Desktop/ZogoLive/lib/pages/football_detail_page.dart的关注按钮事件的网络请求
+
+
+=======================================接口调试===拉黑帖子
+community_page将卡片右上角的关注换成拉黑按钮，点击拉黑有二次弹窗提醒，如果是作者自己发送的，则隐藏按钮
+拉黑的接口url=/api/livespeed/community/block_post，请求方式为POST请求
+请求参数
+   params = {
+      "post_id": 0,int
+      "type": 1,int
+    };
+
+参数说明：post_id为帖子id，type固定写死=1，如果拉黑成功，则发送事件，所有社区列表过滤掉被拉黑的帖子
+
+
+
+post_community_page顶部的个人信息删除掉，输入框往上顶
+post_community_page将关联比赛卡片右上角的刷新按钮删除
+
+post_community_page界面优化：
+1、删除巅峰对决和战术复盘的标签
+2、0/500的文字个数删除掉
+3、添加话题的标签换一批，
+4、关联比赛部分的UI样式修改下
+
+
+社区列表右上角的发帖push到一个发帖子界面：界面和功能参考：/Users/guyilin/Desktop/ZogoLive/lib/pages/post_community_page.dart的大致布局，最好能写出不一样的布局，界面做差异化，主题颜色还是参照index.html的浅紫色加白色，功能和接口全部参照，开放出一个接口，可以从外部传入比赛match_model，当传入match_model的时候，发布帖子关联比赛的地方展示match_model，否则关联比赛可以点击到搜索界面来关联比赛，搜索的界面参照/Users/guyilin/Desktop/ZogoLive/lib/pages/post_match_search_page.dart,最好能写出不一样的布局，界面做差异化，但是数据能对的上，主题颜色还是参照index.html的浅紫色加白色
+
+
+
+
+
+给我创建一个社区的帖子详情和发布帖子的界面:UI参照--社区详情
+
+点击社区列表push到社区详情的UI参照：/Users/guyilin/Desktop/ZogoLive/lib/pages/community_detail_page.dart的大致布局，详情信息参考社区列表的数据，最好能写出不一样的布局，界面做差异化，但是数据能对的上，主题颜色还是参照index.html的浅紫色加白色，功能和接口全部参照
+
 
 
 =======================================UI优化

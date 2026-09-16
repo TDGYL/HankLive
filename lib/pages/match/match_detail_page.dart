@@ -5,14 +5,19 @@ import '../../models/hank_process_model.dart';
 import '../../models/hank_odds_model.dart';
 import '../../models/hank_lineup_model.dart';
 import '../../services/hank_match_detail_api_service.dart';
+import '../../utils/hank_auth_manager.dart';
+import '../../utils/hank_network_manager.dart';
 import '../../widgets/match/match_detail_scoreboard.dart';
 import '../../widgets/match/match_detail_live_tab.dart';
 import '../../widgets/match/match_detail_lineup_tab.dart';
 import '../../widgets/match/match_detail_stats_tab.dart';
 import '../../widgets/match/match_detail_odds_tab.dart';
+import '../../widgets/match/hank_match_posts_tab.dart';
+import '../community/post_community_page.dart';
+import '../login/login_page.dart';
 
 /// MatchDetailTab: 详情页Tab枚举
-/// live: 图文赛况 | lineup: 首发阵容 | stats: 技术统计 | odds: 指数分析
+/// live: 图文赛况 | lineup: 首发阵容 | stats: 技术统计 | odds: 指数分析 | posts: 帖子
 enum MatchDetailTab {
   /// 图文赛况
   live,
@@ -22,6 +27,8 @@ enum MatchDetailTab {
   stats,
   /// 指数分析
   odds,
+  /// 帖子
+  posts,
 }
 
 /// MatchDetailPage: 比赛详情页面
@@ -69,10 +76,91 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   /// 是否正在加载指数数据
   bool _isLoadingOdds = false;
 
+  /// 是否已订阅比赛 - bool类型，true表示已订阅
+  bool _isSubscribed = false;
+
   @override
   void initState() {
     super.initState();
     _fetchProcessData();
+    _fetchMatchDetail();
+  }
+
+  /// 请求比赛详情（获取订阅状态）
+  /// 接口：GET /api/livespeed/football/match/detail
+  Future<void> _fetchMatchDetail() async {
+    final matchId = int.tryParse(widget.match.matchId) ?? 0;
+    if (matchId == 0) return;
+
+    final response = await HankNetworkManager().getRequest(
+      '/api/livespeed/football/match/detail',
+      queryParameters: {'match_id': matchId},
+    );
+
+    if (response.isSuccess && response.data != null && mounted) {
+      final data = response.data as Map<String, dynamic>;
+      setState(() {
+        _isSubscribed = data['subscribed'] == true;
+      });
+    }
+  }
+
+  /// 切换比赛订阅状态
+  /// 订阅接口：POST /api/livespeed/football/match/subscribe
+  /// 取消订阅接口：POST /api/livespeed/football/match/unsubscribe
+  Future<void> _toggleSubscribe() async {
+    if (!HankAuthManager().isLoggedIn) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const HankLoginPage()),
+      );
+      return;
+    }
+
+    final matchId = int.tryParse(widget.match.matchId) ?? 0;
+    if (matchId == 0) return;
+
+    final willSubscribe = !_isSubscribed;
+    final url = willSubscribe
+        ? '/api/livespeed/football/match/subscribe'
+        : '/api/livespeed/football/match/unsubscribe';
+
+    try {
+      final response = await HankNetworkManager().postRequest(
+        url,
+        data: {'match_id': matchId},
+      );
+
+      if (!mounted) return;
+
+      if (response.isSuccess) {
+        setState(() {
+          _isSubscribed = willSubscribe;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(willSubscribe ? '已订阅' : '已取消订阅'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message ?? '操作失败，请重试'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('网络错误，请重试'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    }
   }
 
   /// 请求比赛进程数据（incidents + stats）
@@ -96,6 +184,21 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_currentTab == MatchDetailTab.posts) {
+      return Scaffold(
+        backgroundColor: AppColors.violet50,
+        body: Column(
+          children: [
+            _buildAppBar(),
+            _buildScoreboard(),
+            _buildTabBar(),
+            Expanded(child: _buildPostsTab()),
+          ],
+        ),
+        floatingActionButton: _buildFloatingAddButton(),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.violet50,
       body: Column(
@@ -113,6 +216,49 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// 右下角发帖浮动按钮（圆形浅紫色，宽高40像素）
+  Widget _buildFloatingAddButton() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HankPostCommunityPage(matchModel: widget.match),
+          ),
+        ).then((published) {
+          if (published == true) {
+            setState(() {
+              _currentTab = MatchDetailTab.posts;
+            });
+          }
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.violet400, AppColors.violet600],
+          ),
+          shape: BoxShape.circle,
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x407C3AED),
+              blurRadius: 8,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.add,
+          size: 20,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -166,16 +312,24 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
               ),
             ),
             const Spacer(),
-            // 闹钟按钮（固定24x24，离屏幕右边15像素）
+            // 订阅按钮（固定24x24，离屏幕右边15像素）
             Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: const Icon(
-                  Icons.notifications_outlined,
-                  size: 24,
-                  color: AppColors.violet700,
+              child: GestureDetector(
+                onTap: _toggleSubscribe,
+                behavior: HitTestBehavior.opaque,
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Icon(
+                    _isSubscribed
+                        ? Icons.notifications
+                        : Icons.notifications_outlined,
+                    size: 24,
+                    color: _isSubscribed
+                        ? AppColors.violet600
+                        : AppColors.violet400,
+                  ),
                 ),
               ),
             ),
@@ -209,6 +363,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
       child: Row(
         children: [
           _buildTabButton(MatchDetailTab.live, '图文赛况'),
+          _buildTabButton(MatchDetailTab.posts, '帖子'),
           _buildTabButton(MatchDetailTab.lineup, '首发阵容'),
           _buildTabButton(MatchDetailTab.stats, '技术统计'),
           _buildTabButton(MatchDetailTab.odds, '指数分析'),
@@ -247,7 +402,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// Tab内容区域
+  /// Tab内容区域（帖子Tab在build中单独处理）
   Widget _buildTabContent() {
     switch (_currentTab) {
       case MatchDetailTab.live:
@@ -258,6 +413,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         return _buildStatsTab();
       case MatchDetailTab.odds:
         return _buildOddsTab();
+      case MatchDetailTab.posts:
+        return const SizedBox.shrink();
     }
   }
 
@@ -329,6 +486,13 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
     final stats = _processData?.stats ?? [];
     return MatchDetailStatsTab(stats: stats);
+  }
+
+  /// 帖子Tab（社区帖子列表，接口与community_page一致）
+  Widget _buildPostsTab() {
+    return HankMatchPostsTab(
+      matchId: int.tryParse(widget.match.matchId) ?? 0,
+    );
   }
 
   /// 指数分析Tab（使用接口odds数据）

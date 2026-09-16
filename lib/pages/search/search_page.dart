@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_colors.dart';
 import '../../models/hank_search_model.dart';
 import '../../services/hank_search_api_service.dart';
+import '../../utils/hank_network_manager.dart';
 import '../match/match_detail_page.dart';
 import '../../models/match_model.dart';
 import '../../models/team_model.dart';
@@ -1046,14 +1047,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
           ),
           // 关注按钮
           GestureDetector(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(user.isFollowed ? '已取消关注' : '已关注'),
-                  duration: const Duration(seconds: 1),
-                ),
-              );
-            },
+            onTap: () => _toggleFollow(user),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
@@ -1078,5 +1072,56 @@ class _HankSearchPageState extends State<HankSearchPage> {
         ],
       ),
     );
+  }
+
+  /// 切换用户关注状态
+  /// 接口：POST /api/livespeed/imchat/subscribe
+  /// 参数：target_id=用户ID（int），type=1关注/2取消关注
+  /// [user] - 目标用户模型
+  Future<void> _toggleFollow(HankSearchUser user) async {
+    final int type = user.isFollowed ? 2 : 1;
+    final userId = user.id ?? 0;
+    if (userId == 0) return;
+
+    try {
+      final response = await HankNetworkManager().postRequest(
+        '/api/livespeed/imchat/subscribe',
+        data: {
+          'target_id': userId,
+          'type': type,
+        },
+      );
+
+      if (!mounted) return;
+
+      if (response.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(type == 1 ? '已关注' : '已取消关注'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+
+        setState(() {
+          user.followType = type == 1 ? 1 : 0;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message ?? '操作失败，请重试'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('网络错误，请重试'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+    }
   }
 }

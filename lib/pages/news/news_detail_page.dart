@@ -193,7 +193,7 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                _newsDetail?.title ?? widget.newsTitle ?? '资讯详情',
+                _newsDetail?.title ?? widget.newsTitle ?? 'News Detail',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(

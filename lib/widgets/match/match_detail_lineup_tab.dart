@@ -76,7 +76,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 阵型信息头（主队阵型 vs 客队阵型）
+  /// 阵型信息头（主队Logo+阵型 vs 客队Logo+阵型，不展示队名）
   Widget _buildLineupHeader(HankLineupData data) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -88,13 +88,13 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 主队
+          // 主队（Logo + 阵型）
           Row(
             children: [
               _buildTeamLogo(widget.homeTeamLogo),
               const SizedBox(width: 6),
               Text(
-                '${widget.homeTeamName} (${data.homeFormation})',
+                data.homeFormation ?? '',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -112,11 +112,11 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               color: AppColors.slate500,
             ),
           ),
-          // 客队
+          // 客队（阵型 + Logo）
           Row(
             children: [
               Text(
-                '${widget.awayTeamName} (${data.awayFormation})',
+                data.awayFormation ?? '',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -395,39 +395,15 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
           // 主队替补
           if (data.homeSub.isNotEmpty) ...[
             _buildSubTeamTitle(widget.homeTeamName, isHome: true),
-            const SizedBox(height: 20),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 6,
-                childAspectRatio: 4.5,
-              ),
-              itemCount: data.homeSub.length,
-              itemBuilder: (context, index) =>
-                  _buildSubPlayerChip(data.homeSub[index]),
-            ),
+            const SizedBox(height: 4),
+            ...data.homeSub.map((p) => _buildSubPlayerChip(p)).toList(),
             const SizedBox(height: 12),
           ],
           // 客队替补
           if (data.awaySub.isNotEmpty) ...[
             _buildSubTeamTitle(widget.awayTeamName, isHome: false),
-            const SizedBox(height: 20),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 6,
-                childAspectRatio: 4.5,
-              ),
-              itemCount: data.awaySub.length,
-              itemBuilder: (context, index) =>
-                  _buildSubPlayerChip(data.awaySub[index]),
-            ),
+            const SizedBox(height: 4),
+            ...data.awaySub.map((p) => _buildSubPlayerChip(p)).toList(),
           ],
         ],
       ),
@@ -457,18 +433,19 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 替补球员芯片
+  /// 替补球员行（球衣号码 + Logo + 姓名，单行排列）
   Widget _buildSubPlayerChip(HankLineupPlayer player) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.violet50,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.violet200.withOpacity(0.4)),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
+          // 球衣号码
           Text(
             '${player.shirtNumber}',
             style: const TextStyle(
@@ -477,9 +454,36 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               color: AppColors.violet600,
             ),
           ),
-          const SizedBox(width: 4),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 80),
+          const SizedBox(width: 6),
+          // 球员Logo
+          Container(
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
+              color: AppColors.violet100,
+              shape: BoxShape.circle,
+            ),
+            child: player.playerLogo != null && player.playerLogo!.isNotEmpty
+                ? ClipOval(
+                    child: Image.network(
+                      player.playerLogo!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => const Icon(
+                        Icons.person,
+                        size: 12,
+                        color: AppColors.violet300,
+                      ),
+                    ),
+                  )
+                : const Icon(
+                    Icons.person,
+                    size: 12,
+                    color: AppColors.violet300,
+                  ),
+          ),
+          const SizedBox(width: 6),
+          // 球员姓名
+          Expanded(
             child: Text(
               player.playerName,
               maxLines: 1,

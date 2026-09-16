@@ -5,6 +5,10 @@ import '../../services/mock_data_service.dart';
 import '../../utils/hank_auth_manager.dart';
 import '../../models/hank_user_model.dart';
 import '../login/login_page.dart';
+import 'hank_edit_profile_page.dart';
+import 'hank_about_us_page.dart';
+import 'hank_customer_service_page.dart';
+import 'hank_settings_page.dart';
 
 /// ProfilePage: 个人中心页面
 /// 包含渐变头部（头像、签名、统计数据）和功能列表（编辑信息、关于我们、客服、设置）
@@ -44,13 +48,6 @@ class _ProfilePageState extends State<ProfilePage> {
   /// 点击头像：未登录则push到登录界面，登录成功后刷新
   void _onAvatarTap() {
     if (_isLoggedIn) {
-      // 已登录，展示个人名片
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('展示个人名片'),
-          duration: Duration(seconds: 1),
-        ),
-      );
       return;
     }
 
@@ -60,6 +57,18 @@ class _ProfilePageState extends State<ProfilePage> {
       MaterialPageRoute(builder: (context) => const HankLoginPage()),
     ).then((result) {
       // 登录成功返回后刷新状态
+      if (result == true) {
+        _refreshLoginState();
+      }
+    });
+  }
+
+  /// 未登录时跳转到登录界面
+  void _navigateToLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HankLoginPage()),
+    ).then((result) {
       if (result == true) {
         _refreshLoginState();
       }
@@ -142,10 +151,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildUserRow() {
-    // 显示昵称：已登录用接口数据，未登录用Mock
+    // 显示昵称：已登录用接口数据，未登录显示"登录/注册"
     final displayName = _isLoggedIn
         ? (_currentUser?.nickname ?? '未知用户')
-        : '点击登录';
+        : '登录/注册';
     // 显示签名：已登录用接口数据，未登录用Mock
     final displaySignature = _isLoggedIn
         ? (_currentUser?.signature ?? '这家伙很懒，什么都没留下')
@@ -159,7 +168,9 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 32,
-                backgroundColor: AppColors.violet300,
+                backgroundColor: _isLoggedIn
+                    ? AppColors.violet300
+                    : AppColors.slate400,
                 child: ClipOval(
                   child: _isLoggedIn && _currentUser?.avatar != null
                       ? Image.network(
@@ -170,7 +181,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           errorBuilder: (_, __, ___) =>
                               _buildDefaultAvatar(displayName),
                         )
-                      : _buildDefaultAvatar(displayName),
+                      : _isLoggedIn
+                          ? _buildDefaultAvatar(displayName)
+                          : _buildGuestAvatar(),
                 ),
               ),
               if (_isLoggedIn && _user.isPro)
@@ -237,45 +250,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  if (_isLoggedIn)
-                    GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('展示个人名片'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                          ),
-                        ),
-                        child: Row(
-                          children: const [
-                            Icon(
-                              Icons.qr_code,
-                              size: 12,
-                              color: Color(0xFFC4B5FD),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              '名片',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFFC4B5FD),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                 ],
               ),
               const SizedBox(height: 4),
@@ -318,16 +292,29 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  /// 未登录时的灰色头像占位
+  Widget _buildGuestAvatar() {
+    return Container(
+      width: 64,
+      height: 64,
+      alignment: Alignment.center,
+      color: AppColors.slate400,
+      child: const Icon(
+        Icons.person,
+        color: Colors.white,
+        size: 32,
+      ),
+    );
+  }
+
   Widget _buildStatsBar() {
     // 已登录时使用接口数据，未登录使用Mock
     final following = _isLoggedIn
         ? '${_currentUser?.followers ?? 0}'
-        : '${_user.followingCount}';
+        : '-';
     final fans = _isLoggedIn
         ? '${_currentUser?.fansCount ?? 0}'
-        : _user.followerDisplay;
-    final posts = '${_user.postCount}';
-    final winRate = '${_user.predictWinRate}%';
+        : '-';
 
     return Container(
       padding: const EdgeInsets.only(top: 12),
@@ -345,15 +332,6 @@ class _ProfilePageState extends State<ProfilePage> {
           _buildStatItem(
             value: fans,
             label: '粉丝',
-          ),
-          _buildStatItem(
-            value: posts,
-            label: '帖子',
-          ),
-          _buildStatItem(
-            value: winRate,
-            label: '预测胜率',
-            valueColor: AppColors.amber400,
           ),
         ],
       ),
@@ -414,28 +392,33 @@ class _ProfilePageState extends State<ProfilePage> {
               iconBgColor: AppColors.violet100,
               iconColor: AppColors.violet700,
               title: '编辑个人信息',
-              trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.violet100,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  '完善度${_user.profileCompletion}%',
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.violet700,
-                  ),
-                ),
-              ),
+              trailing: _isLoggedIn
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: AppColors.violet100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        '完善度${_user.profileCompletion}%',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.violet700,
+                        ),
+                      ),
+                    )
+                  : null,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('打开编辑个人信息界面'),
-                    duration: Duration(seconds: 1),
-                  ),
+                if (!_isLoggedIn) {
+                  _navigateToLogin();
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const HankEditProfilePage()),
                 );
               },
             ),
@@ -445,13 +428,11 @@ class _ProfilePageState extends State<ProfilePage> {
               iconBgColor: const Color(0xFFF3E8FF),
               iconColor: const Color(0xFF9333EA),
               title: '关于我们',
-              trailingText: 'v3.2.0',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('紫极足球 v3.2.0 (Build 2026)'),
-                    duration: Duration(seconds: 1),
-                  ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const HankAboutUsPage()),
                 );
               },
             ),
@@ -478,11 +459,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('连接在线客服中...'),
-                    duration: Duration(seconds: 1),
-                  ),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const HankCustomerServicePage()),
                 );
               },
             ),
@@ -493,12 +473,15 @@ class _ProfilePageState extends State<ProfilePage> {
               iconColor: const Color(0xFF334155),
               title: '设置',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('打开系统设置'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
+                if (!_isLoggedIn) {
+                  _navigateToLogin();
+                  return;
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const HankSettingsPage()),
+                ).then((_) => _refreshLoginState());
               },
             ),
           ],
