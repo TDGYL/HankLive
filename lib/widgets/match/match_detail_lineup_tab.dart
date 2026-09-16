@@ -1,188 +1,296 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
-import '../../models/hank_match_detail_model.dart';
+import '../../models/hank_lineup_model.dart';
 
 /// MatchDetailLineupTab: 首发阵容Tab组件
-/// 展示2.5D战术球场、双方首发球员、替补席
+/// 使用接口数据 /api/livespeed/football/match/lineup
+/// 球员坐标定位规则：
+///   主队: centerX = x/100 * totalWidth, centerY = y/100 * itemHeight
+///   客队: centerX = (100-x)/100 * totalWidth, centerY = (100-y)/100 * itemHeight + 55 + 220
 /// 浅紫色+白色主题风格
-class MatchDetailLineupTab extends StatelessWidget {
-  /// 主队阵型数据
-  final HankMatchLineupFormation homeFormation;
+class MatchDetailLineupTab extends StatefulWidget {
+  /// 阵容数据
+  final HankLineupData? lineupData;
 
-  /// 客队阵型数据
-  final HankMatchLineupFormation awayFormation;
+  /// 是否正在加载
+  final bool isLoading;
 
-  /// 替补席球员列表
-  final List<HankMatchBenchPlayer> benchPlayers;
+  /// 主队名称
+  final String homeTeamName;
+
+  /// 客队名称
+  final String awayTeamName;
+
+  /// 主队Logo
+  final String? homeTeamLogo;
+
+  /// 客队Logo
+  final String? awayTeamLogo;
 
   MatchDetailLineupTab({
-    required this.homeFormation,
-    required this.awayFormation,
-    required this.benchPlayers,
+    required this.lineupData,
+    required this.isLoading,
+    required this.homeTeamName,
+    required this.awayTeamName,
+    this.homeTeamLogo,
+    this.awayTeamLogo,
     Key? key,
   }) : super(key: key);
 
   @override
+  State<MatchDetailLineupTab> createState() => _MatchDetailLineupTabState();
+}
+
+class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
+  @override
   Widget build(BuildContext context) {
-    return Padding(
+    if (widget.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: AppColors.violet600,
+          strokeWidth: 2,
+        ),
+      );
+    }
+
+    final data = widget.lineupData;
+    if (data == null ||
+        (data.homeFirst.isEmpty && data.awayFirst.isEmpty)) {
+      return _buildEmptyView();
+    }
+
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildLineupHeader(),
+          _buildLineupHeader(data),
           const SizedBox(height: 16),
-          _buildPitch(),
+          _buildPitch(data),
           const SizedBox(height: 16),
-          _buildBenchSection(),
+          _buildSubSection(data),
+          const SizedBox(height: 16),
+          _buildInjurySection(data),
         ],
       ),
     );
   }
 
-  /// 阵型信息头
-  Widget _buildLineupHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Container(width: 12, height: 12, decoration: const BoxDecoration(color: AppColors.rose500, shape: BoxShape.circle)),
-            const SizedBox(width: 8),
-            Text(
-              '${homeFormation.teamName} (${homeFormation.formation})',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: AppColors.slate800,
-              ),
-            ),
-          ],
-        ),
-        const Text(
-          'VS',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: AppColors.slate500,
-          ),
-        ),
-        Row(
-          children: [
-            Text(
-              '${awayFormation.teamName} (${awayFormation.formation})',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: AppColors.slate800,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Container(width: 12, height: 12, decoration: const BoxDecoration(color: AppColors.blue500, shape: BoxShape.circle)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  /// 2.5D 战术球场
-  Widget _buildPitch() {
+  /// 阵型信息头（主队阵型 vs 客队阵型）
+  Widget _buildLineupHeader(HankLineupData data) {
     return Container(
-      height: 420,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF103820), Color(0xFF0D2E1A)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0x4D10B981)),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 16,
-            offset: Offset(0, 8),
-          ),
-        ],
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.violet200.withOpacity(0.6)),
       ),
-      child: Stack(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 球场标线
-          _buildPitchMarkings(),
-          // 客队（上半场）
-          Positioned(
-            top: 12,
-            left: 0,
-            right: 0,
-            child: _buildTeamRows(awayFormation, isHome: false),
+          // 主队
+          Row(
+            children: [
+              _buildTeamLogo(widget.homeTeamLogo),
+              const SizedBox(width: 6),
+              Text(
+                '${widget.homeTeamName} (${data.homeFormation})',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.slate800,
+                ),
+              ),
+            ],
           ),
-          // 主队（下半场）
-          Positioned(
-            bottom: 12,
-            left: 0,
-            right: 0,
-            child: _buildTeamRows(homeFormation, isHome: true),
+          // VS
+          const Text(
+            'VS',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.slate500,
+            ),
+          ),
+          // 客队
+          Row(
+            children: [
+              Text(
+                '${widget.awayTeamName} (${data.awayFormation})',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.slate800,
+                ),
+              ),
+              const SizedBox(width: 6),
+              _buildTeamLogo(widget.awayTeamLogo),
+            ],
           ),
         ],
       ),
     );
   }
 
-  /// 球场标线（中线、中圈、禁区）
-  Widget _buildPitchMarkings() {
-    return Positioned.fill(
-      child: CustomPaint(
-        painter: _PitchLinePainter(),
+  /// 球队小Logo
+  Widget _buildTeamLogo(String? logoUrl) {
+    if (logoUrl == null || logoUrl.isEmpty) {
+      return Container(
+        width: 18,
+        height: 18,
+        decoration: const BoxDecoration(
+          color: AppColors.violet100,
+          shape: BoxShape.circle,
+        ),
+      );
+    }
+    return ClipOval(
+      child: Image.network(
+        logoUrl,
+        width: 18,
+        height: 18,
+        fit: BoxFit.cover,
+        errorBuilder: (c, e, s) => Container(
+          width: 18,
+          height: 18,
+          color: AppColors.violet100,
+        ),
       ),
     );
   }
 
-  /// 球队阵型行
-  Widget _buildTeamRows(HankMatchLineupFormation formation, {required bool isHome}) {
-    return Column(
-      children: formation.playerRows.map((row) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: row.map((player) => _buildPlayerNode(player, formation.teamColor, isHome)).toList(),
+  /// 2.5D 战术球场（使用坐标定位球员）
+  Widget _buildPitch(HankLineupData data) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // 球场总宽度和总高度
+        final totalWidth = constraints.maxWidth;
+        final itemHeight = 420.0; // 球场高度
+        // 球员节点尺寸
+        const itemWidth = 36.0;
+
+        return Container(
+          height: itemHeight,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF103820), Color(0xFF0D2E1A)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0x4D10B981)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x1A000000),
+                blurRadius: 16,
+                offset: Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // 球场标线
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _PitchLinePainter(),
+                ),
+              ),
+              // 客队球员（上半场，坐标翻转）
+              ...data.awayFirst.map((player) {
+                final centerX = (100 - player.x) / 100.0 * totalWidth;
+                final centerY =
+                    (100 - player.y) / 100.0 * itemHeight / 2 + itemHeight / 2;
+                // 限制在球场范围内
+                final clampedY = centerY.clamp(12.0, itemHeight - 50);
+                return Positioned(
+                  left: centerX - itemWidth / 2,
+                  top: clampedY,
+                  child: _buildPlayerNode(player, isHome: false),
+                );
+              }).toList(),
+              // 主队球员（下半场）
+              ...data.homeFirst.map((player) {
+                final centerX = player.x / 100.0 * totalWidth;
+                final centerY = player.y / 100.0 * itemHeight / 2;
+                // 限制在球场范围内
+                final clampedY = centerY.clamp(12.0, itemHeight - 50);
+                return Positioned(
+                  left: centerX - itemWidth / 2,
+                  top: clampedY,
+                  child: _buildPlayerNode(player, isHome: true),
+                );
+              }).toList(),
+            ],
           ),
         );
-      }).toList(),
+      },
     );
   }
 
-  /// 球员节点
-  Widget _buildPlayerNode(HankMatchPlayer player, int teamColor, bool isHome) {
+  /// 球员节点（头像 + 号码 + 姓名 + 事件标记）
+  Widget _buildPlayerNode(HankLineupPlayer player, {required bool isHome}) {
+    final teamColor = isHome ? const Color(0xFFE11D48) : const Color(0xFF3B82F6);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // 球衣号码圆圈
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: Color(teamColor),
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: player.isStar
-                  ? AppColors.violet300
-                  : Colors.white,
-              width: 2,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              player.number,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+        // 球员头像 + 号码
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: teamColor, width: 2),
+              ),
+              child: ClipOval(
+                child: player.playerLogo.isNotEmpty
+                    ? Image.network(
+                        player.playerLogo,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, e, s) => Container(
+                          color: teamColor.withOpacity(0.3),
+                          child: Center(
+                            child: Text(
+                              '${player.shirtNumber}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        color: teamColor.withOpacity(0.3),
+                        child: Center(
+                          child: Text(
+                            '${player.shirtNumber}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
               ),
             ),
-          ),
+            // 事件标记（进球/黄牌/红牌）
+            if (player.incidents.isNotEmpty)
+              Positioned(
+                right: -2,
+                top: -2,
+                child: _buildIncidentBadge(player.incidents),
+              ),
+          ],
         ),
         const SizedBox(height: 2),
-        // 球员姓名标签
+        // 球员姓名
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
@@ -190,15 +298,13 @@ class MatchDetailLineupTab extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
-            _buildPlayerLabel(player),
-            style: TextStyle(
+            player.playerName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
               fontSize: 9,
-              color: player.isStar
-                  ? AppColors.violet700
-                  : player.hasGoal
-                      ? AppColors.emerald500
-                      : AppColors.slate700,
-              fontWeight: player.isStar || player.hasGoal ? FontWeight.w700 : FontWeight.w400,
+              color: AppColors.slate700,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -206,17 +312,54 @@ class MatchDetailLineupTab extends StatelessWidget {
     );
   }
 
-  /// 球员标签文字（含标记符号）
-  String _buildPlayerLabel(HankMatchPlayer player) {
-    String label = player.name;
-    if (player.hasGoal) label += ' ⚽';
-    if (player.isStar) label = '$label ★';
-    if (player.hasYellowCard) label += ' 🟨';
-    return label;
+  /// 事件标记图标
+  Widget _buildIncidentBadge(List<HankLineupIncident> incidents) {
+    // 取第一个事件类型来显示
+    final type = incidents.first.type;
+    Color badgeColor;
+    String label;
+
+    switch (type) {
+      case 1: // 进球
+        badgeColor = const Color(0xFF10B981);
+        label = '⚽';
+        break;
+      case 2: // 黄牌
+        badgeColor = const Color(0xFFFBBF24);
+        label = '🟨';
+        break;
+      case 3: // 红牌
+        badgeColor = const Color(0xFFEF4444);
+        label = '🟥';
+        break;
+      default:
+        badgeColor = AppColors.violet600;
+        label = '';
+    }
+
+    return Container(
+      width: 14,
+      height: 14,
+      decoration: BoxDecoration(
+        color: badgeColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 1),
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 8),
+        ),
+      ),
+    );
   }
 
-  /// 替补席区域
-  Widget _buildBenchSection() {
+  /// 替补席区域（主队 + 客队）
+  Widget _buildSubSection(HankLineupData data) {
+    if (data.homeSub.isEmpty && data.awaySub.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -239,7 +382,7 @@ class MatchDetailLineupTab extends StatelessWidget {
               Icon(Icons.chair, size: 14, color: AppColors.violet600),
               SizedBox(width: 8),
               Text(
-                '替补席球员',
+                '替补席',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -249,52 +392,267 @@ class MatchDetailLineupTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            childAspectRatio: 4,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            children: benchPlayers.map((p) => _buildBenchItem(p)).toList(),
+          // 主队替补
+          if (data.homeSub.isNotEmpty) ...[
+            _buildSubTeamTitle(widget.homeTeamName, isHome: true),
+            const SizedBox(height: 20),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 6,
+                childAspectRatio: 4.5,
+              ),
+              itemCount: data.homeSub.length,
+              itemBuilder: (context, index) =>
+                  _buildSubPlayerChip(data.homeSub[index]),
+            ),
+            const SizedBox(height: 12),
+          ],
+          // 客队替补
+          if (data.awaySub.isNotEmpty) ...[
+            _buildSubTeamTitle(widget.awayTeamName, isHome: false),
+            const SizedBox(height: 20),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 6,
+                childAspectRatio: 4.5,
+              ),
+              itemCount: data.awaySub.length,
+              itemBuilder: (context, index) =>
+                  _buildSubPlayerChip(data.awaySub[index]),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// 替补球队标题
+  Widget _buildSubTeamTitle(String name, {required bool isHome}) {
+    final color = isHome ? const Color(0xFFE11D48) : const Color(0xFF3B82F6);
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppColors.slate500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 替补球员芯片
+  Widget _buildSubPlayerChip(HankLineupPlayer player) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.violet50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.violet200.withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${player.shirtNumber}',
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.violet600,
+            ),
+          ),
+          const SizedBox(width: 4),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 80),
+            child: Text(
+              player.playerName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColors.slate700,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  /// 替补球员条目
-  Widget _buildBenchItem(HankMatchBenchPlayer player) {
-    final isHome = player.teamName == '阿森纳';
+  /// 伤停区域（主队 + 客队）
+  Widget _buildInjurySection(HankLineupData data) {
+    if (data.homeInjury.isEmpty && data.awayInjury.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.violet50,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFFECACA).withOpacity(0.6)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0FEF4444),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(Icons.local_hospital, size: 14, color: AppColors.rose500),
+              SizedBox(width: 8),
+              Text(
+                '伤停名单',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.slate700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // 主队伤停
+          if (data.homeInjury.isNotEmpty) ...[
+            _buildInjuryTeamTitle(widget.homeTeamName),
+            const SizedBox(height: 4),
+            ...data.homeInjury.map((p) => _buildInjuryPlayerChip(p)).toList(),
+            const SizedBox(height: 12),
+          ],
+          // 客队伤停
+          if (data.awayInjury.isNotEmpty) ...[
+            _buildInjuryTeamTitle(widget.awayTeamName),
+            const SizedBox(height: 4),
+            ...data.awayInjury.map((p) => _buildInjuryPlayerChip(p)).toList(),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// 伤停球队标题
+  Widget _buildInjuryTeamTitle(String name) {
+    return Row(
+      children: [
+        Container(
+          width: 8,
+          height: 8,
+          decoration: const BoxDecoration(
+              color: AppColors.rose500, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          name,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppColors.slate500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// 伤停球员条目
+  Widget _buildInjuryPlayerChip(HankLineupInjuryPlayer player) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFEF2F2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            player.isPlayed
-                ? '${player.name} (已登场 ${player.playedMinute ?? ''})'
-                : player.name,
-            style: TextStyle(
-              fontSize: 11,
-              color: player.isPlayed
-                  ? AppColors.emerald500
-                  : AppColors.slate500,
+          if (player.playerLogo.isNotEmpty)
+            ClipOval(
+              child: Image.network(
+                player.playerLogo,
+                width: 24,
+                height: 24,
+                fit: BoxFit.cover,
+                errorBuilder: (c, e, s) => Container(
+                  width: 24,
+                  height: 24,
+                  color: const Color(0xFFFECDD3),
+                ),
+              ),
+            )
+            else
+              Container(
+                width: 24,
+                height: 24,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFECDD3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person, size: 14, color: AppColors.rose500),
+              ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  player.playerName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.slate800,
+                  ),
+                ),
+                if (player.reason.isNotEmpty)
+                  Text(
+                    player.reason,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppColors.rose500,
+                    ),
+                  ),
+              ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// 空数据视图
+  Widget _buildEmptyView() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.inbox_outlined, size: 48, color: AppColors.violet300),
+          SizedBox(height: 12),
           Text(
-            player.teamName,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: isHome
-                  ? AppColors.rose500
-                  : AppColors.blue500,
-            ),
+            '暂无阵容数据',
+            style: TextStyle(fontSize: 14, color: AppColors.slate500),
           ),
         ],
       ),

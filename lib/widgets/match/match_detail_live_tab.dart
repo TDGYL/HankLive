@@ -38,15 +38,21 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
 
   /// 获取筛选标签列表（根据incidents中实际存在的事件类型动态生成）
   /// 返回顺序：全部、进球、红黄牌、换人（仅包含有数据的类型）
+  /// 未知事件不计入统计
   List<String> _buildFilterLabels() {
     final labels = <String>['全部'];
+
+    // 过滤掉未知事件
+    final knownIncidents = widget.incidents.where((incident) {
+      return incident.custTypeName != '未知事件';
+    }).toList();
 
     // 统计事件类型
     bool hasGoal = false;
     bool hasCard = false;
     bool hasSub = false;
 
-    for (final incident in widget.incidents) {
+    for (final incident in knownIncidents) {
       final type = incident.type ?? 0;
       // 进球类：1=进球, 8=点球进球, 17=乌龙球, 29=点球进球
       if (type == 1 || type == 8 || type == 17 || type == 29) {
@@ -69,13 +75,18 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     return labels;
   }
 
-  /// 根据当前筛选条件过滤事件列表
+  /// 根据当前筛选条件过滤事件列表（过滤掉未知事件）
   List<HankIncidentItem> _getFilteredIncidents() {
+    // 先过滤掉未知事件
+    final knownIncidents = widget.incidents.where((incident) {
+      return incident.custTypeName != '未知事件';
+    }).toList();
+
     if (_selectedFilter == null || _selectedFilter == '全部') {
-      return widget.incidents;
+      return knownIncidents;
     }
 
-    return widget.incidents.where((incident) {
+    return knownIncidents.where((incident) {
       final type = incident.type ?? 0;
       switch (_selectedFilter) {
         case '进球':

@@ -2,6 +2,7 @@ import '../utils/hank_network_manager.dart';
 import '../models/hank_process_model.dart';
 import '../models/hank_odds_model.dart';
 import '../models/hank_odds_history_model.dart';
+import '../models/hank_lineup_model.dart';
 
 /// HankMatchDetailApiService: 比赛详情接口服务
 /// 封装 /api/livespeed/football/match/detail 和 /api/livespeed/football/match/process 接口
@@ -94,6 +95,25 @@ class HankMatchDetailApiService {
     if (response.isSuccess && response.data != null) {
       return HankOddsHistoryData.fromJson(
           response.data as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
+  /// 请求比赛阵容数据（首发/替补/伤停/教练/阵型）
+  /// 接口：GET /api/livespeed/football/match/lineup
+  /// 参数：match_id - 比赛ID
+  /// 返回：HankLineupData 包含双方首发、替补、伤停、教练、阵型、身价
+  Future<HankLineupData?> fetchMatchLineup({
+    required int matchId,
+  }) async {
+    final response = await HankNetworkManager().getRequest(
+      '/api/livespeed/football/match/lineup',
+      queryParameters: {'match_id': matchId},
+    );
+
+    if (response.isSuccess && response.data != null) {
+      return HankLineupData.fromJson(response.data as Map<String, dynamic>);
     }
 
     return null;

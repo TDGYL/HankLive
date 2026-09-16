@@ -1,6 +1,170 @@
 
 
 
+
+
+
+
+=======================================接口调试--阵容
+
+
+
+
+
+
+=======================================接口调试--阵容
+调试match_detail_lineup_tab界面的接口，url=/api/livespeed/football/match/lineup，请求方式为GET请求，
+请求参数：
+params = {
+      "match_id": 10004455346, 
+    };
+参数说明：match_id先写死=10004455346，
+
+后台返回的数据结构为：
+{
+    "code": 0,
+    "data": {
+        "sub": {
+            "home": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "position": "string",
+                    "x": 0,
+                    "y": 0,
+                    "rating": "string",
+                    "shirt_number": 0,
+                    "incidents": [
+                        {
+                            "type": 0,
+                            "time": "string"
+                        }
+                    ]
+                }
+            ],
+            "away": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "position": "string",
+                    "x": 0,
+                    "y": 0,
+                    "rating": "string",
+                    "shirt_number": 0,
+                    "incidents": [
+                        {
+                            "type": 0,
+                            "time": "string"
+                        }
+                    ]
+                }
+            ]
+        },
+        "first": {
+            "home": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "position": "string",
+                    "x": 0,
+                    "y": 0,
+                    "rating": "string",
+                    "shirt_number": 0,
+                    "incidents": [
+                        {
+                            "type": 0,
+                            "time": "string"
+                        }
+                    ]
+                }
+            ],
+            "away": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "position": "string",
+                    "x": 0,
+                    "y": 0,
+                    "rating": "string",
+                    "shirt_number": 0,
+                    "incidents": [
+                        {
+                            "type": 0,
+                            "time": "string"
+                        }
+                    ]
+                }
+            ]
+        },
+        "injury": {
+            "home": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "type": 0,
+                    "reason": "string",
+                    "position": "string"
+                }
+            ],
+            "away": [
+                {
+                    "player_id": 0,
+                    "player_logo": "string",
+                    "player_name": "string",
+                    "type": "string",
+                    "reason": "string",
+                    "position": "string"
+                }
+            ]
+        },
+        "away_coach": {
+            "id": 0,
+            "logo": "string",
+            "name": "string"
+        },
+        "home_coach": {
+            "id": 0,
+            "logo": "string",
+            "name": "string"
+        },
+        "away_formation": "string",
+        "home_formation": "string",
+        "away_market_value": 0,
+        "home_market_value": 0
+    },
+    "message": "string"
+}
+
+其中：sub是替补的两个球队，first是首发阵容两个球队，injury是伤停两个球队，away_formation是客队阵型，home_formation是主队阵型；界面中的球员阵容坐标是从first中取的home和away，坐标位置规则如下：
+假设球场的宽度== totalWidth，长度= itemHeight，那么主队球员坐标计算为：
+                CGFloat centerX = model.x/100.0 * totalWidth;
+                CGFloat centerY = model.y/100.0 * itemHeight/2;
+                [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.mas_equalTo(self.mas_left).offset(centerX);
+                    make.centerY.mas_equalTo(self.mas_top).offset(centerY);
+                    make.height.width.mas_equalTo(itemWidth);
+                }];
+客队球员坐标计算为：
+                CGFloat centerX = (100 - model.x)/100.0 * totalWidth;
+                CGFloat centerY = (100 - model.y)/100.0 * itemHeight/2  + itemHeight/2;
+                [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                    make.centerX.mas_equalTo(self.mas_left).offset(centerX);
+                    make.centerY.mas_equalTo(self.mas_top).offset(centerY);
+                    make.height.width.mas_equalTo(itemWidth);
+                }];
+
+
+
+
+
+
+
+
 将match_page比赛正在进行中的卡片里的联赛背景布局宽度自适应联赛名长度
 
 将team_detail_page的菜单去掉，只保留阵容的数据界面追加在头部卡片下方即可，概览、赛程、积分榜去掉不用了

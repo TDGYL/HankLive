@@ -3,14 +3,13 @@ import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
 import '../../models/hank_process_model.dart';
 import '../../models/hank_odds_model.dart';
+import '../../models/hank_lineup_model.dart';
 import '../../services/hank_match_detail_api_service.dart';
 import '../../widgets/match/match_detail_scoreboard.dart';
 import '../../widgets/match/match_detail_live_tab.dart';
 import '../../widgets/match/match_detail_lineup_tab.dart';
 import '../../widgets/match/match_detail_stats_tab.dart';
 import '../../widgets/match/match_detail_odds_tab.dart';
-import '../../services/hank_match_detail_service.dart';
-import '../../models/hank_match_detail_model.dart';
 
 /// MatchDetailTab: 详情页Tab枚举
 /// live: 图文赛况 | lineup: 首发阵容 | stats: 技术统计 | odds: 指数分析
@@ -52,23 +51,17 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   /// 详情接口服务
   final HankMatchDetailApiService _apiService = HankMatchDetailApiService();
 
-  /// Mock数据服务（阵容 + 指数分析）
-  final HankMatchDetailService _mockService = HankMatchDetailService();
-
   /// 比赛进程数据（incidents + stats）
   HankProcessData? _processData;
 
   /// 是否正在加载进程数据
   bool _isLoadingProcess = true;
 
-  /// 主队阵型（懒加载）
-  HankMatchLineupFormation? _homeLineup;
+  /// 阵容数据（首发/替补/伤停/教练/阵型）
+  HankLineupData? _lineupData;
 
-  /// 客队阵型（懒加载）
-  HankMatchLineupFormation? _awayLineup;
-
-  /// 替补席球员（懒加载）
-  List<HankMatchBenchPlayer>? _benchPlayers;
+  /// 是否正在加载阵容数据
+  bool _isLoadingLineup = false;
 
   /// 指数数据（亚盘/欧赔/大小球/角球）
   HankOddsData? _oddsData;
@@ -286,16 +279,38 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     return MatchDetailLiveTab(incidents: incidents);
   }
 
-  /// 首发阵容Tab（懒加载Mock数据）
+  /// 首发阵容Tab（懒加载接口数据）
+  /// 接口：GET /api/livespeed/football/match/lineup
   Widget _buildLineupTab() {
-    _homeLineup ??= _mockService.getHomeLineup();
-    _awayLineup ??= _mockService.getAwayLineup();
-    _benchPlayers ??= _mockService.getBenchPlayers();
+    if (_lineupData == null && !_isLoadingLineup) {
+      _fetchLineupData();
+    }
     return MatchDetailLineupTab(
-      homeFormation: _homeLineup!,
-      awayFormation: _awayLineup!,
-      benchPlayers: _benchPlayers!,
+      lineupData: _lineupData,
+      isLoading: _isLoadingLineup || _lineupData == null,
+      homeTeamName: widget.match.homeTeam.teamName,
+      awayTeamName: widget.match.awayTeam.teamName,
+      homeTeamLogo: widget.match.homeTeam.logoUrl,
+      awayTeamLogo: widget.match.awayTeam.logoUrl,
     );
+  }
+
+  /// 请求比赛阵容数据（首发/替补/伤停/教练/阵型）
+  /// 接口：GET /api/livespeed/football/match/lineup
+  Future<void> _fetchLineupData() async {
+    final matchId = int.tryParse(widget.match.matchId) ?? 0;
+    if (matchId == 0) return;
+
+    setState(() => _isLoadingLineup = true);
+
+    final data = await _apiService.fetchMatchLineup(matchId: matchId);
+
+    if (mounted) {
+      setState(() {
+        _lineupData = data;
+        _isLoadingLineup = false;
+      });
+    }
   }
 
   /// 技术统计Tab（使用接口stats数据，无主导率UI）
