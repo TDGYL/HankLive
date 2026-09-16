@@ -373,14 +373,21 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                rightText,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: incident.position == 1
-                      ? AppColors.rose500
-                      : AppColors.blue500,
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 4,
+                ),
+                child: Text(
+                  rightText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: incident.position == 1
+                        ? AppColors.rose500
+                        : AppColors.blue500,
+                  ),
                 ),
               ),
             ],

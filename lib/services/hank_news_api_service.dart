@@ -89,6 +89,23 @@ class HankNewsApiService {
     );
   }
 
+  /// 请求资讯详情
+  /// 接口：GET /api/livespeed/info/detail
+  /// [id] - 资讯ID
+  /// 返回：HankNewsItem 资讯详情
+  Future<HankNewsItem?> fetchNewsDetail({required int id}) async {
+    final response = await HankNetworkManager().getRequest(
+      '/api/livespeed/info/detail',
+      queryParameters: {'id': id},
+    );
+
+    if (response.isSuccess && response.data != null) {
+      return HankNewsItem.fromJson(response.data as Map<String, dynamic>);
+    }
+
+    return null;
+  }
+
   /// 根据文章类型获取分类标签
   /// [type] - 文章类型ID
   /// 返回：分类标签文字

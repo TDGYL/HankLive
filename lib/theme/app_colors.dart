@@ -54,6 +54,9 @@ class AppColors {
   /// 蓝色 #3B82F6
   static const Color blue500 = Color(0xFF3B82F6);
 
+  /// 浅灰色文字 #94A3B8
+  static const Color slate400 = Color(0xFF94A3B8);
+
   /// 灰色文字 #64748B
   static const Color slate500 = Color(0xFF64748B);
 

@@ -5,6 +5,8 @@ import '../../services/hank_news_api_service.dart';
 import '../../widgets/news/feature_news_card.dart';
 import '../../widgets/news/compact_news_card.dart';
 
+import 'news_detail_page.dart';
+
 /// NewsPage: 绿荫资讯页面
 /// 顶部Banner（第1条）+ 中间列表卡片 + 底部Banner（第4条）
 /// 数据通过 HankNewsApiService 请求接口获取
@@ -315,12 +317,18 @@ class _NewsPageState extends State<NewsPage> {
     return const SizedBox.shrink();
   }
 
-  /// 点击资讯回调
+  /// 点击资讯回调：push到资讯详情页
   void _onNewsTap(NewsModel news) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('阅读资讯：${news.title.substring(0, news.title.length > 10 ? 10 : news.title.length)}...'),
-        duration: const Duration(seconds: 1),
+    final newsId = int.tryParse(news.newsId) ?? 0;
+    if (newsId == 0) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HankNewsDetailPage(
+          newsId: newsId,
+          newsTitle: news.title,
+        ),
       ),
     );
   }

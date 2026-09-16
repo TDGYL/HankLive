@@ -4,9 +4,9 @@ import '../../models/match_model.dart';
 import '../../services/hank_match_api_service.dart';
 import '../../widgets/match/featured_match_card.dart';
 import '../../widgets/match/standard_match_card.dart';
-import '../../widgets/common/search_modal.dart';
 import '../../widgets/common/calendar_bottom_sheet.dart';
 import 'match_detail_page.dart';
+import '../search/search_page.dart';
 
 /// MatchSubTab: 比赛列表二级Tab枚举
 /// 对应接口 tab 参数：关注=4，推荐=5，赛程=2，赛果=3
@@ -40,6 +40,22 @@ class _MatchPageState extends State<MatchPage> {
   /// 日历当前选中的日期
   DateTime _selectedDate = DateTime.now();
 
+  /// 日期横滑条锚点日期（仅在日历选项卡确认时更新，点击横滑条不更新）
+  /// 赛程：锚点为横滑条第一个日期；赛果：锚点为横滑条最后一个日期
+  DateTime _anchorDate = DateTime.now();
+
+  /// 赛程模式下缓存的选中日期
+  DateTime? _scheduleSelectedDate;
+
+  /// 赛程模式下缓存的锚点日期
+  DateTime? _scheduleAnchorDate;
+
+  /// 赛果模式下缓存的选中日期
+  DateTime? _resultsSelectedDate;
+
+  /// 赛果模式下缓存的锚点日期
+  DateTime? _resultsResultsAnchorDate;
+
   /// 比赛数据列表
   List<MatchModel> _matches = [];
 
@@ -64,6 +80,9 @@ class _MatchPageState extends State<MatchPage> {
   /// 滚动控制器（用于上拉加载监听）
   final ScrollController _scrollController = ScrollController();
 
+  /// 日期横滑条滚动控制器（用于日历选择后自动滚动）
+  final ScrollController _dateStripController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +94,7 @@ class _MatchPageState extends State<MatchPage> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _dateStripController.dispose();
     super.dispose();
   }
 
@@ -166,12 +186,59 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void _switchSubTab(MatchSubTab tab) {
+    // 保存离开Tab的日期缓存
+    if (_currentSubTab == MatchSubTab.schedule) {
+      _scheduleSelectedDate = _selectedDate;
+      _scheduleAnchorDate = _anchorDate;
+    } else if (_currentSubTab == MatchSubTab.results) {
+      _resultsSelectedDate = _selectedDate;
+      _resultsResultsAnchorDate = _anchorDate;
+    }
+
+    // 恢复目标Tab的缓存日期
+    DateTime newSelectedDate;
+    DateTime newAnchorDate;
+    if (tab == MatchSubTab.schedule && _scheduleSelectedDate != null) {
+      newSelectedDate = _scheduleSelectedDate!;
+      newAnchorDate = _scheduleAnchorDate!;
+    } else if (tab == MatchSubTab.results && _resultsSelectedDate != null) {
+      newSelectedDate = _resultsSelectedDate!;
+      newAnchorDate = _resultsResultsAnchorDate!;
+    } else {
+      newSelectedDate = DateTime.now();
+      newAnchorDate = DateTime.now();
+    }
+
+    // 在setState之前预设滚动偏移量，避免重建后出现滚动动画
+    const itemWidth = 64.0;
+    if (tab == MatchSubTab.schedule) {
+      if (_dateStripController.hasClients) {
+        _dateStripController.jumpTo(0);
+      }
+    } else if (tab == MatchSubTab.results) {
+      if (_dateStripController.hasClients) {
+        _dateStripController.jumpTo(6 * itemWidth);
+      }
+    }
+
     setState(() {
       _currentSubTab = tab;
-      _selectedDate = DateTime.now();
+      _selectedDate = newSelectedDate;
+      _anchorDate = newAnchorDate;
       _matches = [];
       _hasNoMore = false;
     });
+
+    // 确保重建后偏移量正确（无动画）
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_dateStripController.hasClients) return;
+      if (tab == MatchSubTab.schedule) {
+        _dateStripController.jumpTo(0);
+      } else if (tab == MatchSubTab.results) {
+        _dateStripController.jumpTo(6 * itemWidth);
+      }
+    });
+
     _fetchMatches(isRefresh: true);
   }
 
@@ -186,11 +253,9 @@ class _MatchPageState extends State<MatchPage> {
   }
 
   void _openSearch() {
-    showDialog(
-      context: context,
-      builder: (_) => SearchModal(
-        onKeywordSelected: (_) {},
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HankSearchPage()),
     );
   }
 
@@ -222,8 +287,30 @@ class _MatchPageState extends State<MatchPage> {
       if (selected != null) {
         setState(() {
           _selectedDate = selected;
+          _anchorDate = selected;
         });
+        // 仅在日历选项卡确认日期时刷新横滑条数据
+        _scrollDateStripToSelected();
         _fetchMatches(isRefresh: true);
+      }
+    });
+  }
+
+  /// 日历选择后，滚动日期横滑条到选中日期位置（无动画）
+  /// 赛程：选中日期在第一个，滚动到最左
+  /// 赛果：选中日期在最后一个，滚动到最右
+  void _scrollDateStripToSelected() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_dateStripController.hasClients) return;
+
+      // 每个日期项宽度56 + 间距8 = 64
+      const itemWidth = 64.0;
+      if (_currentSubTab == MatchSubTab.schedule) {
+        // 赛程：选中日期是第一个，滚动到最左
+        _dateStripController.jumpTo(0);
+      } else {
+        // 赛果：选中日期是最后一个，滚动到最右
+        _dateStripController.jumpTo(6 * itemWidth);
       }
     });
   }
@@ -679,17 +766,21 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 生成7天日期列表（赛程=当天+未来6天，赛果=前6天+当天）
+  /// 生成7天日期列表
+  /// 赛程：以锚点日期为起点，往后追加6天（锚点日期+6天）
+  /// 赛果：以锚点日期为终点，往前追加6天（前6天+锚点日期）
+  /// 锚点日期仅在日历选项卡确认时更新，点击横滑条不影响列表
   List<DateTime> _getDateList() {
     final List<DateTime> list = [];
-    final now = DateTime.now();
     if (_currentSubTab == MatchSubTab.schedule) {
+      // 赛程：锚点日期为第一个，往后追加6天
       for (int i = 0; i < 7; i++) {
-        list.add(now.add(Duration(days: i)));
+        list.add(_anchorDate.add(Duration(days: i)));
       }
     } else {
+      // 赛果：锚点日期为最后一个，往前追加6天
       for (int i = 6; i >= 0; i--) {
-        list.add(now.subtract(Duration(days: i)));
+        list.add(_anchorDate.subtract(Duration(days: i)));
       }
     }
     return list;
@@ -707,6 +798,7 @@ class _MatchPageState extends State<MatchPage> {
     return SizedBox(
       height: 52,
       child: ListView.separated(
+        controller: _dateStripController,
         scrollDirection: Axis.horizontal,
         itemCount: dates.length,
         separatorBuilder: (_, __) => const SizedBox(width: 8),
