@@ -99,13 +99,13 @@ class HankMatchApiService {
       return [];
     }
 
-    return data.results.map((item) => _convertToMatchModel(item)).toList();
+    return data.results.map((item) => HankMatchApiService.convertToMatchModel(item)).toList();
   }
 
   /// 将接口模型 HankMatchItem 转换为 UI 模型 MatchModel
   /// [item] - 接口返回的单场比赛数据
   /// 返回：MatchModel
-  MatchModel _convertToMatchModel(HankMatchItem item) {
+  static MatchModel convertToMatchModel(HankMatchItem item) {
     // 判断比赛状态
     MatchStatus status;
     if (HankMatchStatusUtil.isLive(item.statusId)) {
@@ -129,7 +129,7 @@ class HankMatchApiService {
     final homeTeam = TeamModel(
       teamId: item.homeTeamId?.toString() ?? '',
       teamName: item.homeTeamName ?? '',
-      teamShort: _extractShort(item.homeTeamName),
+      teamShort: extractShort(item.homeTeamName),
       logoUrl: item.homeTeamLogo,
     );
 
@@ -137,7 +137,7 @@ class HankMatchApiService {
     final awayTeam = TeamModel(
       teamId: item.awayTeamId?.toString() ?? '',
       teamName: item.awayTeamName ?? '',
-      teamShort: _extractShort(item.awayTeamName),
+      teamShort: extractShort(item.awayTeamName),
       logoUrl: item.awayTeamLogo,
     );
 
@@ -184,7 +184,7 @@ class HankMatchApiService {
   /// 从球队名称提取缩写（取前3个大写字母或前3个字符）
   /// [name] - 球队名称
   /// 返回：3字符缩写
-  String _extractShort(String? name) {
+  static String extractShort(String? name) {
     if (name == null || name.isEmpty) return '';
     if (name.length <= 3) return name.toUpperCase();
     return name.substring(0, 3).toUpperCase();

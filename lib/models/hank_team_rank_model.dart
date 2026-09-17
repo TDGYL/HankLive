@@ -1,108 +1,128 @@
-/// HankTeamRankGroup: 球队积分榜分组模型
-/// 对应接口 GET /api/livespeed/football/team/rank 返回的数组元素
-/// 按晋级/降级分组，每组含排名列表
-class HankTeamRankGroup {
-  /// 晋级/降级名称（如: 欧冠区, 降级区）
-  final String? promotionName;
+/// HankTeamRank: 球队积分榜行模型
+/// 对应接口 GET /api/livespeed/football/team/rank 返回的 groups[].list[] 元素
+class HankTeamRank {
+  /// 排名位置
+  final int position;
 
-  /// 排名列表
-  final List<HankTeamRankItem>? list;
+  /// 积分
+  final int pts;
 
-  HankTeamRankGroup({this.promotionName, this.list});
+  /// 已赛场次
+  final int played;
 
-  /// 从JSON解析
-  factory HankTeamRankGroup.fromJson(Map<String, dynamic> json) {
-    return HankTeamRankGroup(
-      promotionName: json['promotion_name'] as String?,
-      list: json['list'] != null
-          ? (json['list'] as List)
-              .map((e) => HankTeamRankItem.fromJson(e as Map<String, dynamic>))
-              .toList()
-          : null,
+  /// 胜场
+  final int won;
+
+  /// 平场
+  final int drawn;
+
+  /// 负场
+  final int lost;
+
+  /// 进球数
+  final int goals;
+
+  /// 客场进球数
+  final int awayGoals;
+
+  /// 失球数
+  final int against;
+
+  /// 净胜球
+  final int diff;
+
+  /// 球队ID
+  final int teamId;
+
+  /// 晋级标识ID
+  final int promotionId;
+
+  /// 分组ID
+  final int group;
+
+  /// 晋级名称（英文，如 Qualified）
+  final String promotionName;
+
+  /// 分组名称（中文，如 球队）
+  final String groupName;
+
+  /// 球队名称
+  final String teamName;
+
+  /// 球队Logo URL
+  final String teamLogo;
+
+  /// 阶段ID
+  final int stageId;
+
+  HankTeamRank({
+    required this.position,
+    required this.pts,
+    required this.played,
+    required this.won,
+    required this.drawn,
+    required this.lost,
+    required this.goals,
+    required this.awayGoals,
+    required this.against,
+    required this.diff,
+    required this.teamId,
+    required this.promotionId,
+    required this.group,
+    required this.promotionName,
+    required this.groupName,
+    required this.teamName,
+    required this.teamLogo,
+    required this.stageId,
+  });
+
+  /// 从JSON映射
+  factory HankTeamRank.fromJson(Map<String, dynamic> json) {
+    return HankTeamRank(
+      position: json['position'] as int? ?? 0,
+      pts: json['pts'] as int? ?? 0,
+      played: json['played'] as int? ?? 0,
+      won: json['won'] as int? ?? 0,
+      drawn: json['drawn'] as int? ?? 0,
+      lost: json['lost'] as int? ?? 0,
+      goals: json['goals'] as int? ?? 0,
+      awayGoals: json['away_goals'] as int? ?? 0,
+      against: json['against'] as int? ?? 0,
+      diff: json['diff'] as int? ?? 0,
+      teamId: json['team_id'] as int? ?? 0,
+      promotionId: json['promotion_id'] as int? ?? 0,
+      group: json['group'] as int? ?? 0,
+      promotionName: json['promotion_name'] as String? ?? '',
+      groupName: json['group_name'] as String? ?? '',
+      teamName: json['team_name'] as String? ?? '',
+      teamLogo: (json['team_logo'] as String?)?.trim() ?? '',
+      stageId: json['stage_id'] as int? ?? 0,
     );
   }
 }
 
-/// HankTeamRankItem: 积分榜单条排名数据
-/// 包含球队排名、积分、胜平负、进球失球等
-class HankTeamRankItem {
-  /// 球队ID
-  final int? teamId;
+/// HankTeamRankGroup: 球队积分榜分组模型
+/// 对应接口返回的 groups[] 元素，包含分组名称和球队列表
+class HankTeamRankGroup {
+  /// 分组名称（如欧冠区、降级区等，可能为空）
+  final String promotionName;
 
-  /// 球队名称
-  final String? teamName;
+  /// 球队列表
+  final List<HankTeamRank> list;
 
-  /// 球队Logo URL
-  final String? logo;
-
-  /// 晋级ID
-  final int? promotionId;
-
-  /// 积分
-  final int? points;
-
-  /// 排名名次
-  final int? position;
-
-  /// 备注
-  final String? noteZh;
-
-  /// 总场次
-  final int? total;
-
-  /// 胜场
-  final int? won;
-
-  /// 平场
-  final int? draw;
-
-  /// 负场
-  final int? loss;
-
-  /// 进球数
-  final int? goals;
-
-  /// 失球数
-  final int? goalsAgainst;
-
-  HankTeamRankItem({
-    this.teamId,
-    this.teamName,
-    this.logo,
-    this.promotionId,
-    this.points,
-    this.position,
-    this.noteZh,
-    this.total,
-    this.won,
-    this.draw,
-    this.loss,
-    this.goals,
-    this.goalsAgainst,
+  HankTeamRankGroup({
+    required this.promotionName,
+    required this.list,
   });
 
-  /// 从JSON解析
-  /// 字段映射：team_id→teamId, goals_against→goalsAgainst 等
-  factory HankTeamRankItem.fromJson(Map<String, dynamic> json) {
-    return HankTeamRankItem(
-      teamId: json['team_id'] != null ? (json['team_id'] as num).toInt() : null,
-      teamName: json['team_name'] as String?,
-      logo: json['logo'] as String?,
-      promotionId: json['promotion_id'] != null
-          ? (json['promotion_id'] as num).toInt()
-          : null,
-      points: json['points'] != null ? (json['points'] as num).toInt() : null,
-      position:
-          json['position'] != null ? (json['position'] as num).toInt() : null,
-      noteZh: json['note_zh'] as String?,
-      total: json['total'] != null ? (json['total'] as num).toInt() : null,
-      won: json['won'] != null ? (json['won'] as num).toInt() : null,
-      draw: json['draw'] != null ? (json['draw'] as num).toInt() : null,
-      loss: json['loss'] != null ? (json['loss'] as num).toInt() : null,
-      goals: json['goals'] != null ? (json['goals'] as num).toInt() : null,
-      goalsAgainst: json['goals_against'] != null
-          ? (json['goals_against'] as num).toInt()
-          : null,
+  /// 从JSON映射
+  factory HankTeamRankGroup.fromJson(Map<String, dynamic> json) {
+    final rawList = json['list'] as List? ?? [];
+    return HankTeamRankGroup(
+      promotionName: json['promotion_name'] as String? ?? '',
+      list: rawList
+          .map((e) => HankTeamRank.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

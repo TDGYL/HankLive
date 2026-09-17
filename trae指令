@@ -1,5 +1,423 @@
 
 
+
+
+hank_league_page点击球员能push到球员详情，球员详情的界面参考接口数据元素布局，接口url=/api/livespeed/football/info，请求方式为get请求，
+请求参数为
+{
+"id":123123,int
+}
+参数说明，id表示的是球员id
+
+返回的数据结构为：
+{
+    "code": 0,
+    "data": {
+        "id": 100074711,
+        "team_id": 1010368,
+        "birthday": "1998-12-20T00:00:00+08:00",
+        "age": 25,
+        "weight": 73,
+        "height": 178,
+        "nationality": "法国",
+        "market_value": 180000000,
+        "market_value_currency": "€",
+        "contract_until": "2025-06-30T00:00:00+08:00",
+        "position": "F",
+        "name_zh": "基利安·姆巴佩",
+        "name_en": "Kylian Mbappé",
+        "short_name_zh": "姆巴佩",
+        "short_name_en": "K.Mbappé",
+        "logo": "https://kq3-online-test-1258443845.cos.ap-beijing.myqcloud.com/football/player/7a6eb5f8bd12bd032df54197a8266736.png",
+        "country_id": 5,
+        "preferred_foot": 2,
+        "positions": "[\"ST\",[\"RW\",\"LW\"]]",
+        "team_logo": "https://kq3-online-test-1258443845.cos.ap-beijing.myqcloud.com/football/team/e2de5e373c8f90e30872147582567d3a.png",
+        "country_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/country/d9f02b3e824d47e12f3888de9fb43509.png",
+        "transfer_list": [
+            {
+                "id": 897053,
+                "player_id": 100074711,
+                "player_name": "姆巴佩",
+                "player_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/player/805e3f8df4f9f8af3da7331d3eefe16d.png",
+                "from_team_id": 1010492,
+                "from_team_name": "摩纳哥",
+                "from_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/6bf734b07872f22e755a8a8fc4d490a0.png",
+                "to_team_id": 1010368,
+                "to_team_name": "巴黎圣日尔曼",
+                "to_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/479a9f579bf548bf9571b30539e1183f.png",
+                "transfer_type": 1,
+                "transfer_time": "2017-08-31T00:00:00+08:00",
+                "transfer_fee": 0,
+                "transfer_desc": "-"
+            },
+            {
+                "id": 897054,
+                "player_id": 100074711,
+                "player_name": "姆巴佩",
+                "player_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/player/805e3f8df4f9f8af3da7331d3eefe16d.png",
+                "from_team_id": 0,
+                "from_team_name": "Monaco U19",
+                "from_team_logo": "",
+                "to_team_id": 1010492,
+                "to_team_name": "摩纳哥",
+                "to_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/6bf734b07872f22e755a8a8fc4d490a0.png",
+                "transfer_type": 3,
+                "transfer_time": "2016-03-06T00:00:00+08:00",
+                "transfer_fee": 0,
+                "transfer_desc": "-"
+            },
+            {
+                "id": 987711,
+                "player_id": 100074711,
+                "player_name": "姆巴佩",
+                "player_logo": "https://kq3-online-test-1258443845.cos.ap-beijing.myqcloud.com/football/player/7a6eb5f8bd12bd032df54197a8266736.png",
+                "from_team_id": 1010492,
+                "from_team_name": "摩纳哥",
+                "from_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/6bf734b07872f22e755a8a8fc4d490a0.png",
+                "to_team_id": 1010368,
+                "to_team_name": "巴黎圣日耳曼",
+                "to_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/a88b8f090a6a15c598bc4bdca84ba7a3.png",
+                "transfer_type": 3,
+                "transfer_time": "2018-07-01T00:00:00+08:00",
+                "transfer_fee": 180000000,
+                "transfer_desc": "180M €"
+            },
+            {
+                "id": 987712,
+                "player_id": 100074711,
+                "player_name": "姆巴佩",
+                "player_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/player/805e3f8df4f9f8af3da7331d3eefe16d.png",
+                "from_team_id": 1010368,
+                "from_team_name": "巴黎圣日尔曼",
+                "from_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/479a9f579bf548bf9571b30539e1183f.png",
+                "to_team_id": 1010492,
+                "to_team_name": "摩纳哥",
+                "to_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/6bf734b07872f22e755a8a8fc4d490a0.png",
+                "transfer_type": 2,
+                "transfer_time": "2018-06-30T00:00:00+08:00",
+                "transfer_fee": 0,
+                "transfer_desc": "-"
+            }
+        ],
+        "honor_list": [
+            {
+                "honor_id": 290,
+                "honor_title": "法国甲级联赛冠军",
+                "list": [
+                    {
+                        "season": "2016-2017",
+                        "honor_title_zh": "法国甲级联赛冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2fd0d4c5d6eb5b5adf168bb06c05c85.png",
+                        "team_name": "摩纳哥"
+                    },
+                    {
+                        "season": "2017-2018",
+                        "honor_title_zh": "法国甲级联赛冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2fd0d4c5d6eb5b5adf168bb06c05c85.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2018-2019",
+                        "honor_title_zh": "法国甲级联赛冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2fd0d4c5d6eb5b5adf168bb06c05c85.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2019-2020",
+                        "honor_title_zh": "法国甲级联赛冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2fd0d4c5d6eb5b5adf168bb06c05c85.png",
+                        "team_name": "巴黎圣日耳曼"
+                    }
+                ]
+            },
+            {
+                "honor_id": 532,
+                "honor_title": "年度最佳球员",
+                "list": [
+                    {
+                        "season": "2018-2019",
+                        "honor_title_zh": "年度最佳球员",
+                        "honor_logo": "",
+                        "team_name": "巴黎圣日耳曼"
+                    }
+                ]
+            },
+            {
+                "honor_id": 122,
+                "honor_title": "法国超级杯冠军",
+                "list": [
+                    {
+                        "season": "2018-2019",
+                        "honor_title_zh": "法国超级杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2364f73ab75c8d210a27e7923f4b8ce.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2019-2020",
+                        "honor_title_zh": "法国超级杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2364f73ab75c8d210a27e7923f4b8ce.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2020-2021",
+                        "honor_title_zh": "法国超级杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/b2364f73ab75c8d210a27e7923f4b8ce.png",
+                        "team_name": "巴黎圣日耳曼"
+                    }
+                ]
+            },
+            {
+                "honor_id": 160,
+                "honor_title": "法国联赛杯冠军",
+                "list": [
+                    {
+                        "season": "2017-2018",
+                        "honor_title_zh": "法国联赛杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/501aa8115bc9adc852485ac43fcf26e8.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2019-2020",
+                        "honor_title_zh": "法国联赛杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/501aa8115bc9adc852485ac43fcf26e8.png",
+                        "team_name": "巴黎圣日耳曼"
+                    }
+                ]
+            },
+            {
+                "honor_id": 200,
+                "honor_title": "法国杯冠军",
+                "list": [
+                    {
+                        "season": "2015-2016",
+                        "honor_title_zh": "法国杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/a7e5bc6c269f59d2dbe228574a70f571.png",
+                        "team_name": ""
+                    },
+                    {
+                        "season": "2017-2018",
+                        "honor_title_zh": "法国杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/a7e5bc6c269f59d2dbe228574a70f571.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2019-2020",
+                        "honor_title_zh": "法国杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/a7e5bc6c269f59d2dbe228574a70f571.png",
+                        "team_name": "巴黎圣日耳曼"
+                    },
+                    {
+                        "season": "2020-2021",
+                        "honor_title_zh": "法国杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/a7e5bc6c269f59d2dbe228574a70f571.png",
+                        "team_name": "巴黎圣日耳曼"
+                    }
+                ]
+            },
+            {
+                "honor_id": 252,
+                "honor_title": "世界杯冠军",
+                "list": [
+                    {
+                        "season": "2018",
+                        "honor_title_zh": "世界杯冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/72cab526391765ba8de64bddb54e30c5.png",
+                        "team_name": "法国"
+                    }
+                ]
+            },
+            {
+                "honor_id": 292,
+                "honor_title": "19岁以下欧洲冠军",
+                "list": [
+                    {
+                        "season": "2016",
+                        "honor_title_zh": "19岁以下欧洲冠军",
+                        "honor_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/honor/ebac8a8c57f98c9fbb9fe83ff3050b47.png",
+                        "team_name": "法国U19"
+                    }
+                ]
+            },
+            {
+                "honor_id": 440,
+                "honor_title": "最佳射手",
+                "list": [
+                    {
+                        "season": "2018-2019",
+                        "honor_title_zh": "最佳射手",
+                        "honor_logo": "",
+                        "team_name": ""
+                    },
+                    {
+                        "season": "2019-2020",
+                        "honor_title_zh": "最佳射手",
+                        "honor_logo": "",
+                        "team_name": ""
+                    },
+                    {
+                        "season": "2020-2021",
+                        "honor_title_zh": "最佳射手",
+                        "honor_logo": "",
+                        "team_name": ""
+                    }
+                ]
+            },
+            {
+                "honor_id": 769,
+                "honor_title": "年度足球先生",
+                "list": [
+                    {
+                        "season": "2018",
+                        "honor_title_zh": "年度足球先生",
+                        "honor_logo": "",
+                        "team_name": ""
+                    }
+                ]
+            }
+        ]
+    },
+    "message": "success"
+}
+
+
+
+
+
+
+球员详情：football/info
+球员key
+https://kqiu4-api-all.kqiu.cn/api/v1/football/competition/player-rank-keys
+球员”
+/api/v1/football/competition/player-rank
+
+
+
+请求hank_league_page中球员排行的的数据：
+1、球员排行头部的菜单接口为：/api/livespeed/football/competition/player-rank-keys，请求方式为GET请求，没有入参，
+返回的数据结构为：
+{
+    "code": 0,
+    "data": [
+        {
+            "key": "k_goals",
+            "name": "进球"
+        },
+        {
+            "key": "k_assists",
+            "name": "助攻"
+        }]
+}
+
+2、下边球员的排行数据接口为url=/api/livespeed/football/competition/player-rank，请求方式为get请求，
+请求参数为
+{
+"competition_id":123123,int
+"season_id":2323432,int
+ "key":"k_goals",string
+}
+参数说明，key动态传入选中菜单的key，比如k_goals，competition_id=联赛id，season_id=赛季id
+
+返回的数据结构为：
+{
+    "code": 0,
+    "data": [
+        {
+            "player_id": 100079455,
+            "rank_name": "进球",
+            "position": 1,
+            "player_name": "埃林·布朗特·哈兰德",
+            "player_logo": "https://kq3-online-test-1258443845.cos.ap-beijing.myqcloud.com/football/player/b99836f49322b28a496b06ae19b6fce3.png",
+            "team_name": "曼彻斯特城",
+            "total": 36
+        }]
+}
+
+
+
+
+在hank_league_page中，将球队积分头部的胜/平/负|净胜|积分这行完全删除
+
+优化hank_league_page：1、将赛季右边的第23轮的组建删除了  2、在顶部联赛的菜单右边加一个向下的箭头按钮，当点击箭头的时候，能往下半屏弹出一个联赛列表，方便展示更能的联赛。3、将右上角的的通知按钮删除，搜索按钮直接跳转到search_page这个界面
+
+===========================================赛程结果
+赛程结果的接口url=/api/livespeed/football/competition/fixtures，请求方式为GET请求
+请求参数为：
+{
+"competition_id":123123,int
+"season_id":2323432,int
+}
+参数说明：competition_id=联赛id，season_id=赛季id
+
+返回的数据结构为：{
+    "code": 0,
+    "data": [
+        [
+            {
+                "match_id": 10003746858,
+                "match_time": 1655816400,
+                "status": 8,
+                "home_team_id": 1020947,
+                "home_team_name": "拉科奥里塔",
+                "home_normal_score": 1,
+                "home_half_score": 1,
+                "home_red": 0,
+                "home_yellow": 2,
+                "home_corn": 5,
+                "home_add_score": 0,
+                "home_point_score": 0,
+                "home_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/1285d6f79589b6216e0e92814657c175.png",
+                "away_team_id": 1027118,
+                "away_team_name": "伊斯卡尔德斯",
+                "away_normal_score": 2,
+                "away_half_score": 0,
+                "away_red": 0,
+                "away_yellow": 2,
+                "away_corn": 2,
+                "away_add_score": 0,
+                "away_point_score": 0,
+                "away_team_logo": "https://kqiu3.oss-cn-qingdao.aliyuncs.com/football/team/d31ea09ae3b62762833dbcc181cd26fc.png",
+                "round_int": 0,
+                "group": 0,
+                "group_name": "",
+                "stage_name": "预选赛",
+                "stage_id": 51492,
+                "is_cur_season": true,
+                "is_cur_stage": false,
+                "is_cur_round": true,
+                "minutes": "",
+                "playback_link": "https://tracker.namitiyu.com/zh/version_3d/football?profile=28PpikHDYCpHm&id=3746858"
+            }]]
+}
+
+数据模型直接用首页的比赛列表模型映射即可
+
+
+===========================================球队积分
+
+将接口/api/livespeed/football/team/rank替换成/api/livespeed/football/competition/table-list，请求方式还是get，请求参数不变，
+
+返回的数据结构为：
+{
+    "code": 0,
+    "data": {
+            "is_group":false,
+            "promotion_name": "",
+            "groups": [[
+                {position: 1, pts: 24, played: 8, won: 8, drawn: 0, lost: 0, goals: 23, away_goals: 0, against: 4, diff: 19, team_id: 1010215, promotion_id: 193, group: 0, promotion_name: Qualified, group_name: 球队, team_name: Arsenal, team_logo: https://cdn.sportnanoapi.com/football/team/d6f5debc456da1119256ab66462ab510.png, stage_id: 232017},
+                {position: 1, pts: 24, played: 8, won: 8, drawn: 0, lost: 0, goals: 23, away_goals: 0, against: 4, diff: 19, team_id: 1010215, promotion_id: 193, group: 0, promotion_name: Qualified, group_name: 球队, team_name: Arsenal, team_logo: https://cdn.sportnanoapi.com/football/team/d6f5debc456da1119256ab66462ab510.png, stage_id: 232017}]],
+           "tables":{
+             "all":[
+                {position: 1, pts: 24, played: 8, won: 8, drawn: 0, lost: 0, goals: 23, away_goals: 0, against: 4, diff: 19, team_id: 1010215, promotion_id: 193, group: 0, promotion_name: Qualified, group_name: 球队, team_name: Arsenal, team_logo: https://cdn.sportnanoapi.com/football/team/d6f5debc456da1119256ab66462ab510.png, stage_id: 232017},
+                {position: 1, pts: 24, played: 8, won: 8, drawn: 0, lost: 0, goals: 23, away_goals: 0, against: 4, diff: 19, team_id: 1010215, promotion_id: 193, group: 0, promotion_name: Qualified, group_name: 球队, team_name: Arsenal, team_logo: https://cdn.sportnanoapi.com/football/team/d6f5debc456da1119256ab66462ab510.png, stage_id: 232017}]
+          }
+      }
+}
+
+当is_group=false时候，球队积分取tables下的all数组数据，当is_group=true时候，球队积分列表分段显示groups下的数据
+
+
+
 给我在赛事hank_league_page这个文件做三个请求步骤：
 第一步：
 顶部联赛列表的数据请求url=/api/livespeed/football/competition/list，请求方式为get请求，
@@ -53,15 +471,6 @@
 
 
 
-第三步：
-球队积分的接口请求url=/api/livespeed/football/team/rank，请求方式为get请求，
-请求参数为：
-{
-"competition_id":123123,int
-"season_id":1313123,int
-}
-参数说明，competition_id是联赛的id, season_id是赛季id
-
 
 
 
@@ -75,8 +484,6 @@
 赛程
 /api/v1/basketball/competition/fixtures
 
-球队排名
-api/v1/football/team/rank
 
 // 赛季列表 competition_id
 integer 
