@@ -1,5 +1,125 @@
 
 
+给我在赛事hank_league_page这个文件做三个请求步骤：
+第一步：
+顶部联赛列表的数据请求url=/api/livespeed/football/competition/list，请求方式为get请求，
+不需要请求参数
+返回的数据结构为：
+{
+    "code": 0,
+    "data": [
+        {
+            "id": 100002,
+            "name": "世欧预",
+            "cap": "O",
+            "main": 1,
+            "logo":""
+        },
+      { 
+            "id": 100028,
+            "name": "大运男足",
+            "cap": "D",
+            "main": 0,
+      "logo":""
+        }]
+}
+然后默认选择第一个
+
+
+第二步：
+联赛下横向菜单下边的赛季请求url=/api/livespeed/football/competition/season-list，请求方式为GET请求，
+请求参数
+{
+"competition_id":123123,int
+}
+参数说明，competition_id是联赛的id
+
+放回的数据结构为：
+{
+    "code": 0,
+    "data": [
+        {
+            "season_id": 20221,
+            "year": "2022-2023",
+            "is_current": 1
+        },
+        {
+            "season_id": 20211,
+            "year": "2021-2022",
+            "is_current": 0
+        }]
+}
+参数说明：如果is_current=1表示选中当前赛季，如果全是is_current=0，则优先选择第一个赛季
+
+
+
+第三步：
+球队积分的接口请求url=/api/livespeed/football/team/rank，请求方式为get请求，
+请求参数为：
+{
+"competition_id":123123,int
+"season_id":1313123,int
+}
+参数说明，competition_id是联赛的id, season_id是赛季id
+
+
+
+
+
+//======================================
+在首页增加第五个菜单页，现在是比赛，资讯，社区，我的；我要在比赛后边增加一个赛事菜单，界面严格按照hankLeague.html生成
+
+
+
+联赛+赛季的id
+赛程
+/api/v1/basketball/competition/fixtures
+
+球队排名
+api/v1/football/team/rank
+
+// 赛季列表 competition_id
+integer 
+联赛 id
+/competition/season-list
+
+// 联赛列表
+/api/v1/football/competition/list
+
+
+
+球员key
+https://kqiu4-api-all.kqiu.cn/api/v1/football/competition/player-rank-keys
+球员”
+/api/v1/football/competition/player-rank
+
+
+在首页增加第五个菜单页，现在是比赛，资讯，社区，我的；我要在比赛后边增加一个赛事菜单，数据请求url=/api/livespeed/football/competition/list，请求方式为get请求，
+返回的数据结构为：
+{
+    "code": 0,
+    "data": [
+        {
+            "id": 100002,
+            "name": "世欧预",
+            "cap": "O",
+            "main": 1
+        },
+        {
+            "id": 100028,
+            "name": "大运男足",
+            "cap": "D",
+            "main": 0
+        },
+  "message":""
+}
+
+
+
+
+
+参照/Users/guyilin/Desktop/HankLive/index.html的功能界面元素，给我生成一个联赛详情界面，要适配苹果手机界面
+
 
 首页的比赛列表的请求参数为：
   params = {

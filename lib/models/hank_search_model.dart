@@ -117,6 +117,39 @@ class HankSearchUser {
   }
 }
 
+/// HankSearchCompetition: 搜索联赛结果模型
+/// 对应 /api/livespeed/index/search 返回的 competitions 数组元素
+class HankSearchCompetition {
+  /// 联赛ID
+  final int? id;
+
+  /// 联赛名称
+  final String? name;
+
+  /// 联赛Logo URL
+  final String? logo;
+
+  /// 比赛场次
+  final int? matches;
+
+  HankSearchCompetition({
+    this.id,
+    this.name,
+    this.logo,
+    this.matches,
+  });
+
+  /// 从JSON映射（snake_case → camelCase）
+  factory HankSearchCompetition.fromJson(Map<String, dynamic> json) {
+    return HankSearchCompetition(
+      id: json['id'] != null ? (json['id'] as num).toInt() : null,
+      name: json['name'] as String?,
+      logo: json['logo'] as String?,
+      matches: json['matches'] != null ? (json['matches'] as num).toInt() : null,
+    );
+  }
+}
+
 /// HankSearchResult: 搜索结果模型
 /// 对应 /api/livespeed/index/search 返回的 data 对象
 class HankSearchResult {
@@ -126,9 +159,13 @@ class HankSearchResult {
   /// 用户搜索结果列表
   final List<HankSearchUser> users;
 
+  /// 联赛搜索结果列表
+  final List<HankSearchCompetition> competitions;
+
   HankSearchResult({
     this.matches = const [],
     this.users = const [],
+    this.competitions = const [],
   });
 
   /// 从JSON映射
@@ -139,6 +176,9 @@ class HankSearchResult {
           .toList(),
       users: (json['users'] as List<dynamic>? ?? [])
           .map((e) => HankSearchUser.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      competitions: (json['competitions'] as List<dynamic>? ?? [])
+          .map((e) => HankSearchCompetition.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }

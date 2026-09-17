@@ -4,6 +4,7 @@ import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
 import 'widgets/common/app_bottom_nav_bar.dart';
 import 'pages/match/match_page.dart';
+import 'pages/league/hank_league_page.dart';
 import 'pages/news/news_page.dart';
 import 'pages/community/community_page.dart';
 import 'pages/profile/profile_page.dart';
@@ -40,7 +41,7 @@ class HankLiveApp extends StatelessWidget {
 }
 
 /// MainScaffold: 主框架
-/// 管理底部4个Tab页面切换（比赛/资讯/社区/我的）
+/// 管理底部5个Tab页面切换（比赛/赛事/资讯/社区/我的）
 class MainScaffold extends StatefulWidget {
   const MainScaffold({Key? key}) : super(key: key);
 
@@ -58,6 +59,11 @@ class _MainScaffoldState extends State<MainScaffold> {
       icon: Icons.emoji_events,
       activeColor: AppColors.violet700,
       label: '比赛',
+    ),
+    AppTabItem(
+      icon: Icons.sports_soccer,
+      activeColor: AppColors.violet700,
+      label: '赛事',
     ),
     AppTabItem(
       icon: Icons.newspaper,
@@ -84,6 +90,7 @@ class _MainScaffoldState extends State<MainScaffold> {
     super.initState();
     _pages = [
       const MatchPage(),
+      const HankLeaguePage(),
       const NewsPage(),
       const CommunityPage(),
       const ProfilePage(),

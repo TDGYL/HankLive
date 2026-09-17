@@ -1,3 +1,6 @@
 
 
 按照 /Users/guyilin/Desktop/HankLive/liansaiJson.md的数据结构和按照/Users/guyilin/Desktop/HankLive/index.html的界面主题风格给我生成一个联赛筛选的的界面，界面要求适配苹果手机
+
+
+按照/Users/guyilin/Desktop/HankLive/index.html的界面主题风格给我生成一个联赛单选，然后选择联赛的赛季为条件，展示球队积分、球员排行和赛程的列表界面，界面要求适配苹果手机

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>HankLive 体育联赛中心</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            hank: {
+              bg: '#0B0F19',
+              card: '#161F30',
+              border: '#232E42',
+              primary: '#00E676', // Electric green
+              accent: '#2979FF',
+              darkText: '#94A3B8',
+              gold: '#FFD700',
+              silver: '#C0C0C0',
+              bronze: '#CD7F32'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', '"Helvetica Neue"', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* iOS Safe Area Padding & Custom Scrollbars */
+    body {
+      background-color: #0B0F19;
+      color: #F8FAFC;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .glass-header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .glass-card {
+      background: rgba(22, 31, 48, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .active-pill {
+      background: linear-gradient(135deg, #00E676 0%, #00B0FF 100%);
+      color: #000000;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+    }
+
+    .live-pulse {
+      box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7);
+      animation: pulse-green 1.8s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(0, 230, 118, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(0, 230, 118, 0);
+      }
+    }
+
+    .form-w { background-color: #10B981; }
+    .form-d { background-color: #64748B; }
+    .form-l { background-color: #EF4444; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased text-slate-100 max-w-md mx-auto relative shadow-2xl overflow-x-hidden border-x border-slate-800/40">
+
+  <!-- Header Bar -->
+  <header class="sticky top-0 z-40 glass-header border-b border-slate-800 px-4 pt-3 pb-2 flex flex-col gap-2">
+    <!-- Top Brand & Actions -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-green-500 to-blue-500 flex items-center justify-center font-black text-black text-lg tracking-wider shadow-lg shadow-green-500/20">
+          H
+        </div>
+        <div class="flex flex-col">
+          <span class="font-extrabold tracking-wide text-base leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">HankLive</span>
+          <span class="text-[10px] text-green-400 font-semibold tracking-wider uppercase mt-0.5">体育赛事数据</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button id="searchBtn" class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white active:scale-95 transition">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </button>
+        <div class="relative">
+          <button class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white active:scale-95 transition">
+            <i class="fa-regular fa-bell text-xs"></i>
+          </button>
+          <span class="absolute top-0 right-0 w-2 h-2 rounded-full bg-red-500 live-pulse"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- League Selector Bar (Horizontal Single-Select Slider) -->
+    <div class="mt-1 flex items-center gap-2 overflow-x-auto no-scrollbar py-1" id="leagueContainer">
+      <!-- Dynamic Leagues JS injection -->
+    </div>
+  </header>
+
+  <!-- Sub Header: Season Selector & Round Info -->
+  <section class="bg-slate-900/90 border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400">赛季:</span>
+      <div class="relative">
+        <select id="seasonSelect" class="bg-slate-800 text-white font-medium pl-3 pr-7 py-1 rounded-md border border-slate-700/60 focus:outline-none focus:border-green-500 appearance-none text-xs cursor-pointer">
+          <option value="2025-2026">2025/2026 赛季</option>
+          <option value="2024-2025" selected>2024/2025 赛季</option>
+          <option value="2023-2024">2023/2024 赛季</option>
+        </select>
+        <i class="fa-solid fa-chevron-down absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
+      </div>
+    </div>
+
+    <!-- Matchday Selector (Visible mainly on Fixture tab) -->
+    <div id="roundSelectorWrapper" class="flex items-center gap-1.5">
+      <button id="prevRoundBtn" class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-slate-300 active:scale-90 transition">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+      </button>
+      <span id="currentRoundText" class="font-semibold text-slate-200 px-1">第 28 轮</span>
+      <button id="nextRoundBtn" class="w-6 h-6 rounded bg-slate-800 flex items-center justify-center text-slate-300 active:scale-90 transition">
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- Main Content Navigation Tabs -->
+  <nav class="bg-slate-900 border-b border-slate-800 px-4 flex justify-between text-xs font-semibold text-slate-400">
+    <button class="tab-btn flex-1 py-3 text-center border-b-2 border-green-400 text-green-400 transition-all flex items-center justify-center gap-1.5" data-tab="standings">
+      <i class="fa-solid fa-list-ol"></i> 球队积分
+    </button>
+    <button class="tab-btn flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-200 transition-all flex items-center justify-center gap-1.5" data-tab="players">
+      <i class="fa-solid fa-user-ninja"></i> 球员排行
+    </button>
+    <button class="tab-btn flex-1 py-3 text-center border-b-2 border-transparent hover:text-slate-200 transition-all flex items-center justify-center gap-1.5" data-tab="fixtures">
+      <i class="fa-regular fa-calendar-check"></i> 赛程结果
+    </button>
+  </nav>
+
+  <!-- Main Scrollable Area -->
+  <main class="flex-1 overflow-y-auto no-scrollbar p-3 space-y-3 pb-20">
+
+    <!-- ==================== TAB 1: STANDINGS (球队积分榜) ==================== -->
+    <section id="tab-standings" class="tab-content space-y-3">
+      <!-- Legend indicators -->
+      <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span> 欧冠区</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> 欧联区</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span> 降级区</span>
+        </div>
+        <span class="text-slate-500 text-[10px]">胜/平/负 | 净胜 | 积分</span>
+      </div>
+
+      <!-- Standings Table Container -->
+      <div class="glass-card rounded-xl overflow-hidden shadow-lg border border-slate-800">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-900/80 text-slate-400 border-b border-slate-800 text-[11px]">
+              <th class="py-2.5 pl-3 pr-1 w-8 text-center">排名</th>
+              <th class="py-2.5 px-2">球队</th>
+              <th class="py-2.5 px-1 text-center w-8">赛</th>
+              <th class="py-2.5 px-1 text-center w-12">胜/平/负</th>
+              <th class="py-2.5 px-1 text-center w-8">净</th>
+              <th class="py-2.5 pr-3 pl-1 text-center w-10 font-bold text-white">积分</th>
+            </tr>
+          </thead>
+          <tbody id="standingsTableBody" class="divide-y divide-slate-800/60 font-medium">
+            <!-- Rendered by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: PLAYER RANKINGS (球员排行) ==================== -->
+    <section id="tab-players" class="tab-content hidden space-y-3">
+      <!-- Player Category Filters -->
+      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+        <button class="player-cat-btn active-pill px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap" data-cat="goals">
+          ⚽ 射手榜
+        </button>
+        <button class="player-cat-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap" data-cat="assists">
+          🅰️ 助攻榜
+        </button>
+        <button class="player-cat-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap" data-cat="cards">
+          🟨 黄红牌
+        </button>
+      </div>
+
+      <!-- Top 3 Podium Cards -->
+      <div id="top3Podium" class="grid grid-cols-3 gap-2 pt-2">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Full Player Ranking List -->
+      <div class="glass-card rounded-xl overflow-hidden shadow-lg border border-slate-800 mt-2">
+        <div class="p-2.5 bg-slate-900/80 border-b border-slate-800 flex justify-between items-center text-xs text-slate-400 font-medium">
+          <span>球员 / 球队</span>
+          <span id="playerStatHeader">进球数 (点球)</span>
+        </div>
+        <div id="playerList" class="divide-y divide-slate-800/60">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: FIXTURES & RESULTS (赛程列表) ==================== -->
+    <section id="tab-fixtures" class="tab-content hidden space-y-3">
+      <!-- Match Filter Toggle (All, Live, Finished) -->
+      <div class="flex items-center justify-between text-xs bg-slate-900/60 p-1 rounded-lg border border-slate-800">
+        <button class="fixture-filter-btn flex-1 py-1.5 rounded-md font-semibold text-center bg-slate-800 text-green-400 shadow" data-filter="all">全部比赛</button>
+        <button class="fixture-filter-btn flex-1 py-1.5 rounded-md font-semibold text-center text-slate-400 hover:text-white" data-filter="live">进行中 <span class="ml-1 w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span></button>
+        <button class="fixture-filter-btn flex-1 py-1.5 rounded-md font-semibold text-center text-slate-400 hover:text-white" data-filter="finished">已完赛</button>
+      </div>
+
+      <!-- Schedule Cards List -->
+      <div id="fixturesList" class="space-y-2.5">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation Bar (iOS Modern Style) -->
+  <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass-header border-t border-slate-800/80 px-6 py-2 flex items-center justify-between text-slate-400 text-[10px] z-50">
+    <button class="flex flex-col items-center gap-1 text-green-400 font-bold active:scale-95 transition">
+      <i class="fa-solid fa-trophy text-lg"></i>
+      <span>赛事</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 hover:text-white active:scale-95 transition">
+      <i class="fa-solid fa-circle-play text-lg"></i>
+      <span>直播</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 hover:text-white active:scale-95 transition">
+      <i class="fa-solid fa-newspaper text-lg"></i>
+      <span>资讯</span>
+    </button>
+    <button class="flex flex-col items-center gap-1 hover:text-white active:scale-95 transition">
+      <i class="fa-solid fa-user text-lg"></i>
+      <span>我的</span>
+    </button>
+  </footer>
+
+  <!-- Match Details Modal Bottom Sheet -->
+  <div id="matchModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-end justify-center">
+    <div class="bg-slate-900 border-t border-slate-700 w-full rounded-t-2xl max-w-md p-4 space-y-4 transform translate-y-full transition-transform duration-300" id="modalContainer">
+      <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto"></div>
+      
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <span class="text-xs font-bold text-slate-400" id="modalMatchRound">英超 第 28 轮</span>
+        <button id="closeModalBtn" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <div class="flex items-center justify-between text-center py-2" id="modalScoreBoard">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Quick Match Stats -->
+      <div class="space-y-2 text-xs">
+        <h4 class="font-bold text-slate-300 text-center mb-1">关键比赛统计</h4>
+        <div class="space-y-1.5" id="modalStats">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <button class="w-full py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 font-bold text-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-green-500/20 active:scale-95 transition">
+        <i class="fa-solid fa-play"></i> 进入 HankLive 赛事直播间
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Mock Database for Leagues, Seasons, Standings, Players and Schedules
+    const LEAGUES = [
+      { id: 'EPL', name: '英超', icon: '🏆', logoColor: 'from-purple-600 to-indigo-600' },
+      { id: 'LALIGA', name: '西甲', icon: '🇪🇸', logoColor: 'from-red-600 to-orange-500' },
+      { id: 'SERIEA', name: '意甲', icon: '🇮🇹', logoColor: 'from-blue-600 to-cyan-500' },
+      { id: 'BUNDES', name: '德甲', icon: '🇩🇪', logoColor: 'from-red-700 to-slate-900' },
+      { id: 'UCL', name: '欧冠', icon: '⭐', logoColor: 'from-blue-900 to-indigo-900' },
+      { id: 'CSL', name: '中超', icon: '🇨🇳', logoColor: 'from-yellow-500 to-red-600' }
+    ];
+
+    // Comprehensive Mock Data per League
+    const DATABASE = {
+      'EPL': {
+        '2024-2025': {
+          round: 28,
+          standings: [
+            { rank: 1, name: '利物浦', logo: '🔴', p: 27, w: 20, d: 6, l: 1, gd: +42, pts: 66, form: ['W','W','D','W','W'], zone: 'ucl' },
+            { rank: 2, name: '阿森纳', logo: '🔴', p: 27, w: 17, d: 7, l: 3, gd: +31, pts: 58, form: ['W','L','W','W','D'], zone: 'ucl' },
+            { rank: 3, name: '诺丁汉森林', logo: '🌳', p: 27, w: 14, d: 6, l: 7, gd: +12, pts: 48, form: ['D','W','W','L','W'], zone: 'ucl' },
+            { rank: 4, name: '曼城', logo: '🩵', p: 27, w: 13, d: 8, l: 6, gd: +18, pts: 47, form: ['L','W','D','W','L'], zone: 'ucl' },
+            { rank: 5, name: '切尔西', logo: '🔵', p: 27, w: 12, d: 8, l: 7, gd: +15, pts: 44, form: ['W','D','L','W','D'], zone: 'uel' },
+            { rank: 6, name: '纽卡斯尔联', logo: '⚪', p: 27, w: 12, d: 8, l: 7, gd: +10, pts: 44, form: ['L','W','W','D','W'], zone: 'uel' },
+            { rank: 7, name: '阿斯顿维拉', logo: '🟣', p: 27, w: 12, d: 6, l: 9, gd: +4, pts: 42, form: ['W','L','L','W','D'], zone: '' },
+            { rank: 8, name: '富勒姆', logo: '⚪', p: 27, w: 11, d: 9, l: 7, gd: +6, pts: 42, form: ['D','W','D','L','W'], zone: '' },
+            { rank: 9, name: '布莱顿', logo: '🔵', p: 27, w: 10, d: 10, l: 7, gd: +5, pts: 40, form: ['W','D','W','L','L'], zone: '' },
+            { rank: 10, name: '托特纳姆热刺', logo: '⚪', p: 27, w: 10, d: 4, l: 13, gd: +14, pts: 34, form: ['L','L','W','L','W'], zone: '' },
+            { rank: 18, name: '伊普斯维奇', logo: '🔵', p: 27, w: 3, d: 8, l: 16, gd: -26, pts: 17, form: ['L','L','D','L','L'], zone: 'rel' },
+            { rank: 19, name: '莱斯特城', logo: '🦊', p: 27, w: 4, d: 5, l: 18, gd: -32, pts: 17, form: ['L','L','L','D','L'], zone: 'rel' },
+            { rank: 20, name: '南安普顿', logo: '🔴', p: 27, w: 2, d: 3, l: 22, gd: -45, pts: 9, form: ['L','L','L','L','L'], zone: 'rel' }
+          ],
+          players: {
+            goals: [
+              { rank: 1, name: '萨拉赫', team: '利物浦', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', val: 24, sub: '5点球' },
+              { rank: 2, name: '哈兰德', team: '曼城', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', val: 20, sub: '2点球' },
+              { rank: 3, name: '帕尔默', team: '切尔西', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', val: 16, sub: '4点球' },
+              { rank: 4, name: '伊萨克', team: '纽卡斯尔联', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80', val: 15, sub: '1点球' },
+              { rank: 5, name: '克里斯·伍德', team: '诺丁汉森林', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80', val: 14, sub: '0点球' }
+            ],
+            assists: [
+              { rank: 1, name: '萨拉赫', team: '利物浦', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', val: 15, sub: '助攻数' },
+              { rank: 2, name: '萨卡', team: '阿森纳', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', val: 12, sub: '助攻数' },
+              { rank: 3, name: '帕尔默', team: '切尔西', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', val: 10, sub: '助攻数' }
+            ],
+            cards: [
+              { rank: 1, name: '库库雷利亚', team: '切尔西', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', val: '9🟨 0🟥', sub: '犯规 38' },
+              { rank: 2, name: '帕利尼亚', team: '拜仁/旧将', avatar: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&auto=format&fit=crop&q=80', val: '8🟨 1🟥', sub: '犯规 42' }
+            ]
+          },
+          fixtures: [
+            { id: 101, home: '阿森纳', homeLogo: '🔴', away: '切尔西', awayLogo: '🔵', score: '2 - 1', status: 'FT', time: '完赛', live: false, round: 28, posession: '54% - 46%', shots: '14 - 9' },
+            { id: 102, home: '曼城', homeLogo: '🩵', away: '利物浦', awayLogo: '🔴', score: '1 - 2', status: '78\'', time: '直播中', live: true, round: 28, posession: '61% - 39%', shots: '18 - 11' },
+            { id: 103, home: '托特纳姆热刺', homeLogo: '⚪', away: '纽卡斯尔联', awayLogo: '⚪', score: 'VS', status: '23:30', time: '今晚', live: false, round: 28, posession: '- - -', shots: '- - -' },
+            { id: 104, home: '阿斯顿维拉', homeLogo: '🟣', away: '诺丁汉森林', awayLogo: '🌳', score: '3 - 0', status: 'FT', time: '完赛', live: false, round: 28, posession: '50% - 50%', shots: '12 - 7' }
+          ]
+        }
+      },
+      'LALIGA': {
+        '2024-2025': {
+          round: 26,
+          standings: [
+            { rank: 1, name: '巴塞罗那', logo: '🔵🔴', p: 26, w: 19, d: 3, l: 4, gd: +45, pts: 60, form: ['W','W','W','D','W'], zone: 'ucl' },
+            { rank: 2, name: '皇家马德里', logo: '⚪', p: 26, w: 18, d: 5, l: 3, gd: +33, pts: 59, form: ['W','D','W','W','W'], zone: 'ucl' },
+            { rank: 3, name: '马德里竞技', logo: '🔴⚪', p: 26, w: 16, d: 7, l: 3, gd: +24, pts: 55, form: ['W','W','L','W','D'], zone: 'ucl' },
+            { rank: 4, name: '毕尔巴鄂竞技', logo: '🔴⚪', p: 26, w: 13, d: 9, l: 4, gd: +18, pts: 48, form: ['D','W','W','D','L'], zone: 'ucl' },
+            { rank: 5, name: '比利亚雷亚尔', logo: '💛', p: 26, w: 12, d: 8, l: 6, gd: +8, pts: 44, form: ['W','L','W','D','W'], zone: 'uel' }
+          ],
+          players: {
+            goals: [
+              { rank: 1, name: '莱万多夫斯基', team: '巴塞罗那', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', val: 21, sub: '3点球' },
+              { rank: 2, name: '姆巴佩', team: '皇家马德里', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', val: 17, sub: '4点球' },
+              { rank: 3, name: '拉菲尼亚', team: '巴塞罗那', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', val: 13, sub: '0点球' }
+            ],
+            assists: [
+              { rank: 1, name: '亚马尔', team: '巴塞罗那', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', val: 13, sub: '助攻数' },
+              { rank: 2, name: '拉菲尼亚', team: '巴塞罗那', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', val: 9, sub: '助攻数' }
+            ],
+            cards: []
+          },
+          fixtures: [
+            { id: 201, home: '皇家马德里', homeLogo: '⚪', away: '巴塞罗那', awayLogo: '🔵🔴', score: '1 - 3', status: 'FT', time: '完赛', live: false, round: 26, posession: '48% - 52%', shots: '11 - 16' }
+          ]
+        }
+      }
+    };
+
+    let currentState = {
+      league: 'EPL',
+      season: '2024-2025',
+      activeTab: 'standings',
+      playerCategory: 'goals',
+      fixtureFilter: 'all'
+    };
+
+    // DOM Elements
+    const leagueContainer = document.getElementById('leagueContainer');
+    const seasonSelect = document.getElementById('seasonSelect');
+    const standingsTableBody = document.getElementById('standingsTableBody');
+    const playerList = document.getElementById('playerList');
+    const top3Podium = document.getElementById('top3Podium');
+    const fixturesList = document.getElementById('fixturesList');
+    const roundSelectorWrapper = document.getElementById('roundSelectorWrapper');
+    const currentRoundText = document.getElementById('currentRoundText');
+    const matchModal = document.getElementById('matchModal');
+    const modalContainer = document.getElementById('modalContainer');
+
+    function renderLeagueSelector() {
+      leagueContainer.innerHTML = LEAGUES.map(l => {
+        const isActive = l.id === currentState.league;
+        return `
+          <button onclick="switchLeague('${l.id}')" class="px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 ${
+            isActive ? 'active-pill scale-105' : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700'
+          }">
+            <span class="text-sm">${l.icon}</span>
+            <span>${l.name}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchLeague(leagueId) {
+      currentState.league = leagueId;
+      renderLeagueSelector();
+      renderCurrentView();
+    }
+
+    function renderStandings() {
+      const data = DATABASE[currentState.league]?.[currentState.season]?.standings || [];
+      if (data.length === 0) {
+        standingsTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-500">暂无该赛季数据</td></tr>`;
+        return;
+      }
+
+      standingsTableBody.innerHTML = data.map(item => {
+        let zoneClass = 'border-l-2 border-transparent';
+        if (item.zone === 'ucl') zoneClass = 'border-l-4 border-blue-500 bg-blue-500/5';
+        else if (item.zone === 'uel') zoneClass = 'border-l-4 border-amber-500 bg-amber-500/5';
+        else if (item.zone === 'rel') zoneClass = 'border-l-4 border-red-500 bg-red-500/5';
+
+        const gdText = item.gd > 0 ? `+${item.gd}` : item.gd;
+
+        return `
+          <tr class="hover:bg-slate-800/50 transition-colors ${zoneClass}">
+            <td class="py-3 pl-3 pr-1 text-center font-bold text-slate-300">${item.rank}</td>
+            <td class="py-3 px-2">
+              <div class="flex items-center gap-2">
+                <span class="text-base">${item.logo}</span>
+                <span class="font-bold text-slate-100">${item.name}</span>
+              </div>
+            </td>
+            <td class="py-3 px-1 text-center text-slate-400">${item.p}</td>
+            <td class="py-3 px-1 text-center text-slate-400 font-mono text-[11px]">${item.w}/${item.d}/${item.l}</td>
+            <td class="py-3 px-1 text-center ${item.gd > 0 ? 'text-green-400' : item.gd < 0 ? 'text-red-400' : 'text-slate-400'}">${gdText}</td>
+            <td class="py-3 pr-3 pl-1 text-center font-extrabold text-green-400 text-sm">${item.pts}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPlayers() {
+      const playersData = DATABASE[currentState.league]?.[currentState.season]?.players?.[currentState.playerCategory] || [];
+      
+      document.getElementById('playerStatHeader').innerText = 
+        currentState.playerCategory === 'goals' ? '进球数 (点球)' : 
+        currentState.playerCategory === 'assists' ? '助攻数' : '牌数';
+
+      if (playersData.length === 0) {
+        top3Podium.innerHTML = '';
+        playerList.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">暂无该项目排行数据</div>`;
+        return;
+      }
+
+      // Render Top 3 Podium
+      const top3 = playersData.slice(0, 3);
+      const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean); // 2nd, 1st, 3rd
+
+      top3Podium.innerHTML = podiumOrder.map(p => {
+        if (!p) return '<div></div>';
+        const isFirst = p.rank === 1;
+        const crownColor = p.rank === 1 ? 'text-amber-400' : p.rank === 2 ? 'text-slate-300' : 'text-amber-700';
+        const height = isFirst ? 'py-4 border-amber-500/50' : 'py-3 mt-2 border-slate-700/50';
+
+        return `
+          <div class="glass-card rounded-xl p-2 text-center flex flex-col items-center justify-between border ${height} relative overflow-hidden">
+            <div class="absolute top-1 left-2 text-xs font-black ${crownColor}">#${p.rank}</div>
+            <div class="relative mt-1">
+              <img src="${p.avatar}" class="w-11 h-11 rounded-full object-cover border-2 ${isFirst ? 'border-amber-400 ring-2 ring-amber-400/30' : 'border-slate-600'}">
+            </div>
+            <div class="mt-2">
+              <div class="font-bold text-xs truncate max-w-[80px] mx-auto">${p.name}</div>
+              <div class="text-[10px] text-slate-400 truncate">${p.team}</div>
+            </div>
+            <div class="mt-1 font-extrabold text-sm text-green-400">${p.val}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Render remaining list (Rank 4+)
+      const restPlayers = playersData.slice(3);
+      playerList.innerHTML = restPlayers.map(p => `
+        <div class="p-3 flex items-center justify-between hover:bg-slate-800/40 transition">
+          <div class="flex items-center gap-3">
+            <span class="w-5 text-center font-bold text-slate-500 text-xs">${p.rank}</span>
+            <img src="${p.avatar}" class="w-8 h-8 rounded-full object-cover">
+            <div>
+              <div class="font-bold text-xs text-slate-200">${p.name}</div>
+              <div class="text-[10px] text-slate-400">${p.team}</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="font-extrabold text-sm text-green-400">${p.val}</div>
+            <div class="text-[10px] text-slate-500">${p.sub}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderFixtures() {
+      const leagueData = DATABASE[currentState.league]?.[currentState.season];
+      let fixtures = leagueData?.fixtures || [];
+
+      if (currentState.fixtureFilter === 'live') {
+        fixtures = fixtures.filter(f => f.live);
+      } else if (currentState.fixtureFilter === 'finished') {
+        fixtures = fixtures.filter(f => f.status === 'FT');
+      }
+
+      currentRoundText.innerText = `第 ${leagueData?.round || 1} 轮`;
+
+      if (fixtures.length === 0) {
+        fixturesList.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">该筛选条件下无赛程安排</div>`;
+        return;
+      }
+
+      fixturesList.innerHTML = fixtures.map(f => `
+        <div onclick="openMatchDetail(${f.id})" class="glass-card rounded-xl p-3 border border-slate-800/80 hover:border-slate-700 transition cursor-pointer relative overflow-hidden active:scale-[0.99]">
+          ${f.live ? '<div class="absolute top-0 left-0 bg-green-500 text-black font-extrabold text-[9px] px-2 py-0.5 rounded-br">LIVE 实时</div>' : ''}
+          <div class="flex items-center justify-between mt-1">
+            <!-- Home Team -->
+            <div class="flex-1 flex items-center justify-end gap-2 text-right">
+              <span class="font-bold text-xs text-slate-200 truncate">${f.home}</span>
+              <span class="text-lg">${f.homeLogo}</span>
+            </div>
+
+            <!-- Score / Time Banner -->
+            <div class="px-4 text-center min-w-[90px]">
+              <div class="font-black text-base tracking-wider ${f.live ? 'text-green-400' : 'text-white'}">${f.score}</div>
+              <div class="text-[10px] px-2 py-0.5 rounded-full ${f.live ? 'bg-green-500/20 text-green-400 font-bold' : 'bg-slate-800 text-slate-400'} inline-block mt-0.5">
+                ${f.status}
+              </div>
+            </div>
+
+            <!-- Away Team -->
+            <div class="flex-1 flex items-center justify-start gap-2 text-left">
+              <span class="text-lg">${f.awayLogo}</span>
+              <span class="font-bold text-xs text-slate-200 truncate">${f.away}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCurrentView() {
+      if (currentState.activeTab === 'standings') {
+        roundSelectorWrapper.classList.add('hidden');
+        renderStandings();
+      } else if (currentState.activeTab === 'players') {
+        roundSelectorWrapper.classList.add('hidden');
+        renderPlayers();
+      } else if (currentState.activeTab === 'fixtures') {
+        roundSelectorWrapper.classList.remove('hidden');
+        renderFixtures();
+      }
+    }
+
+    function openMatchDetail(matchId) {
+      const fixtures = DATABASE[currentState.league]?.[currentState.season]?.fixtures || [];
+      const match = fixtures.find(f => f.id === matchId);
+      if (!match) return;
+
+      document.getElementById('modalMatchRound').innerText = `${LEAGUES.find(l=>l.id===currentState.league)?.name} 第 ${match.round} 轮`;
+      document.getElementById('modalScoreBoard').innerHTML = `
+        <div class="flex-1 text-center">
+          <div class="text-3xl mb-1">${match.homeLogo}</div>
+          <div class="font-bold text-xs text-slate-200">${match.home}</div>
+        </div>
+        <div class="px-4">
+          <div class="text-2xl font-black text-green-400">${match.score}</div>
+          <div class="text-[10px] text-slate-400 mt-1">${match.time} (${match.status})</div>
+        </div>
+        <div class="flex-1 text-center">
+          <div class="text-3xl mb-1">${match.awayLogo}</div>
+          <div class="font-bold text-xs text-slate-200">${match.away}</div>
+        </div>
+      `;
+
+      document.getElementById('modalStats').innerHTML = `
+        <div class="flex justify-between items-center text-slate-400 text-[11px]">
+          <span>控球率</span>
+          <span class="font-bold text-slate-200">${match.posession}</span>
+        </div>
+        <div class="flex justify-between items-center text-slate-400 text-[11px]">
+          <span>射门(射正)</span>
+          <span class="font-bold text-slate-200">${match.shots}</span>
+        </div>
+      `;
+
+      matchModal.classList.remove('hidden');
+      setTimeout(() => {
+        matchModal.classList.remove('opacity-0');
+        modalContainer.classList.remove('translate-y-full');
+      }, 10);
+    }
+
+    function closeModal() {
+      modalContainer.classList.add('translate-y-full');
+      matchModal.classList.add('opacity-0');
+      setTimeout(() => {
+        matchModal.classList.add('hidden');
+      }, 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLeagueSelector();
+      renderCurrentView();
+
+      // Season Dropdown Change
+      seasonSelect.addEventListener('change', (e) => {
+        currentState.season = e.target.value;
+        renderCurrentView();
+      });
+
+      // Navigation Tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('border-green-400', 'text-green-400');
+            b.classList.add('border-transparent', 'text-slate-400');
+          });
+          btn.classList.remove('border-transparent', 'text-slate-400');
+          btn.classList.add('border-green-400', 'text-green-400');
+
+          const tabName = btn.getAttribute('data-tab');
+          currentState.activeTab = tabName;
+
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+          document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+          renderCurrentView();
+        });
+      });
+
+      // Player Leaderboard Categories
+      document.querySelectorAll('.player-cat-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.player-cat-btn').forEach(b => {
+            b.className = 'player-cat-btn bg-slate-800 text-slate-300 hover:text-white px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap';
+          });
+          btn.className = 'player-cat-btn active-pill px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap';
+          currentState.playerCategory = btn.getAttribute('data-cat');
+          renderPlayers();
+        });
+      });
+
+      // Fixture Filters (All, Live, Finished)
+      document.querySelectorAll('.fixture-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.fixture-filter-btn').forEach(b => {
+            b.className = 'fixture-filter-btn flex-1 py-1.5 rounded-md font-semibold text-center text-slate-400 hover:text-white';
+          });
+          btn.className = 'fixture-filter-btn flex-1 py-1.5 rounded-md font-semibold text-center bg-slate-800 text-green-400 shadow';
+          currentState.fixtureFilter = btn.getAttribute('data-filter');
+          renderFixtures();
+        });
+      });
+
+      // Modal Close Listeners
+      document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+      matchModal.addEventListener('click', (e) => {
+        if (e.target === matchModal) closeModal();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -9,7 +9,7 @@ import '../../models/match_model.dart';
 import '../../models/team_model.dart';
 
 /// HankSearchTab: 搜索结果分类枚举
-/// all: 全部 | match: 比赛 | user: 用户
+/// all: 全部 | match: 比赛 | user: 用户 | league: 联赛
 enum HankSearchTab {
   /// 全部
   all,
@@ -17,6 +17,8 @@ enum HankSearchTab {
   match,
   /// 用户
   user,
+  /// 联赛
+  league,
 }
 
 /// HankSearchPage: 搜索页面
@@ -678,6 +680,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       HankSearchTab.all: '全部',
       HankSearchTab.match: '比赛',
       HankSearchTab.user: '用户',
+      HankSearchTab.league: '联赛',
     };
 
     return Container(
@@ -740,11 +743,13 @@ class _HankSearchPageState extends State<HankSearchPage> {
 
     final matches = _searchResult?.matches ?? [];
     final users = _searchResult?.users ?? [];
+    final competitions = _searchResult?.competitions ?? [];
 
-    final showMatchSection = matches.isNotEmpty && _currentTab != HankSearchTab.user;
-    final showUserSection = users.isNotEmpty && _currentTab != HankSearchTab.match;
+    final showMatchSection = matches.isNotEmpty && _currentTab != HankSearchTab.user && _currentTab != HankSearchTab.league;
+    final showUserSection = users.isNotEmpty && _currentTab != HankSearchTab.match && _currentTab != HankSearchTab.league;
+    final showLeagueSection = competitions.isNotEmpty && _currentTab != HankSearchTab.match && _currentTab != HankSearchTab.user;
 
-    if (!showMatchSection && !showUserSection) {
+    if (!showMatchSection && !showUserSection && !showLeagueSection) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -790,6 +795,12 @@ class _HankSearchPageState extends State<HankSearchPage> {
           _buildSectionTitle('用户', users.length),
           const SizedBox(height: 10),
           ...users.map((user) => _buildUserCard(user)),
+        ],
+        if (showLeagueSection) ...[
+          if (showMatchSection || showUserSection) const SizedBox(height: 20),
+          _buildSectionTitle('联赛', competitions.length),
+          const SizedBox(height: 10),
+          ...competitions.map((comp) => _buildCompetitionCard(comp)),
         ],
       ],
     );
@@ -1071,6 +1082,87 @@ class _HankSearchPageState extends State<HankSearchPage> {
           ),
         ],
       ),
+    );
+  }
+
+  /// 联赛结果卡片
+  /// [competition] - 联赛模型
+  Widget _buildCompetitionCard(HankSearchCompetition competition) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.violet200.withOpacity(0.6)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0F8B5CF6),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // 联赛logo
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: (competition.logo != null && competition.logo!.isNotEmpty)
+                ? Image.network(
+                    competition.logo!,
+                    width: 36,
+                    height: 36,
+                    fit: BoxFit.cover,
+                    errorBuilder: (c, e, s) => _buildCompetitionLogoPlaceholder(),
+                  )
+                : _buildCompetitionLogoPlaceholder(),
+          ),
+          const SizedBox(width: 12),
+          // 联赛名称
+          Expanded(
+            child: Text(
+              competition.name ?? '',
+              style: const TextStyle(
+                color: AppColors.slate800,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          // 比赛场次
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: AppColors.violet100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '${competition.matches ?? 0} 场',
+              style: const TextStyle(
+                color: AppColors.violet700,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 联赛Logo占位图
+  Widget _buildCompetitionLogoPlaceholder() {
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: AppColors.violet100,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: const Icon(Icons.sports_soccer, size: 18, color: AppColors.violet400),
     );
   }
 
