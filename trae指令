@@ -1,6 +1,77 @@
 
 
 
+首页的比赛列表的请求参数为：
+  params = {
+      "tab": 0,
+      "page": 1,
+      "size": 10,
+      "timestamp": 1747464738,
+      "competition_ids": [int]
+    };
+当筛选联赛好之后，将联赛id放入数组，动态传给入参competition_ids，再请求比赛列表
+
+
+=====================================UI--联赛筛选
+
+当点击首页的筛选按钮时候，跳转到一个联赛筛选按钮界面，界面严格参照leagueList.html
+
+请求接口url=/api/livespeed/football/competition-filter，请求方式为get请求，
+请求参数：
+{
+"tab":0,int
+}
+
+返回的数据结构为：{
+    "code": 0,
+    "data": {
+        "categories": [
+            {
+                "name": "string",
+                "main": true,
+                "competitions": [
+                    {
+                        "id": 0,
+                        "logo": "string",
+                        "name": "string",
+                        "matches": 0
+                    }
+                ]
+            }
+        ],
+        "lotteries": [
+            {
+                "name": "string",
+                "type": 0,
+                "main": true,
+                "competitions": [
+                    {
+                        "id": 0,
+                        "logo": "string",
+                        "name": "string",
+                        "matches": 0
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+数据说明：categories表示的是菜单列表，competitions表示菜单对应的数据列表
+
+界面保留全选和反选功能，去掉五大联赛的过滤按钮
+
+
+
+
+
+将match_page顶部的菜单的宽度设置是屏幕的宽度减掉50，菜单设置可以滑动，然后当菜单选中的是全部、进行中、赛程和赛果时候，出现一个筛选的按钮在右边距离屏幕16像素处
+
+
+
+在match_page的顶部菜单中，在关注右边再追加：全部和进行中两种比赛赛类型的列表数据
+参数说明：tab为菜单类型：关注tap=4，全部type=0，进行中type=1,推荐type=5，赛程type=2，赛果type=3；
+
 
 优化：
 1、比赛详情右上角的订阅按钮，未登录时候点击直接push到登录界面，取消toast提示

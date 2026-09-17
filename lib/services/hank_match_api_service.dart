@@ -5,10 +5,14 @@ import '../models/match_model.dart';
 import '../models/team_model.dart';
 
 /// HankMatchTab: 比赛列表Tab类型枚举
-/// 对应接口 tab 参数：关注=4，推荐=5，赛程=2，赛果=3
+/// 对应接口 tab 参数：关注=4，全部=0，进行中=1，推荐=5，赛程=2，赛果=3
 enum HankMatchTab {
   /// 关注
   follow(4),
+  /// 全部
+  all(0),
+  /// 进行中
+  live(1),
   /// 推荐
   recommend(5),
   /// 赛程

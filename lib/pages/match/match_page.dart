@@ -6,13 +6,18 @@ import '../../widgets/match/featured_match_card.dart';
 import '../../widgets/match/standard_match_card.dart';
 import '../../widgets/common/calendar_bottom_sheet.dart';
 import 'match_detail_page.dart';
+import 'hank_league_filter_page.dart';
 import '../search/search_page.dart';
 
 /// MatchSubTab: 比赛列表二级Tab枚举
-/// 对应接口 tab 参数：关注=4，推荐=5，赛程=2，赛果=3
+/// 对应接口 tab 参数：关注=4，全部=0，进行中=1，推荐=5，赛程=2，赛果=3
 enum MatchSubTab {
   /// 关注 tab=4
   follow,
+  /// 全部 tab=0
+  all,
+  /// 进行中 tab=1
+  live,
   /// 推荐 tab=5
   recommend,
   /// 赛程 tab=2
@@ -22,8 +27,8 @@ enum MatchSubTab {
 }
 
 /// MatchPage: 比赛列表页
-/// 含4个二级Tab：关注/推荐/赛程/赛果
-/// 赛程和赛果Tab含日历选择按钮 + 7天日期横滑条
+/// 含6个二级Tab：关注/全部/进行中/推荐/赛程/赛果
+/// 赛程和赛果Tab含日历选择按钮 + 6天日期横滑条
 /// 数据通过 HankMatchApiService 请求接口获取
 /// 支持下拉刷新 + 上拉加载更多
 class MatchPage extends StatefulWidget {
@@ -81,7 +86,10 @@ class _MatchPageState extends State<MatchPage> {
   final ScrollController _scrollController = ScrollController();
 
   /// 日期横滑条滚动控制器（用于日历选择后自动滚动）
-  final ScrollController _dateStripController = ScrollController();
+  ScrollController _dateStripController = ScrollController();
+
+  /// 筛选选中的联赛ID列表
+  List<int> _selectedCompetitionIds = [];
 
   @override
   void initState() {
@@ -113,6 +121,10 @@ class _MatchPageState extends State<MatchPage> {
     switch (tab) {
       case MatchSubTab.follow:
         return HankMatchTab.follow;
+      case MatchSubTab.all:
+        return HankMatchTab.all;
+      case MatchSubTab.live:
+        return HankMatchTab.live;
       case MatchSubTab.recommend:
         return HankMatchTab.recommend;
       case MatchSubTab.schedule:
@@ -152,6 +164,7 @@ class _MatchPageState extends State<MatchPage> {
       page: requestPage,
       size: _size,
       timestamp: timestamp,
+      competitionIds: _selectedCompetitionIds,
     );
 
     if (mounted) {
@@ -209,17 +222,12 @@ class _MatchPageState extends State<MatchPage> {
       newAnchorDate = DateTime.now();
     }
 
-    // 在setState之前预设滚动偏移量，避免重建后出现滚动动画
+    // 创建带正确初始偏移的新controller，避免重建后出现滑动动效
     const itemWidth = 64.0;
-    if (tab == MatchSubTab.schedule) {
-      if (_dateStripController.hasClients) {
-        _dateStripController.jumpTo(0);
-      }
-    } else if (tab == MatchSubTab.results) {
-      if (_dateStripController.hasClients) {
-        _dateStripController.jumpTo(6 * itemWidth);
-      }
-    }
+    _dateStripController.dispose();
+    _dateStripController = ScrollController(
+      initialScrollOffset: tab == MatchSubTab.results ? 5 * itemWidth : 0,
+    );
 
     setState(() {
       _currentSubTab = tab;
@@ -227,16 +235,6 @@ class _MatchPageState extends State<MatchPage> {
       _anchorDate = newAnchorDate;
       _matches = [];
       _hasNoMore = false;
-    });
-
-    // 确保重建后偏移量正确（无动画）
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_dateStripController.hasClients) return;
-      if (tab == MatchSubTab.schedule) {
-        _dateStripController.jumpTo(0);
-      } else if (tab == MatchSubTab.results) {
-        _dateStripController.jumpTo(6 * itemWidth);
-      }
     });
 
     _fetchMatches(isRefresh: true);
@@ -310,7 +308,7 @@ class _MatchPageState extends State<MatchPage> {
         _dateStripController.jumpTo(0);
       } else {
         // 赛果：选中日期是最后一个，滚动到最右
-        _dateStripController.jumpTo(6 * itemWidth);
+        _dateStripController.jumpTo(5 * itemWidth);
       }
     });
   }
@@ -601,7 +599,7 @@ class _MatchPageState extends State<MatchPage> {
               ],
             ),
             const SizedBox(height: 12),
-            _buildSubTabs(),
+            _buildSubTabsRow(),
             if (_showCalendar) ...[
               const SizedBox(height: 8),
               _buildCalendarButton(),
@@ -614,7 +612,15 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  Widget _buildSubTabs() {
+  /// 是否显示筛选按钮
+  bool get _showFilterButton =>
+      _currentSubTab == MatchSubTab.all ||
+      _currentSubTab == MatchSubTab.live ||
+      _currentSubTab == MatchSubTab.schedule ||
+      _currentSubTab == MatchSubTab.results;
+
+  /// 菜单+筛选按钮行（筛选按钮与菜单垂直对齐，菜单靠左）
+  Widget _buildSubTabsRow() {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -625,12 +631,55 @@ class _MatchPageState extends State<MatchPage> {
         ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSubTabButton(MatchSubTab.follow, '关注'),
-          _buildSubTabButton(MatchSubTab.recommend, '推荐'),
-          _buildSubTabButton(MatchSubTab.schedule, '赛程'),
-          _buildSubTabButton(MatchSubTab.results, '赛果'),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildSubTabButton(MatchSubTab.follow, '关注'),
+                  _buildSubTabButton(MatchSubTab.recommend, '推荐'),
+                  _buildSubTabButton(MatchSubTab.all, '全部'),
+                  _buildSubTabButton(MatchSubTab.live, '进行中'),
+                  _buildSubTabButton(MatchSubTab.schedule, '赛程'),
+                  _buildSubTabButton(MatchSubTab.results, '赛果'),
+                ],
+              ),
+            ),
+          ),
+          if (_showFilterButton)
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => const HankLeagueFilterPage()),
+                ).then((selectedIds) {
+                  if (selectedIds is List<int>) {
+                    setState(() {
+                      _selectedCompetitionIds = selectedIds;
+                    });
+                    _fetchMatches(isRefresh: true);
+                  }
+                });
+              },
+              child: Container(
+                width: 24,
+                height: 24,
+                margin: const EdgeInsets.only(right: 16),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: AppColors.violet200),
+                ),
+                child: const Icon(
+                  Icons.filter_list,
+                  size: 14,
+                  color: AppColors.violet700,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -766,20 +815,20 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 生成7天日期列表
-  /// 赛程：以锚点日期为起点，往后追加6天（锚点日期+6天）
-  /// 赛果：以锚点日期为终点，往前追加6天（前6天+锚点日期）
+  /// 生成6天日期列表
+  /// 赛程：以锚点日期为起点，往后追加5天（锚点日期+5天）
+  /// 赛果：以锚点日期为终点，往前追加5天（前5天+锚点日期）
   /// 锚点日期仅在日历选项卡确认时更新，点击横滑条不影响列表
   List<DateTime> _getDateList() {
     final List<DateTime> list = [];
     if (_currentSubTab == MatchSubTab.schedule) {
-      // 赛程：锚点日期为第一个，往后追加6天
-      for (int i = 0; i < 7; i++) {
+      // 赛程：锚点日期为第一个，往后追加5天
+      for (int i = 0; i < 6; i++) {
         list.add(_anchorDate.add(Duration(days: i)));
       }
     } else {
-      // 赛果：锚点日期为最后一个，往前追加6天
-      for (int i = 6; i >= 0; i--) {
+      // 赛果：锚点日期为最后一个，往前追加5天
+      for (int i = 5; i >= 0; i--) {
         list.add(_anchorDate.subtract(Duration(days: i)));
       }
     }
@@ -791,7 +840,7 @@ class _MatchPageState extends State<MatchPage> {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  /// 日期横滑条：展示7天，高亮与日历选择联动
+  /// 日期横滑条：展示6天，高亮与日历选择联动
   Widget _buildDateStrip() {
     final dates = _getDateList();
     final weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
