@@ -4,23 +4,23 @@ import '../../models/hank_team_data_model.dart';
 import '../../models/hank_team_lineup_model.dart';
 import '../../services/hank_team_api_service.dart';
 
-/// HankTeamDetailPage: 球队详情页面
-/// 布局与ZogoLive差异化：白色卡片头部 + 阵容列表
-/// 主题：浅紫色 + 白色
-/// 接口：
-///   1. GET /api/livespeed/football/team/data → 球队详情
-///   2. GET /api/livespeed/football/team/lineup → 球队阵容
+/// HankTeamDetailPage: TeamDetailspage
+/// layoutmatchwithZogoLivedifferentiated：whitecolorcardheader + Lineuplist
+/// hometheme：lightpurple + whitecolor
+/// API：
+///   1. GET /api/livespeed/football/team/data → TeamDetails
+///   2. GET /api/livespeed/football/team/lineup → TeamLineup
 class HankTeamDetailPage extends StatefulWidget {
-  /// 球队ID
+  /// TeamID
   final int teamId;
 
-  /// 球队名称（传入用于标题展示，接口返回前使用）
+  /// Teamname（passed inusetitledisplay，APIBackbeforeuseuse）
   final String teamName;
 
-  /// 球队Logo URL（传入用于头像展示，接口返回前使用）
+  /// TeamLogo URL（passed inuseavatardisplay，APIBackbeforeuseuse）
   final String? teamLogo;
 
-  /// 联赛ID（可选，预留）
+  /// LeagueID（optional，reserved）
   final int? competitionId;
 
   HankTeamDetailPage({
@@ -36,19 +36,19 @@ class HankTeamDetailPage extends StatefulWidget {
 }
 
 class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
-  /// 球队接口服务
+  /// TeamAPI service
   final HankTeamApiService _apiService = HankTeamApiService();
 
-  /// 球队详情数据
+  /// TeamDetailsData
   HankTeamData? _teamData;
 
-  /// 是否正在加载球队详情
+  /// whetherLoadingTeamDetails
   bool _isLoadingTeam = true;
 
-  /// 球队阵容数据
+  /// TeamLineupData
   List<HankTeamLineupGroup> _lineupList = [];
 
-  /// 是否正在加载阵容
+  /// whetherLoadingLineup
   bool _isLoadingLineup = false;
 
   @override
@@ -58,8 +58,8 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     _fetchTeamLineup();
   }
 
-  /// 请求球队详情数据
-  /// 接口：GET /api/livespeed/football/team/data
+  /// requestTeamDetailsData
+  /// API：GET /api/livespeed/football/team/data
   Future<void> _fetchTeamData() async {
     final data = await _apiService.fetchTeamData(teamId: widget.teamId);
 
@@ -71,8 +71,8 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     }
   }
 
-  /// 请求球队阵容
-  /// 接口：GET /api/livespeed/football/team/lineup
+  /// requestTeamLineup
+  /// API：GET /api/livespeed/football/team/lineup
   Future<void> _fetchTeamLineup() async {
     setState(() => _isLoadingLineup = true);
 
@@ -100,7 +100,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 顶部导航栏（返回按钮 + 球队名称）
+  /// topnavbar（Backbutton + Teamname）
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -149,7 +149,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 球队信息头部卡片（差异化布局：居中Logo + 水平信息芯片）
+  /// Teaminfoheadercard（differentiatedlayoutmatch：centerinLogo + oddsDinfochip）
   Widget _buildHeaderCard() {
     if (_isLoadingTeam) {
       return Container(
@@ -168,14 +168,14 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     final logoUrl = team?.logo ?? widget.teamLogo;
     final teamName = team?.name ?? widget.teamName;
 
-    // 身价格式化
+    // Valueformat
     String marketValueStr = '-';
     if (team?.marketValue != null) {
       final mv = team!.marketValue!;
       if (mv >= 100000000) {
-        marketValueStr = '€${(mv / 100000000).toStringAsFixed(1)}亿';
+        marketValueStr = '€${(mv / 100000000).toStringAsFixed(1)}B';
       } else if (mv >= 10000) {
-        marketValueStr = '€${(mv / 10000).toStringAsFixed(0)}万';
+        marketValueStr = '€${(mv / 10000).toStringAsFixed(0)}M';
       } else {
         marketValueStr = '€$mv';
       }
@@ -186,7 +186,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
       child: Column(
         children: [
-          // 球队Logo + 名称 + 联赛标签
+          // TeamLogo + name + Leaguetag
           Row(
             children: [
               // Logo
@@ -211,7 +211,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
                 ),
               ),
               const SizedBox(width: 16),
-              // 名称 + 联赛
+              // name + League
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,38 +260,38 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
             ],
           ),
           const SizedBox(height: 16),
-          // 水平信息芯片行
+          // oddsDinfochiprow
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 _buildInfoChip(
                   Icons.calendar_today_outlined,
-                  '成立',
+                  'founded',
                   team?.foundationTime?.toString() ?? '-',
                 ),
                 const SizedBox(width: 8),
                 _buildInfoChip(
                   Icons.stadium_outlined,
-                  '主场',
+                  'homematch',
                   team?.venueName ?? '-',
                 ),
                 const SizedBox(width: 8),
                 _buildInfoChip(
                   Icons.person_outline,
-                  '教练',
+                  'Coach',
                   team?.managerName ?? '-',
                 ),
                 const SizedBox(width: 8),
                 _buildInfoChip(
                   Icons.people_outline,
-                  '容量',
+                  'capacitycount',
                   team?.venueCapacity?.toString() ?? '-',
                 ),
                 const SizedBox(width: 8),
                 _buildInfoChip(
                   Icons.monetization_on_outlined,
-                  '身价',
+                  'Value',
                   marketValueStr,
                 ),
               ],
@@ -302,7 +302,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 信息芯片（图标 + 标签 + 值）
+  /// infochip（icon + tag + value）
   Widget _buildInfoChip(IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -347,7 +347,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// Logo占位（首字母）
+  /// Logoplaceholder（initial）
   Widget _buildLogoPlaceholder(String name) {
     return Center(
       child: Text(
@@ -361,7 +361,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 阵容列表（直接展示，无Tab）
+  /// Lineuplist（directlydisplay，noneTab）
   Widget _buildLineupList() {
     if (_isLoadingLineup) {
       return const Center(
@@ -377,7 +377,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
         .toList();
 
     if (validGroups.isEmpty) {
-      return _buildEmptyView('暂无阵容数据');
+      return _buildEmptyView('NoLineupData');
     }
 
     return ListView.builder(
@@ -390,7 +390,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 阵容分组卡片（位置标题 + 球员逐行排列）
+  /// Lineupgroupingcard（Positiontitle + Playereachrowarrange）
   Widget _buildLineupGroupCard(HankTeamLineupGroup group) {
     final players = group.personList ?? [];
     final isCoach = group.position == 'Coach';
@@ -412,7 +412,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 位置标题
+          // Positiontitle
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -436,7 +436,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
                 ),
                 if (!isCoach)
                   Text(
-                    '进球/出场',
+                    'Goals/appearance',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.slate500,
@@ -445,7 +445,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
               ],
             ),
           ),
-          // 球员列表（全宽逐行排列）
+          // Playerlist（full widtheachrowarrange）
           ...players
               .map((player) => _buildPlayerChip(player, isCoach))
               .toList(),
@@ -454,8 +454,8 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 球员信息行（全宽，头像 + 姓名 + 号码 + 数据右对齐）
-  /// [isCoach] - true时隐藏进球/出场数据
+  /// Playerinforow（full width，avatar + name + Number + Dataright aligned）
+  /// [isCoach] - truewhenhideGoals/appearanceData
   Widget _buildPlayerChip(HankTeamPlayer player, bool isCoach) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
@@ -467,7 +467,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
       ),
       child: Row(
         children: [
-          // 球衣号码
+          // jerseyNumber
           Container(
             width: 24,
             height: 24,
@@ -486,7 +486,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
             ),
           ),
           const SizedBox(width: 10),
-          // 头像
+          // avatar
           Container(
             width: 28,
             height: 28,
@@ -513,7 +513,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
                   ),
           ),
           const SizedBox(width: 10),
-          // 姓名
+          // name
           Expanded(
             child: Text(
               player.name ?? '',
@@ -526,10 +526,10 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
               ),
             ),
           ),
-          // 进球/出场（右对齐，与标题"进球/出场"垂直对齐）
+          // Goals/appearance（right aligned，withtitle"Goals/appearance"vertical align）
           if (!isCoach)
             Text(
-              '${player.goals ?? 0}球 / ${player.matches ?? 0}场',
+              '${player.goals ?? 0}goal / ${player.matches ?? 0}match',
               style: const TextStyle(
                 fontSize: 10,
                 color: AppColors.slate500,
@@ -540,7 +540,7 @@ class _HankTeamDetailPageState extends State<HankTeamDetailPage> {
     );
   }
 
-  /// 空数据视图
+  /// emptyDatavisualimage
   Widget _buildEmptyView(String message) {
     return Center(
       child: Column(

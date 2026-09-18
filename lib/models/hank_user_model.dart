@@ -1,55 +1,55 @@
-/// HankUserModel: 用户信息模型
-/// 对应 /api/livespeed/member 返回的用户数据
+/// HankUserModel: useaccountinfomodel
+/// maps to /api/livespeed/member BackuseaccountData
 class HankUserModel {
-  /// 用户ID - int类型，用户唯一标识
+  /// useaccountID - inttype，useaccountuniquebadge
   final int? id;
 
-  /// 账号 - String类型，用户登录账号
+  /// account - Stringtype，useaccountLoginaccount
   final String? account;
 
-  /// 邮箱 - String类型，用户绑定邮箱
+  /// email - Stringtype，useaccountboundemail
   final String? email;
 
-  /// 昵称 - String类型，用户展示名称
+  /// nickname - Stringtype，useaccountdisplayname
   final String? nickname;
 
-  /// 头像URL - String类型，用户头像图片地址
+  /// avatarURL - Stringtype，useaccountavatarimageaddress
   final String? avatar;
 
-  /// 个性签名 - String类型，用户个人简介
+  /// bio - Stringtype，useaccounteachpersonbio
   final String? signature;
 
-  /// 手机号 - String类型，用户绑定手机号
+  /// phone - Stringtype，useaccountboundphone
   final String? mobile;
 
-  /// 注册时间 - String类型，用户注册时间
+  /// RegisterTime - Stringtype，useaccountRegisterTime
   final String? regTime;
 
-  /// 用户状态 - int类型，0=正常 1=禁用
+  /// user status - inttype，0=normal 1=banneduse
   final int? status;
 
-  /// 登录平台 - String类型，用户登录平台标识
+  /// LoginDplatform - Stringtype，useaccountLoginDplatformbadge
   final String? platforms;
 
-  /// 最后登录时间 - String类型，用户最近一次登录时间
+  /// lastLoginTime - Stringtype，useaccountrecentatimeLoginTime
   final String? lastLoginTime;
 
-  /// 是否首登 - bool类型，true表示首次登录
+  /// is first login - booltype，truemeansfirsttimeLogin
   final bool? isDebut;
 
-  /// 金币余额 - int类型，用户金币数量
+  /// gold balance - inttype，useaccountgoldcountcount
   final int? kMoney;
 
-  /// 优惠券数量 - int类型，用户优惠券数量
+  /// couponscountcount - inttype，useaccountcouponscountcount
   final int? kCoupon;
 
-  /// 关注数 - int类型，用户关注的人数
+  /// Followcount - inttype，useaccountFollowpersoncount
   final int? followers;
 
-  /// 粉丝数 - int类型，用户的粉丝数量
+  /// followerscount - inttype，useaccountfollowerscountcount
   final int? fansCount;
 
-  /// 性别 - int类型，0=未知 1=男 2=女
+  /// gender - inttype，0=unknown 1=male 2=female
   final int? sex;
 
   HankUserModel({
@@ -72,7 +72,7 @@ class HankUserModel {
     this.sex,
   });
 
-  /// 从JSON映射（snake_case → camelCase）
+  /// fromJSONmapping（snake_case → camelCase）
   factory HankUserModel.fromJson(Map<String, dynamic> json) {
     return HankUserModel(
       id: json['id'] as int?,
@@ -95,7 +95,7 @@ class HankUserModel {
     );
   }
 
-  /// 转为JSON（camelCase → snake_case）
+  /// convert toJSON（camelCase → snake_case）
   Map<String, dynamic> toJson() {
     return {
       'id': id,

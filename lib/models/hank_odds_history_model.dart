@@ -1,23 +1,23 @@
-/// HankOddsHistoryData: 指数历史数据模型
-/// 对应接口 GET /api/livespeed/football/match/odd-histories 返回的数据体
-/// 包含四种盘口类型的历史赔率列表（asia/eu/bs/cr）
+/// HankOddsHistoryData: oddscounthistoryDatamodel
+/// maps to API GET /api/livespeed/football/match/odd-histories BackDatabody
+/// containsfour typesHandicaptypehistoryOddslist（asia/eu/bs/cr）
 class HankOddsHistoryData {
-  /// 亚盘让球（胜负）历史赔率列表
+  /// AHhandicapgoal（WL）historyOddslist
   final List<HankOddsHistoryItem>? asia;
 
-  /// 欧赔（胜平负）历史赔率列表
+  /// 1X2（WDL）historyOddslist
   final List<HankOddsHistoryItem>? eu;
 
-  /// 大小球（总进球）历史赔率列表
+  /// O/Ugoal（totalGoals）historyOddslist
   final List<HankOddsHistoryItem>? bs;
 
-  /// 角球历史赔率列表
+  /// CornershistoryOddslist
   final List<HankOddsHistoryItem>? cr;
 
   HankOddsHistoryData({this.asia, this.eu, this.bs, this.cr});
 
-  /// 从JSON解析
-  /// 字段映射：asia=让球, eu=胜平负, bs=总进球, cr=角球
+  /// fromJSONparse
+  /// field mapping：asia=handicapgoal, eu=WDL, bs=totalGoals, cr=Corners
   factory HankOddsHistoryData.fromJson(Map<String, dynamic> json) {
     return HankOddsHistoryData(
       asia: _parseList(json['asia']),
@@ -27,9 +27,9 @@ class HankOddsHistoryData {
     );
   }
 
-  /// 解析历史赔率列表
-  /// [data] 原始JSON数组数据
-  /// 返回 HankOddsHistoryItem 列表，空数据返回null
+  /// parse historyOddslist
+  /// [data] rawJSONcountgroupData
+  /// Back HankOddsHistoryItem list，emptyDataBacknull
   static List<HankOddsHistoryItem>? _parseList(dynamic data) {
     if (data == null || data is! List) return null;
     return data
@@ -38,31 +38,31 @@ class HankOddsHistoryData {
   }
 }
 
-/// HankOddsHistoryItem: 单条指数历史记录
-/// 记录某个时间点的赔率变化快照
+/// HankOddsHistoryItem: singleoddscounthistoryrecordin
+/// records aTimepointOddschange snapshot
 class HankOddsHistoryItem {
-  /// 更新时间戳（秒级）
+  /// updateTimetimestamp（secondslevel）
   final int? updatedAt;
 
-  /// 比赛偏移时间（如: "HT", "55'", "Open"）
+  /// matchoffsetTime（e.g.: "HT", "55'", "Open"）
   final String? matchOffset;
 
-  /// 主胜（或大球）赔率值
+  /// homeW（orover）Oddsvalue
   final String? home;
 
-  /// 平局（或盘口线）赔率值
+  /// Dmatch（orHandicapline）Oddsvalue
   final String? draw;
 
-  /// 客胜（或小球）赔率值
+  /// awayW（orundergoal）Oddsvalue
   final String? away;
 
-  /// 盘口状态（0=正常, 1=暂停等）
+  /// Handicapstatus（0=normal, 1=pausedetc）
   final int? state;
 
-  /// 是否已收盘（0=未收盘, 1=已收盘）
+  /// is closed（0=notclosed, 1=alreadyclosed）
   final int? closed;
 
-  /// 当前比分（如: "1-0"）
+  /// whenbeforescore（e.g.: "1-0"）
   final String? score;
 
   HankOddsHistoryItem({
@@ -76,8 +76,8 @@ class HankOddsHistoryItem {
     this.score,
   });
 
-  /// 从JSON解析
-  /// 字段映射：updated_at→updatedAt, match_offset→matchOffset, 其余直接映射
+  /// fromJSONparse
+  /// field mapping：updated_at→updatedAt, match_offset→matchOffset, itsremaindermapping
   factory HankOddsHistoryItem.fromJson(Map<String, dynamic> json) {
     return HankOddsHistoryItem(
       updatedAt:

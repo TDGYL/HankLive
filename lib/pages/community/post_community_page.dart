@@ -7,13 +7,13 @@ import '../../utils/hank_network_manager.dart';
 import '../../widgets/common/hank_dotted_border_container.dart';
 import 'post_match_search_page.dart';
 
-/// HankPostCommunityPage: 发帖页面
-/// 差异化布局：浅紫色+白色主题，圆角输入区，标签卡片选择
-/// 功能：输入内容、选择战术标签、选择话题分类、关联比赛、发布帖子
-/// 接口：POST /api/livespeed/community/save
-/// 支持从外部传入 matchModel，传入时直接展示关联比赛
+/// HankPostCommunityPage: New Postpage
+/// differentiatedlayoutmatch：lightpurple+whitecolorhometheme，roundedinputarea，tagcardselect
+/// feature：inputcontent、selecttacticaltag、selecttopiccategorytype、linkedmatch、PostPost
+/// API：POST /api/livespeed/community/save
+/// supportfromoutersectionpassed in matchModel，passed inwhendirectlydisplaylinkedmatch
 class HankPostCommunityPage extends StatefulWidget {
-  /// 外部传入的比赛模型 - MatchModel?类型，传入时直接展示关联比赛
+  /// outersectionpassed inmatchmodel - MatchModel?type，passed inwhendirectlydisplaylinkedmatch
   final MatchModel? matchModel;
 
   HankPostCommunityPage({
@@ -26,43 +26,43 @@ class HankPostCommunityPage extends StatefulWidget {
 }
 
 class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
-  /// 内容输入控制器
+  /// contentinputcontroller
   final TextEditingController _contentController = TextEditingController();
 
-  /// 话题分类候选池（多选，可换一批）
+  /// topiccategorytypecandidate pool（multipleselect，canrefresh）
   final List<String> _allTopics = [
-    '赛事讨论',
-    '战术分析',
-    '转会动态',
-    '装备评测',
-    '冠军预测',
-    '青训观察',
-    '球迷故事',
-    '赛事预测',
-    '球员评测',
-    '历史回顾',
-    '规则解读',
-    '联赛综述',
+    'matchdiscussion',
+    'tacticalcategoryanalysis',
+    'transferdynamic',
+    'gear review',
+    'championprediction',
+    'academy watch',
+    'goalfan storymatch',
+    'matchprediction',
+    'Playerreview',
+    'historybackreview',
+    'rulethensolveread',
+    'Leaguesummary',
   ];
 
-  /// 当前展示的话题分类（从候选池中取5个）
+  /// whenbeforedisplaytopiccategorytype（fromcandidate poolinget5each）
   List<String> _topics = [];
 
-  /// 已选话题分类
+  /// selectedtopiccategorytype
   final List<String> _selectedTopics = [];
 
-  /// 选中的比赛 - HankSearchMatch?类型，存储关联比赛信息
+  /// selectedmatch - HankSearchMatch?type，storelinkedmatchinfo
   HankSearchMatch? _selectedMatch;
 
-  /// 是否正在发布
+  /// whetheractiveinPost
   bool _isPublishing = false;
 
   @override
   void initState() {
     super.initState();
-    // 初始化展示前5个话题
+    // initdisplaybefore5eachtopic
     _topics = _allTopics.sublist(0, 5);
-    // 如果外部传入了matchModel，转换并展示
+    // e.g.ifoutersectionpassed inmatchModel，convert anddisplay
     if (widget.matchModel != null) {
       final m = widget.matchModel!;
       _selectedMatch = HankSearchMatch(
@@ -84,29 +84,29 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     super.dispose();
   }
 
-  /// 发布帖子
-  /// 接口：POST /api/livespeed/community/save
+  /// PostPost
+  /// API：POST /api/livespeed/community/save
   Future<void> _handlePublish() async {
     final textContent = _contentController.text.trim();
     if (textContent.length < 10) {
-      _showToast('帖子内容至少10个字符');
+      _showToast('Postcontenttofew10eachcharchar');
       return;
     }
 
-    // 话题分类存入 images 字段
+    // topiccategorytypestorein images field
     List<String> images = [];
     if (_selectedTopics.isNotEmpty) {
       images.add(_selectedTopics.join(','));
     }
 
-    // 构建请求参数
+    // buildrequestparamcount
     final Map<String, dynamic> params = {
       'id': 0,
       'content': textContent,
       'images': images,
     };
 
-    // 若有关联比赛则追加比赛参数
+    // ifhaslinkedmatchthenappendmatchparamcount
     if (_selectedMatch != null && _selectedMatch!.matchId != null) {
       params['match_type'] = 1;
       params['match_id'] = _selectedMatch!.matchId;
@@ -123,14 +123,14 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
       );
 
       if (response.isSuccess && mounted) {
-        _showToast('发布成功');
+        _showToast('Postsuccess');
         Navigator.pop(context, true);
       } else if (mounted) {
-        _showToast(response.message ?? '发布失败');
+        _showToast(response.message ?? 'Postfailed');
       }
     } catch (e) {
       if (mounted) {
-        _showToast('发布失败，请检查网络');
+        _showToast('Postfailed，pleasechecksearchnetwork');
       }
     } finally {
       if (mounted) {
@@ -141,7 +141,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     }
   }
 
-  /// 跳转到比赛搜索页面
+  /// navigate tomatchSearchpage
   Future<void> _navigateToMatchSearch() async {
     final match = await Navigator.push<HankSearchMatch>(
       context,
@@ -154,11 +154,11 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     }
   }
 
-  /// 换一批话题，从候选池中随机取5个未展示的
+  /// refreshtopic，fromcandidate poolinrandomget5eachnotdisplay
   void _shuffleTopics() {
     final available = _allTopics.where((t) => !_topics.contains(t)).toList();
     if (available.isEmpty) {
-      // 全部展示过了，重置为前5个
+      // Alldisplaypass，resetisbefore5each
       setState(() {
         _topics = _allTopics.sublist(0, 5);
       });
@@ -171,7 +171,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     });
   }
 
-  /// 显示Toast
+  /// displayToast
   void _showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -219,7 +219,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 顶部导航栏：取消 + 标题 + 发布按钮
+  /// topnavbar：Cancel + title + Postbutton
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -238,7 +238,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: const Text(
-                  '取消',
+                  'Cancel',
                   style: TextStyle(
                     color: AppColors.slate500,
                     fontSize: 14,
@@ -247,7 +247,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
               ),
               const Expanded(
                 child: Text(
-                  '发帖',
+                  'New Post',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -280,7 +280,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                         )
                       : const Icon(Icons.send, size: 12),
                   label: Text(
-                    _isPublishing ? '发布中' : '发布',
+                    _isPublishing ? 'Postin' : 'Post',
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -295,10 +295,10 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 用户信息栏：头像 + 昵称 + 公开提示
+  /// useaccountinfobar：avatar + nickname + publicopenhint
   Widget _buildUserHeader() {
     final user = HankAuthManager().currentUser;
-    final userName = user?.nickname ?? '球友';
+    final userName = user?.nickname ?? 'goalfan';
     final userAvatar = user?.avatar;
 
     return Row(
@@ -323,7 +323,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                   Icon(Icons.public, size: 10, color: AppColors.slate400),
                   SizedBox(width: 4),
                   Text(
-                    '公开 · HankLive社区',
+                    'publicopen · HankLiveCommunity',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.slate400,
@@ -338,7 +338,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 内容输入区域
+  /// contentinputarea
   Widget _buildContentInput() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -364,7 +364,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
           color: AppColors.slate700,
         ),
         decoration: const InputDecoration(
-          hintText: '分享你的想法、战术分析或赛事讨论...',
+          hintText: 'Shareyou wantmethod、tacticalcategoryanalysisormatchdiscussion...',
           hintStyle: TextStyle(
             color: AppColors.slate400,
             fontSize: 14,
@@ -376,12 +376,12 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 关联比赛区域
+  /// linkedmatcharea
   Widget _buildMatchSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 标题行
+        // titlerow
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Row(
@@ -390,7 +390,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                   size: 16, color: AppColors.violet500),
               const SizedBox(width: 4),
               const Text(
-                '关联比赛',
+                'linkedmatch',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -406,7 +406,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                   border: Border.all(color: AppColors.violet200, width: 0.5),
                 ),
                 child: const Text(
-                  '选填',
+                  'selectfill',
                   style: TextStyle(
                     fontSize: 10,
                     color: AppColors.slate400,
@@ -416,7 +416,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
             ],
           ),
         ),
-        // 内容区
+        // contentarea
         if (_selectedMatch == null)
           _buildMatchSelector()
         else
@@ -425,7 +425,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 未选择比赛时的选择卡片（虚线边框风格）
+  /// notselectmatchwhenselectcard（dashlineborderfieldstyle）
   Widget _buildMatchSelector() {
     return GestureDetector(
       onTap: _navigateToMatchSearch,
@@ -454,7 +454,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    '点击关联比赛',
+                    'taplinkedmatch',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
@@ -463,7 +463,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                   ),
                   SizedBox(height: 2),
                   Text(
-                    '关联后帖子将展示比赛卡片',
+                    'linkedafterPostwilldisplaymatchcard',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.slate400,
@@ -478,7 +478,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 已选择比赛的展示卡片
+  /// selectedchoosematchdisplaycard
   Widget _buildSelectedMatchCard() {
     final match = _selectedMatch!;
     return Container(
@@ -492,7 +492,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
       ),
       child: Column(
         children: [
-          // 联赛名 + 操作按钮
+          // Leaguename + actionbutton
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -531,7 +531,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
             ],
           ),
           const SizedBox(height: 14),
-          // 对阵双方
+          // two sides
           Row(
             children: [
               Expanded(
@@ -600,7 +600,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 话题分类区域（多选，可换一批）
+  /// topiccategorytypearea（multipleselect，canrefresh）
   Widget _buildTopicsSection() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -616,7 +616,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                '添加话题',
+                'addtopic',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -631,7 +631,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
                     Icon(Icons.refresh, size: 12, color: AppColors.violet500),
                     SizedBox(width: 3),
                     Text(
-                      '换一批',
+                      'refresh',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -691,10 +691,10 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 构建头像组件
-  /// [url] - 头像URL
-  /// [name] - 昵称（用于生成默认头像）
-  /// [size] - 头像尺寸
+  /// buildavatarcomponent
+  /// [url] - avatarURL
+  /// [name] - nickname（usegeneratecompletedefaultavatar）
+  /// [size] - avatarsize
   Widget _buildAvatar(String? url, String name, double size) {
     return Container(
       width: size,
@@ -718,7 +718,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 默认头像（首字母）
+  /// defaultavatar（initial）
   Widget _buildDefaultAvatar(String name, double size) {
     final initial = name.isNotEmpty ? name.characters.first : '?';
     return Container(
@@ -742,7 +742,7 @@ class _HankPostCommunityPageState extends State<HankPostCommunityPage> {
     );
   }
 
-  /// 球队Logo
+  /// TeamLogo
   Widget _buildTeamLogo(String? url, double size) {
     return Container(
       width: size,

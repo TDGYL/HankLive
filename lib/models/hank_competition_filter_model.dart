@@ -1,16 +1,16 @@
-/// HankCompetition: 联赛筛选中的联赛实体
-/// 包含联赛ID、logo、名称、比赛场次
+/// HankCompetition: LeaguefilterLeagueentitybody
+/// containsLeagueID、logo、name、matchmatchtime
 class HankCompetition {
-  /// 联赛ID
+  /// LeagueID
   final int id;
 
-  /// 联赛logo URL
+  /// Leaguelogo URL
   final String logo;
 
-  /// 联赛名称
+  /// Leaguename
   final String name;
 
-  /// 比赛场次
+  /// matchmatchtime
   final int matches;
 
   HankCompetition({
@@ -20,7 +20,7 @@ class HankCompetition {
     required this.matches,
   });
 
-  /// 从 JSON Map 构造
+  /// from JSON Map constructor
   factory HankCompetition.fromJson(Map<String, dynamic> json) {
     return HankCompetition(
       id: json['id'] as int? ?? 0,
@@ -31,16 +31,16 @@ class HankCompetition {
   }
 }
 
-/// HankFilterCategory: 联赛筛选分类实体
-/// 包含分类名称、是否主分类、联赛列表
+/// HankFilterCategory: Leaguefilter category entity
+/// containscategorytypename、whetherhomecategorytype、Leaguelist
 class HankFilterCategory {
-  /// 分类名称
+  /// categorytypename
   final String name;
 
-  /// 是否主分类
+  /// whetherhomecategorytype
   final bool main;
 
-  /// 该分类下的联赛列表
+  /// thiscategorytypedownLeaguelist
   final List<HankCompetition> competitions;
 
   HankFilterCategory({
@@ -49,7 +49,7 @@ class HankFilterCategory {
     required this.competitions,
   });
 
-  /// 从 JSON Map 构造
+  /// from JSON Map constructor
   factory HankFilterCategory.fromJson(Map<String, dynamic> json) {
     final competitionList = json['competitions'] as List? ?? [];
     return HankFilterCategory(
@@ -62,19 +62,19 @@ class HankFilterCategory {
   }
 }
 
-/// HankLotteryCategory: 彩票分类实体
-/// 包含分类名称、类型、是否主分类、联赛列表
+/// HankLotteryCategory: lotterycategorytypeentitybody
+/// containscategorytypename、type、whetherhomecategorytype、Leaguelist
 class HankLotteryCategory {
-  /// 分类名称
+  /// categorytypename
   final String name;
 
-  /// 类型
+  /// type
   final int type;
 
-  /// 是否主分类
+  /// whetherhomecategorytype
   final bool main;
 
-  /// 该分类下的联赛列表
+  /// thiscategorytypedownLeaguelist
   final List<HankCompetition> competitions;
 
   HankLotteryCategory({
@@ -84,7 +84,7 @@ class HankLotteryCategory {
     required this.competitions,
   });
 
-  /// 从 JSON Map 构造
+  /// from JSON Map constructor
   factory HankLotteryCategory.fromJson(Map<String, dynamic> json) {
     final competitionList = json['competitions'] as List? ?? [];
     return HankLotteryCategory(
@@ -98,13 +98,13 @@ class HankLotteryCategory {
   }
 }
 
-/// HankCompetitionFilterData: 联赛筛选接口返回数据体
-/// 包含分类列表和彩票分类列表
+/// HankCompetitionFilterData: LeaguefilterAPIBackDatabody
+/// containscategorytypelistandlotterycategorytypelist
 class HankCompetitionFilterData {
-  /// 分类列表（菜单）
+  /// categorytypelist（menu）
   final List<HankFilterCategory> categories;
 
-  /// 彩票分类列表
+  /// lotterycategorytypelist
   final List<HankLotteryCategory> lotteries;
 
   HankCompetitionFilterData({
@@ -112,7 +112,7 @@ class HankCompetitionFilterData {
     required this.lotteries,
   });
 
-  /// 从 JSON Map 构造
+  /// from JSON Map constructor
   factory HankCompetitionFilterData.fromJson(Map<String, dynamic> json) {
     final categoryList = json['categories'] as List? ?? [];
     final lotteryList = json['lotteries'] as List? ?? [];

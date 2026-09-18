@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
-/// CalendarBottomSheet: 日历选择底部弹窗
-/// 根据传入的日期范围约束，限制可选日期
+/// CalendarBottomSheet: calendarselectbottompopup
+/// rootbased onpassed inDaterange constraint，limitoptionalDate
 class CalendarBottomSheet extends StatefulWidget {
-  /// 日历标题
+  /// calendartitle
   final String title;
 
-  /// 初始选中日期
+  /// initial selectedDate
   final DateTime initialDate;
 
-  /// 最小可选日期
+  /// mostunderoptionalDate
   final DateTime firstDate;
 
-  /// 最大可选日期
+  /// mostbigoptionalDate
   final DateTime lastDate;
 
   CalendarBottomSheet({
@@ -24,7 +24,7 @@ class CalendarBottomSheet extends StatefulWidget {
     required this.lastDate,
   }) : super(key: key);
 
-  /// 弹出日历底部弹窗，返回选中的日期（取消则返回null）
+  /// popupcalendarbottompopup，BackselectedDate（CancelthenBacknull）
   static Future<DateTime?> show(
     BuildContext context, {
     required String title,
@@ -50,7 +50,7 @@ class CalendarBottomSheet extends StatefulWidget {
 }
 
 class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
-  /// 当前选中日期
+  /// whenbeforeselectedDate
   late DateTime _selectedDate;
 
   @override
@@ -72,7 +72,7 @@ class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 顶部拖拽条
+          // topdragitem
           Container(
             margin: const EdgeInsets.only(top: 8),
             width: 40,
@@ -82,7 +82,7 @@ class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
               borderRadius: BorderRadius.circular(999),
             ),
           ),
-          // 标题行
+          // titlerow
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
             child: Row(
@@ -113,7 +113,7 @@ class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
               ],
             ),
           ),
-          // 日历组件
+          // calendarcomponent
           Theme(
             data: Theme.of(context).copyWith(
               colorScheme: Theme.of(context).colorScheme.copyWith(
@@ -134,7 +134,7 @@ class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
               },
             ),
           ),
-          // 底部确认按钮
+          // bottomConfirmbutton
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
             child: SizedBox(
@@ -151,7 +151,7 @@ class _CalendarBottomSheetState extends State<CalendarBottomSheet> {
                   elevation: 0,
                 ),
                 child: const Text(
-                  '确认选择',
+                  'Confirmselect',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,

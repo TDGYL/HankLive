@@ -3,16 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../../theme/app_colors.dart';
 
-/// HankLocalWebPage: 本地HTML文件加载页面
-/// 从assets加载HTML文件并展示，用于服务条款、隐私政策等
+/// HankLocalWebPage: localHTMLfileloadpage
+/// fromassetsloadHTMLfileanddisplay，useTerms of Service、Privacy Policyetc
 class HankLocalWebPage extends StatefulWidget {
-  /// HTML文件路径（assets路径，如 assets/htmlSource/user-agreement.html）
+  /// HTMLfilepath（assetspath，e.g. assets/htmlSource/user-agreement.html）
   final String assetPath;
 
-  /// 页面标题
+  /// pagetitle
   final String title;
 
-  /// 构造函数
+  /// constructorfunctioncount
   const HankLocalWebPage({
     required this.assetPath,
     required this.title,
@@ -24,10 +24,10 @@ class HankLocalWebPage extends StatefulWidget {
 }
 
 class _HankLocalWebPageState extends State<HankLocalWebPage> {
-  /// WebView控制器
+  /// WebViewcontroller
   late final WebViewController _controller;
 
-  /// 是否正在加载
+  /// whetherLoading
   bool _isLoading = true;
 
   @override

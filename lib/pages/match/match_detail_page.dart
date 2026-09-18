@@ -18,32 +18,32 @@ import '../../models/hank_h2h_model.dart';
 import '../community/post_community_page.dart';
 import '../login/login_page.dart';
 
-/// MatchDetailTab: 详情页Tab枚举
-/// live: 图文赛况 | lineup: 首发阵容 | stats: 技术统计 | odds: 指数分析 | posts: 帖子
+/// MatchDetailTab: DetailspageTabenum
+/// live: Articlematch events | lineup: starterLineup | stats: technicalstats | odds: Odds | posts: Post
 enum MatchDetailTab {
-  /// 图文赛况
+  /// Articlematch events
   live,
-  /// 首发阵容
+  /// starterLineup
   lineup,
-  /// 技术统计
+  /// technicalstats
   stats,
-  /// 指数分析
+  /// Odds
   odds,
-  /// 历史交锋
+  /// H2H
   h2h,
-  /// 帖子
+  /// Post
   posts,
 }
 
-/// MatchDetailPage: 比赛详情页面
-/// 包含顶部计分板 + 4个Tab（图文赛况/首发阵容/技术统计/指数分析）
-/// 浅紫色+白色主题风格
-/// 数据请求：
-///   1. GET /api/livespeed/football/match/detail → 比赛详情（计分板数据）
-///   2. GET /api/livespeed/football/match/process → 进程数据（incidents + stats）
-/// 首发阵容和指数分析使用本地Mock数据
+/// MatchDetailPage: matchDetailspage
+/// containstopstatscategoryboard + 4eachTab（Articlematch events/starterLineup/technicalstats/Odds）
+/// lightpurple+whitecolorhomethemestyle
+/// Datarequest：
+///   1. GET /api/livespeed/football/match/detail → matchDetails（statscategoryboardData）
+///   2. GET /api/livespeed/football/match/process → progressData（incidents + stats）
+/// starterLineupandOddsuseuselocalMockData
 class MatchDetailPage extends StatefulWidget {
-  /// 比赛数据
+  /// matchData
   final MatchModel match;
 
   MatchDetailPage({
@@ -56,40 +56,40 @@ class MatchDetailPage extends StatefulWidget {
 }
 
 class _MatchDetailPageState extends State<MatchDetailPage> {
-  /// 当前选中的Tab
+  /// whenbeforeselectedTab
   MatchDetailTab _currentTab = MatchDetailTab.live;
 
-  /// 详情接口服务
+  /// DetailsAPI service
   final HankMatchDetailApiService _apiService = HankMatchDetailApiService();
 
-  /// 比赛进程数据（incidents + stats）
+  /// matchprogressData（incidents + stats）
   HankProcessData? _processData;
 
-  /// 是否正在加载进程数据
+  /// whetherLoadingprogressData
   bool _isLoadingProcess = true;
 
-  /// 阵容数据（首发/替补/伤停/教练/阵型）
+  /// LineupData（starter/substitute/injured/Coach/formation）
   HankLineupData? _lineupData;
 
-  /// 是否正在加载阵容数据
+  /// whetherLoadingLineupData
   bool _isLoadingLineup = false;
 
-  /// 指数数据（亚盘/欧赔/大小球/角球）
+  /// oddscountData（AH/1X2/O/Ugoal/Corners）
   HankOddsData? _oddsData;
 
-  /// 是否正在加载指数数据
+  /// whetherLoadingoddscountData
   bool _isLoadingOdds = false;
 
-  /// 历史交锋数据列表
+  /// H2HDatalist
   List<HankH2HMatch> _h2hMatches = [];
 
-  /// 是否正在加载历史交锋数据
+  /// whetherLoadingH2HData
   bool _isLoadingH2H = false;
 
-  /// 是否已请求过历史交锋数据
+  /// whetheralreadyrequestpassH2HData
   bool _hasFetchedH2H = false;
 
-  /// 是否已订阅比赛 - bool类型，true表示已订阅
+  /// whetheralreadysubscribematch - booltype，truemeansalreadysubscribe
   bool _isSubscribed = false;
 
   @override
@@ -99,8 +99,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     _fetchMatchDetail();
   }
 
-  /// 请求比赛详情（获取订阅状态）
-  /// 接口：GET /api/livespeed/football/match/detail
+  /// requestmatchDetails（getsubscribestatus）
+  /// API：GET /api/livespeed/football/match/detail
   Future<void> _fetchMatchDetail() async {
     final matchId = int.tryParse(widget.match.matchId) ?? 0;
     if (matchId == 0) return;
@@ -118,9 +118,9 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 切换比赛订阅状态
-  /// 订阅接口：POST /api/livespeed/football/match/subscribe
-  /// 取消订阅接口：POST /api/livespeed/football/match/unsubscribe
+  /// togglematchsubscribestatus
+  /// subscribeAPI：POST /api/livespeed/football/match/subscribe
+  /// CancelsubscribeAPI：POST /api/livespeed/football/match/unsubscribe
   Future<void> _toggleSubscribe() async {
     if (!HankAuthManager().isLoggedIn) {
       Navigator.push(
@@ -152,14 +152,14 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(willSubscribe ? '已订阅' : '已取消订阅'),
+            content: Text(willSubscribe ? 'alreadysubscribe' : 'alreadyCancelsubscribe'),
             duration: const Duration(seconds: 1),
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response.message ?? '操作失败，请重试'),
+            content: Text(response.message ?? 'Failed，please retry'),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -168,7 +168,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('网络错误，请重试'),
+            content: Text('Network error，please retry'),
             duration: Duration(seconds: 1),
           ),
         );
@@ -176,8 +176,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 请求比赛进程数据（incidents + stats）
-  /// 接口：GET /api/livespeed/football/match/process
+  /// requestmatchprogressData（incidents + stats）
+  /// API：GET /api/livespeed/football/match/process
   Future<void> _fetchProcessData() async {
     final matchId = int.tryParse(widget.match.matchId) ?? 0;
     if (matchId == 0) {
@@ -233,7 +233,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 右下角发帖浮动按钮（圆形浅紫色，宽高40像素）
+  /// rightdowncornerNew Postfloatbutton（rounded lightpurple，dimensions40pixels）
   Widget _buildFloatingAddButton() {
     return GestureDetector(
       onTap: () {
@@ -276,7 +276,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 顶部导航栏（仅返回按钮 + 联赛信息）
+  /// topnavbar（onlyBackbutton + Leagueinfo）
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -290,7 +290,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         bottom: false,
         child: Row(
           children: [
-            // 返回按钮
+            // Backbutton
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
@@ -308,7 +308,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
               ),
             ),
             const Spacer(),
-            // 联赛信息
+            // Leagueinfo
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
@@ -325,7 +325,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
               ),
             ),
             const Spacer(),
-            // 订阅按钮（固定24x24，离屏幕右边15像素）
+            // subscribebutton（fixed24x24，off-screenrightborder15pixels）
             Padding(
               padding: const EdgeInsets.only(right: 15),
               child: GestureDetector(
@@ -352,18 +352,18 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 顶部计分板
+  /// topstatscategoryboard
   Widget _buildScoreboard() {
     return MatchDetailScoreboard(
       match: widget.match,
       roundInfo: widget.match.leagueName,
-      venueInfo: '伦敦体育场 · 主裁判: 迈克尔·奥利弗',
+      venueInfo: 'LondonSportsmatch · homeReferee: Michael·Oliver',
       halfTimeScore: null,
       liveMinute: int.tryParse(widget.match.liveMinute?.replaceAll("'", '') ?? ''),
     );
   }
 
-  /// Tab导航栏
+  /// Tabnavbar
   Widget _buildTabBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -375,18 +375,18 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
       ),
       child: Row(
         children: [
-          _buildTabButton(MatchDetailTab.live, '图文赛况'),
-          _buildTabButton(MatchDetailTab.posts, '帖子'),
-          _buildTabButton(MatchDetailTab.lineup, '首发阵容'),
-          _buildTabButton(MatchDetailTab.stats, '技术统计'),
-          _buildTabButton(MatchDetailTab.odds, '指数分析'),
-          _buildTabButton(MatchDetailTab.h2h, '历史交锋'),
+          _buildTabButton(MatchDetailTab.live, 'Events'),
+          _buildTabButton(MatchDetailTab.posts, 'Post'),
+          _buildTabButton(MatchDetailTab.lineup, 'Lineup'),
+          _buildTabButton(MatchDetailTab.stats, 'Stats'),
+          _buildTabButton(MatchDetailTab.odds, 'Odds'),
+          _buildTabButton(MatchDetailTab.h2h, 'H2H'),
         ],
       ),
     );
   }
 
-  /// Tab按钮
+  /// Tabbutton
   Widget _buildTabButton(MatchDetailTab tab, String label) {
     final isSelected = _currentTab == tab;
     return Expanded(
@@ -416,7 +416,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// Tab内容区域（帖子Tab在build中单独处理）
+  /// Tabcontentarea（PostTabinbuildinsinglehandle）
   Widget _buildTabContent() {
     switch (_currentTab) {
       case MatchDetailTab.live:
@@ -434,7 +434,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 图文赛况Tab（使用接口incidents数据）
+  /// Articlematch eventsTab（useAPIincidentsData）
   Widget _buildLiveTab() {
     if (_isLoadingProcess) {
       return const Padding(
@@ -452,8 +452,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     return MatchDetailLiveTab(incidents: incidents);
   }
 
-  /// 首发阵容Tab（懒加载接口数据）
-  /// 接口：GET /api/livespeed/football/match/lineup
+  /// starterLineupTab（lazy loadAPIData）
+  /// API：GET /api/livespeed/football/match/lineup
   Widget _buildLineupTab() {
     if (_lineupData == null && !_isLoadingLineup) {
       _fetchLineupData();
@@ -468,8 +468,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 请求比赛阵容数据（首发/替补/伤停/教练/阵型）
-  /// 接口：GET /api/livespeed/football/match/lineup
+  /// requestmatchLineupData（starter/substitute/injured/Coach/formation）
+  /// API：GET /api/livespeed/football/match/lineup
   Future<void> _fetchLineupData() async {
     final matchId = int.tryParse(widget.match.matchId) ?? 0;
     if (matchId == 0) return;
@@ -486,7 +486,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 技术统计Tab（使用接口stats数据，无主导率UI）
+  /// technicalstatsTab（useAPIstatsData，nonehomenavrateUI）
   Widget _buildStatsTab() {
     if (_isLoadingProcess) {
       return const Padding(
@@ -504,14 +504,14 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     return MatchDetailStatsTab(stats: stats);
   }
 
-  /// 帖子Tab（社区帖子列表，接口与community_page一致）
+  /// PostTab（CommunityPostlist，APIwithcommunity_pageamatch）
   Widget _buildPostsTab() {
     return HankMatchPostsTab(
       matchId: int.tryParse(widget.match.matchId) ?? 0,
     );
   }
 
-  /// 指数分析Tab（使用接口odds数据）
+  /// OddsTab（useAPIoddsData）
   Widget _buildOddsTab() {
     if (_oddsData == null && !_isLoadingOdds) {
       _fetchOddsData();
@@ -523,8 +523,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 请求比赛指数数据（亚盘/欧赔/大小球/角球）
-  /// 接口：GET /api/livespeed/football/match/odds
+  /// requestmatchoddscountData（AH/1X2/O/Ugoal/Corners）
+  /// API：GET /api/livespeed/football/match/odds
   Future<void> _fetchOddsData() async {
     final matchId = int.tryParse(widget.match.matchId) ?? 0;
     if (matchId == 0) return;
@@ -541,8 +541,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 历史交锋Tab（懒加载接口数据）
-  /// 接口：GET /api/livespeed/football/match/analysis
+  /// H2HTab（lazy loadAPIData）
+  /// API：GET /api/livespeed/football/match/analysis
   Widget _buildH2HTab() {
     if (!_hasFetchedH2H && !_isLoadingH2H) {
       _fetchH2HData();
@@ -559,9 +559,9 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     );
   }
 
-  /// 请求历史交锋数据
-  /// 接口：GET /api/livespeed/football/match/analysis
-  /// 参数：match_id - 比赛ID
+  /// requestH2HData
+  /// API：GET /api/livespeed/football/match/analysis
+  /// paramcount：match_id - matchID
   Future<void> _fetchH2HData() async {
     final matchId = int.tryParse(widget.match.matchId) ?? 0;
     if (matchId == 0) return;

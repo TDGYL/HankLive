@@ -2,23 +2,23 @@ import '../utils/hank_network_manager.dart';
 import '../models/hank_post_api_model.dart';
 import '../models/hank_comment_model.dart';
 
-/// HankCommunityDetailApiService: 社区详情接口服务
-/// 封装帖子详情、评论列表、评论发布、点赞、删除、关注等接口
+/// HankCommunityDetailApiService: CommunityDetailsAPI service
+/// wrapPostDetails、Commentlist、CommentPost、Like、Delete、FollowetcAPI
 class HankCommunityDetailApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankCommunityDetailApiService _instance =
       HankCommunityDetailApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankCommunityDetailApiService() => _instance;
 
-  /// 私有构造
+  /// private constructor
   HankCommunityDetailApiService._internal();
 
-  /// 请求帖子详情
-  /// 接口：GET /api/livespeed/community/detail
-  /// [postId] - 帖子ID
-  /// 返回：HankPostItem 帖子详情
+  /// requestPostDetails
+  /// API：GET /api/livespeed/community/detail
+  /// [postId] - PostID
+  /// Back：HankPostItem PostDetails
   Future<HankPostItem?> fetchPostDetail({required int postId}) async {
     final response = await HankNetworkManager().getRequest(
       '/api/livespeed/community/detail',
@@ -31,10 +31,10 @@ class HankCommunityDetailApiService {
     return null;
   }
 
-  /// 请求评论列表
-  /// 接口：GET /api/livespeed/community/comment/list
-  /// [objectId] - 帖子ID
-  /// 返回：HankCommentData 评论列表数据
+  /// requestCommentlist
+  /// API：GET /api/livespeed/community/comment/list
+  /// [objectId] - PostID
+  /// Back：HankCommentData CommentlistData
   Future<HankCommentData?> fetchComments({required String objectId}) async {
     final response = await HankNetworkManager().getRequest(
       '/api/livespeed/community/comment/list',
@@ -47,12 +47,12 @@ class HankCommunityDetailApiService {
     return null;
   }
 
-  /// 发表评论/回复
-  /// 接口：POST /api/livespeed/community/comment/add
-  /// [objectId] - 帖子ID
-  /// [words] - 评论内容
-  /// [commentId] - 回复时的一级评论ID，直接评论帖子时为null
-  /// 返回：HankCommentItem? 新评论数据
+  /// posttableComment/Reply
+  /// API：POST /api/livespeed/community/comment/add
+  /// [objectId] - PostID
+  /// [words] - Commentcontent
+  /// [commentId] - ReplywhenalevelCommentID，directlyCommentPostwhennull
+  /// Back：HankCommentItem? newCommentData
   Future<HankCommentItem?> addComment({
     required int objectId,
     required String words,
@@ -81,11 +81,11 @@ class HankCommunityDetailApiService {
     return null;
   }
 
-  /// 评论点赞/取消点赞
-  /// 接口：POST /api/livespeed/support
-  /// [objectId] - 评论ID
-  /// [isSupport] - true=点赞 false=取消
-  /// 返回：bool 是否成功
+  /// CommentLike/CancelLike
+  /// API：POST /api/livespeed/support
+  /// [objectId] - CommentID
+  /// [isSupport] - true=Like false=Cancel
+  /// Back：bool whethersuccess
   Future<bool> supportComment({
     required int objectId,
     required bool isSupport,
@@ -102,11 +102,11 @@ class HankCommunityDetailApiService {
     return response.isSuccess;
   }
 
-  /// 帖子点赞/取消点赞
-  /// 接口：POST /api/livespeed/community/like
-  /// [postId] - 帖子ID
-  /// [type] - 1=点赞 2=取消
-  /// 返回：bool 是否成功
+  /// PostLike/CancelLike
+  /// API：POST /api/livespeed/community/like
+  /// [postId] - PostID
+  /// [type] - 1=Like 2=Cancel
+  /// Back：bool whethersuccess
   Future<bool> likePost({required int postId, required int type}) async {
     final response = await HankNetworkManager().postRequest(
       '/api/livespeed/community/like',
@@ -119,10 +119,10 @@ class HankCommunityDetailApiService {
     return response.isSuccess;
   }
 
-  /// 删除帖子
-  /// 接口：POST /api/livespeed/community/delete
-  /// [postId] - 帖子ID
-  /// 返回：bool 是否成功
+  /// DeletePost
+  /// API：POST /api/livespeed/community/delete
+  /// [postId] - PostID
+  /// Back：bool whethersuccess
   Future<bool> deletePost({required int postId}) async {
     final response = await HankNetworkManager().postRequest(
       '/api/livespeed/community/delete',
@@ -132,11 +132,11 @@ class HankCommunityDetailApiService {
     return response.isSuccess;
   }
 
-  /// 关注/取消关注帖子作者
-  /// 接口：POST /api/livespeed/imchat/subscribe
-  /// [targetId] - 作者用户ID
-  /// [type] - 1=关注 2=取消
-  /// 返回：bool 是否成功
+  /// Follow/CancelFollowPostauthor
+  /// API：POST /api/livespeed/imchat/subscribe
+  /// [targetId] - authoruseaccountID
+  /// [type] - 1=Follow 2=Cancel
+  /// Back：bool whethersuccess
   Future<bool> toggleFollowAuthor({
     required int targetId,
     required int type,

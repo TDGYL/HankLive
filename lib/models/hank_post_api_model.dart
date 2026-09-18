@@ -1,15 +1,15 @@
-/// HankPostData: 社区帖子列表接口响应数据体
-/// 包含总数和帖子项列表
+/// HankPostData: CommunityPostlistAPIresponseDatabody
+/// containstotalcountandPostitem list
 class HankPostData {
-  /// 数据总数
+  /// Datatotalcount
   final int? total;
 
-  /// 帖子项列表
+  /// Postitem list
   final List<HankPostItem> results;
 
   HankPostData({this.total, this.results = const []});
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPostData.fromJson(Map<String, dynamic> json) {
     final list = json['results'] as List?;
     List<HankPostItem> items = [];
@@ -23,37 +23,37 @@ class HankPostData {
   }
 }
 
-/// HankPostItem: 单条帖子数据项
-/// 映射接口返回的 snake_case 字段为 camelCase 属性
+/// HankPostItem: singlePostDataitem
+/// mappingAPIBack snake_case field is camelCase property
 class HankPostItem {
-  /// 帖子唯一ID
+  /// PostuniqueID
   final int? id;
 
-  /// 帖子正文内容
+  /// Postcontentcontent
   final String? content;
 
-  /// 话题标签（逗号分隔的字符串，可能含 com/ 前缀）
+  /// topictag（commacategoryseparatedstring，maycontains com/ beforesuffix）
   final String? image;
 
-  /// 图片列表
+  /// image list
   final List<String>? images;
 
-  /// 点赞数
+  /// Likecount
   final int? likeCount;
 
-  /// 评论数
+  /// Commentcount
   final int? commentCount;
 
-  /// 创建时间戳（秒）
+  /// createdTimetimestamp（seconds）
   final int? createTime;
 
-  /// 作者信息
+  /// authorinfo
   final HankPostAuthor? author;
 
-  /// 关联比赛信息
+  /// linkedmatchinfo
   final HankPostMatch? match;
 
-  /// 是否已点赞
+  /// whetheralreadyLike
   final bool? isLike;
 
   HankPostItem({
@@ -69,7 +69,7 @@ class HankPostItem {
     this.isLike,
   });
 
-  /// 从JSON解析（snake_case → camelCase）
+  /// fromJSONparse（snake_case → camelCase）
   factory HankPostItem.fromJson(Map<String, dynamic> json) {
     return HankPostItem(
       id: json['id'] as int?,
@@ -86,21 +86,21 @@ class HankPostItem {
   }
 }
 
-/// HankPostAuthor: 帖子作者信息
+/// HankPostAuthor: Postauthorinfo
 class HankPostAuthor {
-  /// 作者ID
+  /// authorID
   final int? id;
 
-  /// 作者昵称
+  /// author nickname
   final String? name;
 
-  /// 是否已关注
+  /// whetheralreadyFollow
   final bool? isSubscribe;
 
-  /// 作者头像URL
+  /// authoravatarURL
   final String? avatar;
 
-  /// 会员ID
+  /// memberID
   final int? memberId;
 
   HankPostAuthor({
@@ -111,7 +111,7 @@ class HankPostAuthor {
     this.memberId,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPostAuthor.fromJson(Map<String, dynamic> json) {
     return HankPostAuthor(
       id: json['id'] as int?,
@@ -123,54 +123,54 @@ class HankPostAuthor {
   }
 }
 
-/// HankPostMatch: 帖子关联比赛信息
+/// HankPostMatch: Postlinkedmatchinfo
 class HankPostMatch {
-  /// 比赛类型
+  /// matchtype
   final int? matchType;
 
-  /// 比赛ID
+  /// matchID
   final int? matchId;
 
-  /// 赛事ID
+  /// matchID
   final int? competitionId;
 
-  /// 赛季ID
+  /// SeasonID
   final int? seasonId;
 
-  /// 开始时间戳（秒）
+  /// startTimetimestamp（seconds）
   final int? startTime;
 
-  /// 状态ID
+  /// statusID
   final int? statusId;
 
-  /// 状态名称
+  /// statusname
   final String? statusName;
 
-  /// 赛事名称
+  /// matchname
   final String? competitionName;
 
-  /// 主队ID
+  /// HomeID
   final int? homeTeamId;
 
-  /// 主队名称
+  /// Homename
   final String? homeTeamName;
 
-  /// 主队Logo URL
+  /// HomeLogo URL
   final String? homeTeamLogo;
 
-  /// 客队ID
+  /// AwayID
   final int? awayTeamId;
 
-  /// 客队名称
+  /// Awayname
   final String? awayTeamName;
 
-  /// 客队Logo URL
+  /// AwayLogo URL
   final String? awayTeamLogo;
 
-  /// 主队比分
+  /// Homescore
   final int? homeScore;
 
-  /// 客队比分
+  /// Awayscore
   final int? awayScore;
 
   HankPostMatch({
@@ -192,7 +192,7 @@ class HankPostMatch {
     this.awayScore,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPostMatch.fromJson(Map<String, dynamic> json) {
     return HankPostMatch(
       matchType: json['match_type'] as int?,

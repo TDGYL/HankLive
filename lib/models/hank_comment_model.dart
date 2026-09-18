@@ -1,15 +1,15 @@
-/// HankCommentData: 社区评论列表响应数据体
-/// 包含评论总数和评论项列表
+/// HankCommentData: CommunityCommentlistresponseDatabody
+/// containsCommenttotalcountandCommentitem list
 class HankCommentData {
-  /// 评论总数 - int类型，表示评论的总数量
+  /// Commenttotalcount - inttype，meansCommenttotalcountcount
   final int? total;
 
-  /// 评论项数组 - List<HankCommentItem>类型，包含所有评论项
+  /// Commentitemcountgroup - List<HankCommentItem>type，containsthehasCommentitem
   final List<HankCommentItem> results;
 
   HankCommentData({this.total, this.results = const []});
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankCommentData.fromJson(Map<String, dynamic> json) {
     final list = json['results'] as List?;
     return HankCommentData(
@@ -22,61 +22,61 @@ class HankCommentData {
   }
 }
 
-/// HankCommentItem: 单条评论/回复数据项
-/// 评论和回复共用同一结构，通过 parent_id 和 is_reply_child 区分层级
+/// HankCommentItem: singleComment/ReplyDataitem
+/// CommentandReplyshareusesameastructure，passpass parent_id and is_reply_child areacategorylevellevel
 class HankCommentItem {
-  /// 评论ID - int类型，唯一标识该条评论
+  /// CommentID - inttype，uniquebadgethisitemComment
   int? id;
 
-  /// 关联对象ID - int类型，评论所属帖子的ID
+  /// linkedobjectID - inttype，Commentbelongs toPostID
   int? objectId;
 
-  /// 关联对象类型 - int类型，表示评论所属的对象类型（如帖子=3）
+  /// linkedobjecttype - inttype，meansCommentbelongs toobjecttype（e.g.Post=3）
   int? objectType;
 
-  /// 评论用户ID - int类型，发表该评论的用户ID
+  /// CommentuseaccountID - inttype，post thisCommentuseaccountID
   int? userId;
 
-  /// 父评论ID - int类型，一级评论为0，回复则对应一级评论的ID
+  /// parentCommentID - inttype，alevelCommentis0，Replythenmaps toalevelCommentID
   int? parentId;
 
-  /// 回复目标用户ID - int类型，回复某用户时该用户的ID
+  /// ReplyitemmarkuseaccountID - inttype，ReplysomeuseaccountwhenthisuseaccountID
   int? replyToUser;
 
-  /// 回复目标评论ID - int类型，回复某评论时该评论的ID
+  /// ReplyitemmarkCommentID - inttype，ReplysomeCommentwhenthisCommentID
   int? replyToComment;
 
-  /// 评论内容 - String类型，评论文字内容
+  /// Commentcontent - Stringtype，Commenttextcontent
   String? words;
 
-  /// 点赞数 - int类型，该评论获得的点赞数
+  /// Likecount - inttype，thisCommentgetgotLikecount
   int? support;
 
-  /// 是否为子回复 - int类型，0=一级评论 1=二级回复
+  /// whetherischildReply - inttype，0=alevelComment 1=secondlevelReply
   int? isReplyChild;
 
-  /// 评论时间 - int类型，Unix时间戳（秒）
+  /// CommentTime - inttype，UnixTimetimestamp（seconds）
   int? commentTime;
 
-  /// 删除时间 - String?类型，未删除为null
+  /// DeleteTime - String?type，notDeleteisnull
   String? deletedAt;
 
-  /// 用户头像URL - String类型，评论用户头像图片地址
+  /// useaccountavatarURL - Stringtype，Commentuseaccountavatarimageaddress
   String? userPic;
 
-  /// 用户名 - String类型，评论用户昵称
+  /// useaccountname - Stringtype，Commentuseaccountnickname
   String? userName;
 
-  /// 是否已点赞 - bool类型，true表示当前用户已点赞
+  /// whetheralreadyLike - booltype，truemeanswhenbeforeuseaccountalreadyLike
   bool? isSupport;
 
-  /// 剩余子评论数量 - int类型，未展示的回复数量
+  /// remainingchildCommentcountcount - inttype，notdisplayReplycountcount
   int? remainChildCommentCount;
 
-  /// 展示的子评论列表 - List<HankCommentItem>?类型，该评论下的回复列表
+  /// displaychildCommentlist - List<HankCommentItem>?type，thisCommentdownReplylist
   List<HankCommentItem>? showChildComments;
 
-  /// 回复目标用户名 - String类型，回复某用户时该用户的昵称
+  /// Replyitemmarkuseaccountname - Stringtype，Replysomeuseaccountwhenthisuseaccountnickname
   String? replyToUserName;
 
   HankCommentItem({
@@ -100,7 +100,7 @@ class HankCommentItem {
     this.replyToUserName,
   });
 
-  /// 从JSON映射（snake_case → camelCase）
+  /// fromJSONmapping（snake_case → camelCase）
   factory HankCommentItem.fromJson(Map<String, dynamic> json) {
     final childList = json['show_child_comments'] as List?;
     return HankCommentItem(

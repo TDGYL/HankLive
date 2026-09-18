@@ -1,19 +1,19 @@
-/// HankLeagueInfo: 联赛信息模型
-/// 对应接口 GET /api/livespeed/football/competition/list 返回的数据元素
+/// HankLeagueInfo: Leagueinfomodel
+/// maps to API GET /api/livespeed/football/competition/list BackDataelement
 class HankLeagueInfo {
-  /// 联赛ID
+  /// LeagueID
   final int id;
 
-  /// 联赛名称
+  /// Leaguename
   final String name;
 
-  /// 联赛标识符（如 "O"、"D" 等）
+  /// Leagueidentifier（e.g. "O"、"D" etc）
   final String cap;
 
-  /// 是否为主联赛（1=是, 0=否）
+  /// whetherishomeLeague（1=is, 0=no）
   final int main;
 
-  /// 联赛Logo URL
+  /// LeagueLogo URL
   final String logo;
 
   HankLeagueInfo({
@@ -24,7 +24,7 @@ class HankLeagueInfo {
     required this.logo,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankLeagueInfo.fromJson(Map<String, dynamic> json) {
     return HankLeagueInfo(
       id: json['id'] as int? ?? 0,

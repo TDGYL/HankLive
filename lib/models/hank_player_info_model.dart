@@ -1,53 +1,53 @@
-/// HankPlayerTransfer: 球员转会记录模型
-/// 描述球员的一次转会信息（转出球队、转入球队、转会费等）
+/// HankPlayerTransfer: PlayerTransfersmodel
+/// descriptionPlayeratimetransferinfo（transfer outTeam、transfer inTeam、transferfeeetc）
 class HankPlayerTransfer {
 
-  /// 安全转换为String，兼容int/double/null
+  /// Safeconvert toString，compatibleint/double/null
   static String _str(dynamic v, {String def = ''}) {
     if (v == null) return def;
     if (v is String) return v.trim();
     return v.toString();
   }
-  /// 转会记录ID
+  /// TransfersID
   final int id;
 
-  /// 球员ID
+  /// PlayerID
   final int playerId;
 
-  /// 球员名称
+  /// Playername
   final String playerName;
 
-  /// 球员头像URL
+  /// PlayeravatarURL
   final String playerLogo;
 
-  /// 转出球队ID
+  /// transfer outTeamID
   final int fromTeamId;
 
-  /// 转出球队名称
+  /// transfer outTeamname
   final String fromTeamName;
 
-  /// 转出球队Logo URL
+  /// transfer outTeamLogo URL
   final String fromTeamLogo;
 
-  /// 转入球队ID
+  /// transfer inTeamID
   final int toTeamId;
 
-  /// 转入球队名称
+  /// transfer inTeamname
   final String toTeamName;
 
-  /// 转入球队Logo URL
+  /// transfer inTeamLogo URL
   final String toTeamLogo;
 
-  /// 转会类型（1=转会，2=租借结束，3=签约/提拔）
+  /// transfertype（1=transfer，2=loanended，3=signed/promotion）
   final int transferType;
 
-  /// 转会时间（ISO 8601）
+  /// transferTime（ISO 8601）
   final String transferTime;
 
-  /// 转会费
+  /// transferfee
   final int transferFee;
 
-  /// 转会描述
+  /// transferdescription
   final String transferDesc;
 
   HankPlayerTransfer({
@@ -67,7 +67,7 @@ class HankPlayerTransfer {
     required this.transferDesc,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPlayerTransfer.fromJson(Map<String, dynamic> json) {
     return HankPlayerTransfer(
       id: (json['id'] as num?)?.toInt() ?? 0,
@@ -87,7 +87,7 @@ class HankPlayerTransfer {
     );
   }
 
-  /// 获取格式化的转会时间（YYYY-MM-DD）
+  /// getformattransferTime（YYYY-MM-DD）
   String get formattedTime {
     if (transferTime.isEmpty) return '';
     final dt = DateTime.tryParse(transferTime);
@@ -95,41 +95,41 @@ class HankPlayerTransfer {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  /// 获取转会类型文本
+  /// gettransfertypetext
   String get transferTypeText {
     switch (transferType) {
       case 1:
-        return '转会';
+        return 'transfer';
       case 2:
-        return '租借结束';
+        return 'loanended';
       case 3:
-        return '签约';
+        return 'signed';
       default:
-        return '转会';
+        return 'transfer';
     }
   }
 }
 
-/// HankPlayerHonorItem: 球员荣誉条目模型
-/// 描述球员在某赛季获得的某个荣誉
+/// HankPlayerHonorItem: PlayerHonorsitemitemmodel
+/// descriptionPlayerinsomeSeasongetgotsomeeachHonors
 class HankPlayerHonorItem {
 
-  /// 安全转换为String，兼容int/double/null
+  /// Safeconvert toString，compatibleint/double/null
   static String _str(dynamic v, {String def = ''}) {
     if (v == null) return def;
     if (v is String) return v.trim();
     return v.toString();
   }
-  /// 赛季（如 2018-2019）
+  /// Season（e.g. 2018-2019）
   final String season;
 
-  /// 荣誉中文标题
+  /// HonorsChinesetitle
   final String honorTitleZh;
 
-  /// 荣誉Logo URL
+  /// HonorsLogo URL
   final String honorLogo;
 
-  /// 球队名称
+  /// Teamname
   final String teamName;
 
   HankPlayerHonorItem({
@@ -139,7 +139,7 @@ class HankPlayerHonorItem {
     required this.teamName,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPlayerHonorItem.fromJson(Map<String, dynamic> json) {
     return HankPlayerHonorItem(
       season: _str(json['season']),
@@ -150,23 +150,23 @@ class HankPlayerHonorItem {
   }
 }
 
-/// HankPlayerHonorGroup: 球员荣誉分组模型
-/// 按荣誉类型分组，包含多条赛季荣誉
+/// HankPlayerHonorGroup: PlayerHonorsgroupingmodel
+/// byHonorstypegrouping，containsmultipleitemSeasonHonors
 class HankPlayerHonorGroup {
 
-  /// 安全转换为String，兼容int/double/null
+  /// Safeconvert toString，compatibleint/double/null
   static String _str(dynamic v, {String def = ''}) {
     if (v == null) return def;
     if (v is String) return v.trim();
     return v.toString();
   }
-  /// 荣誉ID
+  /// HonorsID
   final int honorId;
 
-  /// 荣誉标题
+  /// Honorstitle
   final String honorTitle;
 
-  /// 荣誉条目列表
+  /// Honorsitemitemlist
   final List<HankPlayerHonorItem> list;
 
   HankPlayerHonorGroup({
@@ -175,7 +175,7 @@ class HankPlayerHonorGroup {
     required this.list,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPlayerHonorGroup.fromJson(Map<String, dynamic> json) {
     final rawList = json['list'] as List? ?? [];
     return HankPlayerHonorGroup(
@@ -188,83 +188,83 @@ class HankPlayerHonorGroup {
   }
 }
 
-/// HankPlayerInfo: 球员详情模型
-/// 包含球员基本信息、转会记录、荣誉列表
+/// HankPlayerInfo: PlayerDetailsmodel
+/// containsPlayerInfo、Transfers、Honorslist
 class HankPlayerInfo {
 
-  /// 安全转换为String，兼容int/double/null
+  /// Safeconvert toString，compatibleint/double/null
   static String _str(dynamic v, {String def = ''}) {
     if (v == null) return def;
     if (v is String) return v.trim();
     return v.toString();
   }
-  /// 球员唯一ID
+  /// PlayeruniqueID
   final int id;
 
-  /// 所属球队ID
+  /// belongs toTeamID
   final int teamId;
 
-  /// 生日（ISO 8601）
+  /// birthday（ISO 8601）
   final String birthday;
 
-  /// 年龄
+  /// age
   final int age;
 
-  /// 体重（kg）
+  /// Weight（kg）
   final int weight;
 
-  /// 身高（cm）
+  /// Height（cm）
   final int height;
 
-  /// 国籍
+  /// Nationality
   final String nationality;
 
-  /// 身价
+  /// Value
   final int marketValue;
 
-  /// 身价货币符号
+  /// Valuecurrency symbol
   final String marketValueCurrency;
 
-  /// 合同到期时间（ISO 8601）
+  /// contracttoexpiryTime（ISO 8601）
   final String contractUntil;
 
-  /// 主要位置（如 F=前锋）
+  /// homeneedPosition（e.g. F=before）
   final String position;
 
-  /// 中文名称
+  /// Chinesename
   final String nameZh;
 
-  /// 英文名称
+  /// Englishname
   final String nameEn;
 
-  /// 中文简称
+  /// Chinese short name
   final String shortNameZh;
 
-  /// 英文简称
+  /// Englishshort name
   final String shortNameEn;
 
-  /// 球员头像URL
+  /// PlayeravatarURL
   final String logo;
 
-  /// 国家ID
+  /// CountryID
   final int countryId;
 
-  /// 惯用脚（1=左脚，2=右脚）
+  /// Preferred Foot（1=leftfoot，2=rightfoot）
   final int preferredFoot;
 
-  /// 位置列表（原始JSON字符串）
+  /// Positionlist（rawJSONstring）
   final String positions;
 
-  /// 球队Logo URL
+  /// TeamLogo URL
   final String teamLogo;
 
-  /// 国家Logo URL
+  /// CountryLogo URL
   final String countryLogo;
 
-  /// 转会记录列表
+  /// Transferslist
   final List<HankPlayerTransfer> transferList;
 
-  /// 荣誉列表
+  /// Honorslist
   final List<HankPlayerHonorGroup> honorList;
 
   HankPlayerInfo({
@@ -293,7 +293,7 @@ class HankPlayerInfo {
     required this.honorList,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPlayerInfo.fromJson(Map<String, dynamic> json) {
     final rawTransfers = json['transfer_list'] as List? ?? [];
     final rawHonors = json['honor_list'] as List? ?? [];
@@ -328,7 +328,7 @@ class HankPlayerInfo {
     );
   }
 
-  /// 获取格式化的生日（YYYY-MM-DD）
+  /// getformatbirthday（YYYY-MM-DD）
   String get formattedBirthday {
     if (birthday.isEmpty) return '';
     final dt = DateTime.tryParse(birthday);
@@ -336,7 +336,7 @@ class HankPlayerInfo {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  /// 获取格式化的合同到期时间（YYYY-MM-DD）
+  /// getformatcontracttoexpiryTime（YYYY-MM-DD）
   String get formattedContractUntil {
     if (contractUntil.isEmpty) return '';
     final dt = DateTime.tryParse(contractUntil);
@@ -344,35 +344,35 @@ class HankPlayerInfo {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  /// 获取惯用脚文本
+  /// getPreferred Foottext
   String get preferredFootText {
     switch (preferredFoot) {
       case 1:
-        return '左脚';
+        return 'leftfoot';
       case 2:
-        return '右脚';
+        return 'rightfoot';
       default:
-        return '未知';
+        return 'unknown';
     }
   }
 
-  /// 获取位置文本
+  /// getPositiontext
   String get positionText {
     switch (position) {
       case 'F':
-        return '前锋';
+        return 'before';
       case 'M':
-        return '中场';
+        return 'halftime';
       case 'D':
-        return '后卫';
+        return 'defender';
       case 'G':
-        return '门将';
+        return 'goalkeeper';
       default:
         return position;
     }
   }
 
-  /// 获取格式化的身价文本
+  /// getformatValuetext
   String get formattedMarketValue {
     if (marketValue == 0) return '-';
     if (marketValue >= 1000000) {

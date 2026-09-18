@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../theme/app_colors.dart';
 
-/// HankCustomerServicePage: 在线客服页面
-/// 功能：展示客服邮箱，支持一键复制
-/// 差异化：浅紫+白色主题，渐变圆形邮箱图标，白色圆角卡片
-/// 参照 ZogoLive customer_service_page.dart 的功能和数据
+/// HankCustomerServicePage: onlineSupportpage
+/// feature：displaySupportemail，one-click supportcopy
+/// differentiated：light purple+whitecolorhometheme，gradient circleemailicon，whitecolorroundedcard
+/// reference ZogoLive customer_service_page.dart featureandData
 class HankCustomerServicePage extends StatefulWidget {
   const HankCustomerServicePage({Key? key}) : super(key: key);
 
@@ -15,16 +15,16 @@ class HankCustomerServicePage extends StatefulWidget {
 }
 
 class _HankCustomerServicePageState extends State<HankCustomerServicePage> {
-  /// 客服邮箱地址
+  /// Supportemailaddress
   static const String _serviceEmail = 'LiveSpeedService@outlook.com';
 
-  /// 复制邮箱到剪贴板
+  /// copyemailtoclipboardboard
   Future<void> _copyEmail() async {
     await Clipboard.setData(const ClipboardData(text: _serviceEmail));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('已复制'),
+            content: Text('Copied'),
             duration: Duration(seconds: 1)),
       );
     }
@@ -38,7 +38,7 @@ class _HankCustomerServicePageState extends State<HankCustomerServicePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text('在线客服',
+        title: const Text('onlineSupport',
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700,
                 color: AppColors.slate800)),
@@ -51,7 +51,7 @@ class _HankCustomerServicePageState extends State<HankCustomerServicePage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 顶部说明卡片
+          // topdescriptioncard
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -76,19 +76,19 @@ class _HankCustomerServicePageState extends State<HankCustomerServicePage> {
                       color: Colors.white, size: 24),
                 ),
                 const SizedBox(height: 12),
-                const Text('7x24小时在线服务',
+                const Text('7x24underwhenonlineservice',
                     style: TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w700,
                         color: AppColors.violet700)),
                 const SizedBox(height: 4),
-                const Text('有任何问题请通过邮箱联系我们',
+                const Text('hasany questionthemepleasepasspassemailContact Us',
                     style: TextStyle(
                         fontSize: 12, color: AppColors.slate500)),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          // 邮箱卡片
+          // emailcard
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -140,7 +140,7 @@ class _HankCustomerServicePageState extends State<HankCustomerServicePage> {
                         children: [
                           Icon(Icons.copy, color: Colors.white, size: 12),
                           SizedBox(width: 4),
-                          Text('复制',
+                          Text('copy',
                               style: TextStyle(
                                   color: Colors.white, fontSize: 11)),
                         ],

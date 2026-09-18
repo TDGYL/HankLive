@@ -1,22 +1,22 @@
-/// TeamModel: 球队信息模型
-/// 存储球队的ID、名称、简称、队色、Logo等基础信息
+/// TeamModel: Teaminfomodel
+/// storeTeamID、name、short name、team color、Logoetcbaseinfo
 class TeamModel {
-  /// 球队唯一ID
+  /// TeamuniqueID
   final String teamId;
 
-  /// 球队中文全称
+  /// TeamChineseallname
   final String teamName;
 
-  /// 球队英文缩写（如 ARS / CHE）
+  /// TeamEnglish abbreviation（e.g. ARS / CHE）
   final String teamShort;
 
-  /// 队徽图片URL（可空，使用首字母占位）
+  /// team logo imageURL（canempty，use initial as placeholder）
   final String? logoUrl;
 
-  /// 队主色（用于首字母占位背景）
+  /// teamhomecolor（usefor initial placeholder background）
   final int primaryColor;
 
-  /// 队文字颜色（用于首字母占位文字）
+  /// team text color（usefor initial placeholder text）
   final int textColor;
 
   TeamModel({
@@ -28,7 +28,7 @@ class TeamModel {
     this.textColor = 0xFF7C3AED,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory TeamModel.fromJson(Map<String, dynamic> json) {
     return TeamModel(
       teamId: json['teamId'] ?? '',
@@ -40,7 +40,7 @@ class TeamModel {
     );
   }
 
-  /// 转换为JSON
+  /// convert toJSON
   Map<String, dynamic> toJson() {
     return {
       'teamId': teamId,

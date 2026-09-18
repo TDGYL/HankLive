@@ -4,45 +4,48 @@ import '../models/post_model.dart';
 import '../models/match_model.dart';
 import '../models/team_model.dart';
 
-/// HankCommunityTab: 社区列表Tab类型枚举
-/// 对应接口 type 参数：推荐=1，最近=2，关注=3
+/// HankCommunityTab: CommunitylistTabtypeenum
+/// maps to API type paramcount：Featured=1，recent=2，Follow=3
 enum HankCommunityTab {
-  /// 推荐 type=1
+  /// Featured type=1
   recommend(1),
-  /// 最近 type=2
+
+  /// recent type=2
   recent(2),
-  /// 关注 type=3
+
+  /// Follow type=3
   follow(3);
 
-  /// 接口对应的 type 值
+  /// APImaps to type value
   final int value;
   const HankCommunityTab(this.value);
 }
 
-/// HankCommunityApiService: 社区列表接口服务
-/// 封装 /api/livespeed/community/list GET 请求
-/// 返回数据通过 HankPostItem → PostModel 转换供 UI 使用
+/// HankCommunityApiService: CommunitylistAPI service
+/// wrap /api/livespeed/community/list GET request
+/// BackDatapasspass HankPostItem → PostModel convertfor UI useuse
 class HankCommunityApiService {
-  /// 单例实例
-  static final HankCommunityApiService _instance = HankCommunityApiService._internal();
+  /// singleton instance
+  static final HankCommunityApiService _instance =
+      HankCommunityApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankCommunityApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankCommunityApiService._internal();
 
-  /// 接口路径
+  /// APIpath
   static const String _apiPath = '/api/livespeed/community/list';
 
-  /// 请求社区帖子列表
-  /// [tab] - 菜单Tab类型（推荐/最近/关注）
-  /// [page] - 分页页码（从1开始）
-  /// [size] - 每页条数
-  /// [matchType] - 比赛类型，默认1
-  /// 返回：HankPostData 原始响应数据
+  /// requestCommunityPostlist
+  /// [tab] - menuTabtype（Featured/recent/Follow）
+  /// [page] - categorypagepagecode（from1start）
+  /// [size] - eachpageitemcount
+  /// [matchType] - matchtype，default1
+  /// Back：HankPostData rawresponseData
   Future<HankPostData?> fetchPostList({
     required HankCommunityTab tab,
     int page = 1,
@@ -68,9 +71,9 @@ class HankCommunityApiService {
     return null;
   }
 
-  /// 请求社区帖子列表并转换为 PostModel 列表
-  /// 参数同 [fetchPostList]
-  /// 返回：List<PostModel>，供 UI 组件直接使用
+  /// requestCommunityPostlistandconvert to PostModel list
+  /// paramcountsame [fetchPostList]
+  /// Back：List<PostModel>，for UI componentdirectlyuseuse
   Future<List<PostModel>> fetchPostModels({
     required HankCommunityTab tab,
     int page = 1,
@@ -91,14 +94,14 @@ class HankCommunityApiService {
     return data.results.map((item) => _convertToPostModel(item)).toList();
   }
 
-  /// 将接口模型 HankPostItem 转换为 UI 模型 PostModel
-  /// [item] - 接口返回的单条帖子数据
-  /// 返回：PostModel
+  /// convert APImodel HankPostItem convert to UI model PostModel
+  /// [item] - APIBacksinglePostData
+  /// Back：PostModel
   PostModel _convertToPostModel(HankPostItem item) {
-    // 解析话题标签：image 字段可能含 "com/" 前缀，逗号分隔
+    // parsetopictag：image fieldmaycontains "com/" beforesuffix，commacategoryseparated
     final hashtags = _parseHashtags(item.image);
 
-    // 构建内嵌比赛模型
+    // buildembeddedmatchmodel
     MatchModel? embeddedMatch;
     if (item.match != null) {
       final m = item.match!;
@@ -137,9 +140,9 @@ class HankCommunityApiService {
     return PostModel(
       postId: item.id?.toString() ?? '',
       userId: item.author?.id?.toString() ?? '',
-      userName: item.author?.name ?? '匿名球友',
+      userName: item.author?.name ?? 'anonymousnamegoalfan',
       userAvatarUrl: item.author?.avatar,
-      userBadge: item.author?.isSubscribe == true ? '已关注' : null,
+      userBadge: item.author?.isSubscribe == true ? 'Followed' : null,
       userBadgeBgColor: 0xFFEDE9FE,
       userBadgeTextColor: 0xFF7C3AED,
       publishTime: _formatPublishTime(item.createTime),
@@ -154,14 +157,14 @@ class HankCommunityApiService {
     );
   }
 
-  /// 解析话题标签
-  /// [rawImage] - 接口返回的 image 字段，可能含 "com/" 前缀，逗号分隔
-  /// 返回：List<String> 话题标签数组
+  /// parsetopictag
+  /// [rawImage] - APIBack image field，maycontains "com/" beforesuffix，commacategoryseparated
+  /// Back：List<String> topictagcountgroup
   List<String> _parseHashtags(String? rawImage) {
     if (rawImage == null || rawImage.isEmpty) return [];
 
     String raw = rawImage;
-    // 去除 "com/" 前缀
+    // goremove "com/" beforesuffix
     if (raw.contains('com/')) {
       raw = raw.substring(raw.indexOf('com/') + 4);
     }
@@ -173,9 +176,9 @@ class HankCommunityApiService {
         .toList();
   }
 
-  /// 格式化发布时间为相对时间描述
-  /// [timestamp] - 时间戳（秒）
-  /// 返回：如 "2小时前"、"3天前"
+  /// formatPostTimeisrelativeTimedescription
+  /// [timestamp] - Timetimestamp（seconds）
+  /// Back：e.g. "2underwhenbefore"、"3daybefore"
   String _formatPublishTime(int? timestamp) {
     if (timestamp == null || timestamp == 0) return '';
     final now = DateTime.now();
@@ -183,19 +186,19 @@ class HankCommunityApiService {
     final diff = now.difference(publishDate);
 
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}分钟前';
+      return '${diff.inMinutes}minbefore';
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}小时前';
+      return '${diff.inHours}underwhenbefore';
     } else if (diff.inDays < 30) {
-      return '${diff.inDays}天前';
+      return '${diff.inDays}daybefore';
     } else {
       return '${publishDate.month}-${publishDate.day}';
     }
   }
 
-  /// 格式化比赛时间（时间戳秒 → HH:mm）
-  /// [timestamp] - 时间戳（秒）
-  /// 返回：如 "20:00"
+  /// formatmatchTime（Timetimestampseconds → HH:mm）
+  /// [timestamp] - Timetimestamp（seconds）
+  /// Back：e.g. "20:00"
   String _formatMatchTime(int? timestamp) {
     if (timestamp == null || timestamp == 0) return '';
     final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
@@ -204,9 +207,9 @@ class HankCommunityApiService {
     return '$hour:$minute';
   }
 
-  /// 根据状态ID判断比赛状态
-  /// [statusId] - 状态ID
-  /// 返回：MatchStatus
+  /// rootbased onstatusIDcheckmatchstatus
+  /// [statusId] - statusID
+  /// Back：MatchStatus
   MatchStatus _matchStatusFromId(int? statusId) {
     if (statusId == 2 || statusId == 3 || statusId == 4) {
       return MatchStatus.live;
@@ -216,9 +219,9 @@ class HankCommunityApiService {
     return MatchStatus.upcoming;
   }
 
-  /// 从球队名称提取缩写
-  /// [name] - 球队名称
-  /// 返回：3字符缩写
+  /// fromTeamnameextractgetabbrevwrite
+  /// [name] - Teamname
+  /// Back：3charcharabbrevwrite
   String _extractShort(String? name) {
     if (name == null || name.isEmpty) return '';
     if (name.length <= 3) return name.toUpperCase();

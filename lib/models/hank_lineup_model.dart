@@ -1,10 +1,10 @@
-/// HankLineupIncident: 球员事件（进球/黄牌/红牌等）
-/// 对应API字段：incidents 数组中的元素
+/// HankLineupIncident: Playerevent（Goals/Yellow Cards/Red Cardsetc）
+/// maps toAPIfield：incidents countgroupinelement
 class HankLineupIncident {
-  /// 事件类型（0: 未知, 1: 进球, 2: 黄牌, 3: 红牌, 4: 换人 等）
+  /// eventtype（0: unknown, 1: Goals, 2: Yellow Cards, 3: Red Cards, 4: substitution etc）
   final int type;
 
-  /// 事件时间（如: "45'"）
+  /// eventTime（e.g.: "45'"）
   final String time;
 
   HankLineupIncident({
@@ -12,7 +12,7 @@ class HankLineupIncident {
     required this.time,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankLineupIncident.fromJson(Map<String, dynamic> json) {
     return HankLineupIncident(
       type: json['type'] as int? ?? 0,
@@ -21,34 +21,34 @@ class HankLineupIncident {
   }
 }
 
-/// HankLineupPlayer: 阵容球员模型
-/// 对应API字段：first/sub → home/away 数组中的元素
+/// HankLineupPlayer: LineupPlayermodel
+/// maps toAPIfield：first/sub → home/away countgroupinelement
 class HankLineupPlayer {
-  /// 球员ID
+  /// PlayerID
   final int playerId;
 
-  /// 球员头像URL
+  /// PlayeravatarURL
   final String playerLogo;
 
-  /// 球员姓名
+  /// Playername
   final String playerName;
 
-  /// 球员位置（如: "GK", "DF", "MF", "FW"）
+  /// PlayerPosition（e.g.: "GK", "DF", "MF", "FW"）
   final String position;
 
-  /// X坐标（0-100，百分比，用于球场定位）
+  /// Xcoordinates（0-100，percentcategorymatch，useStadiumposition）
   final double x;
 
-  /// Y坐标（0-100，百分比，用于球场定位）
+  /// Ycoordinates（0-100，percentcategorymatch，useStadiumposition）
   final double y;
 
-  /// 评分
+  /// rating
   final String rating;
 
-  /// 球衣号码
+  /// jerseyNumber
   final int shirtNumber;
 
-  /// 事件列表（进球、黄牌等）
+  /// eventlist（Goals、Yellow Cardsetc）
   final List<HankLineupIncident> incidents;
 
   HankLineupPlayer({
@@ -63,7 +63,7 @@ class HankLineupPlayer {
     required this.incidents,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankLineupPlayer.fromJson(Map<String, dynamic> json) {
     return HankLineupPlayer(
       playerId: json['player_id'] as int? ?? 0,
@@ -82,25 +82,25 @@ class HankLineupPlayer {
   }
 }
 
-/// HankLineupInjuryPlayer: 伤停球员模型
-/// 对应API字段：injury → home/away 数组中的元素
+/// HankLineupInjuryPlayer: injuredPlayermodel
+/// maps toAPIfield：injury → home/away countgroupinelement
 class HankLineupInjuryPlayer {
-  /// 球员ID
+  /// PlayerID
   final int playerId;
 
-  /// 球员头像URL
+  /// PlayeravatarURL
   final String playerLogo;
 
-  /// 球员姓名
+  /// Playername
   final String playerName;
 
-  /// 伤停类型
+  /// injuredtype
   final String type;
 
-  /// 伤停原因
+  /// injuredreason
   final String reason;
 
-  /// 球员位置
+  /// PlayerPosition
   final String position;
 
   HankLineupInjuryPlayer({
@@ -112,7 +112,7 @@ class HankLineupInjuryPlayer {
     required this.position,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankLineupInjuryPlayer.fromJson(Map<String, dynamic> json) {
     return HankLineupInjuryPlayer(
       playerId: json['player_id'] as int? ?? 0,
@@ -125,16 +125,16 @@ class HankLineupInjuryPlayer {
   }
 }
 
-/// HankLineupCoach: 教练模型
-/// 对应API字段：home_coach / away_coach
+/// HankLineupCoach: Coachmodel
+/// maps toAPIfield：home_coach / away_coach
 class HankLineupCoach {
-  /// 教练ID
+  /// CoachID
   final int id;
 
-  /// 教练头像URL
+  /// CoachavatarURL
   final String logo;
 
-  /// 教练姓名
+  /// Coachname
   final String name;
 
   HankLineupCoach({
@@ -143,7 +143,7 @@ class HankLineupCoach {
     required this.name,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankLineupCoach.fromJson(Map<String, dynamic> json) {
     return HankLineupCoach(
       id: json['id'] as int? ?? 0,
@@ -153,15 +153,15 @@ class HankLineupCoach {
   }
 }
 
-/// HankLineupTeam: 单支球队的阵容数据（首发/替补/伤停）
+/// HankLineupTeam: singlesingleTeamLineupData（starter/substitute/injured）
 class HankLineupTeam {
-  /// 首发球员列表
+  /// starterPlayerlist
   final List<HankLineupPlayer> first;
 
-  /// 替补球员列表
+  /// substitutePlayerlist
   final List<HankLineupPlayer> sub;
 
-  /// 伤停球员列表
+  /// injuredPlayerlist
   final List<HankLineupInjuryPlayer> injury;
 
   HankLineupTeam({
@@ -171,44 +171,44 @@ class HankLineupTeam {
   });
 }
 
-/// HankLineupData: 阵容完整数据模型
-/// 对应API返回的data对象
-/// 包含：first（首发）、sub（替补）、injury（伤停）、教练、阵型、身价
+/// HankLineupData: LineupfullDatamodel
+/// maps toAPIBackdataobject
+/// contains：first（starter）、sub（substitute）、injury（injured）、Coach、formation、Value
 class HankLineupData {
-  /// 主队首发
+  /// Homestarter
   final List<HankLineupPlayer> homeFirst;
 
-  /// 客队首发
+  /// Awaystarter
   final List<HankLineupPlayer> awayFirst;
 
-  /// 主队替补
+  /// Homesubstitute
   final List<HankLineupPlayer> homeSub;
 
-  /// 客队替补
+  /// Awaysubstitute
   final List<HankLineupPlayer> awaySub;
 
-  /// 主队伤停
+  /// Homeinjured
   final List<HankLineupInjuryPlayer> homeInjury;
 
-  /// 客队伤停
+  /// Awayinjured
   final List<HankLineupInjuryPlayer> awayInjury;
 
-  /// 主队教练
+  /// HomeCoach
   final HankLineupCoach homeCoach;
 
-  /// 客队教练
+  /// AwayCoach
   final HankLineupCoach awayCoach;
 
-  /// 主队阵型（如: "4-3-3"）
+  /// Homeformation（e.g.: "4-3-3"）
   final String homeFormation;
 
-  /// 客队阵型
+  /// Awayformation
   final String awayFormation;
 
-  /// 主队身价
+  /// HomeValue
   final int homeMarketValue;
 
-  /// 客队身价
+  /// AwayValue
   final int awayMarketValue;
 
   HankLineupData({
@@ -226,20 +226,20 @@ class HankLineupData {
     required this.awayMarketValue,
   });
 
-  /// 从JSON映射
-  /// data结构: { first: { home: [...], away: [...] }, sub: { home: [...], away: [...] }, injury: {...}, home_coach: {...}, away_coach: {...}, home_formation: "4-3-3", away_formation: "4-3-3", home_market_value: 0, away_market_value: 0 }
+  /// fromJSONmapping
+  /// datastructure: { first: { home: [...], away: [...] }, sub: { home: [...], away: [...] }, injury: {...}, home_coach: {...}, away_coach: {...}, home_formation: "4-3-3", away_formation: "4-3-3", home_market_value: 0, away_market_value: 0 }
   factory HankLineupData.fromJson(Map<String, dynamic> json) {
-    // 首发阵容
+    // starterLineup
     final firstMap = json['first'] as Map<String, dynamic>? ?? {};
     final homeFirstRaw = firstMap['home'] as List<dynamic>? ?? [];
     final awayFirstRaw = firstMap['away'] as List<dynamic>? ?? [];
 
-    // 替补席
+    // bench
     final subMap = json['sub'] as Map<String, dynamic>? ?? {};
     final homeSubRaw = subMap['home'] as List<dynamic>? ?? [];
     final awaySubRaw = subMap['away'] as List<dynamic>? ?? [];
 
-    // 伤停
+    // injured
     final injuryMap = json['injury'] as Map<String, dynamic>? ?? {};
     final homeInjuryRaw = injuryMap['home'] as List<dynamic>? ?? [];
     final awayInjuryRaw = injuryMap['away'] as List<dynamic>? ?? [];

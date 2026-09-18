@@ -1,54 +1,54 @@
 import 'match_model.dart';
 
-/// PostModel: 社区帖子模型
-/// 包含发布用户信息、话题标签、正文、内嵌比赛卡片、交互数据
+/// PostModel: CommunityPostmodel
+/// containsPostuseaccountinfo、topictag、content、embeddedmatchcard、interactionData
 class PostModel {
-  /// 帖子唯一ID
+  /// PostuniqueID
   final String postId;
 
-  /// 发布用户ID
+  /// PostuseaccountID
   final String userId;
 
-  /// 发布用户昵称
+  /// Postuseaccountnickname
   final String userName;
 
-  /// 用户头像URL
+  /// useaccountavatarURL
   final String? userAvatarUrl;
 
-  /// 用户等级标签（如 LV.8 / VIP）
+  /// useaccountetcleveltag（e.g. LV.8 / VIP）
   final String? userBadge;
 
-  /// 用户等级标签背景颜色
+  /// useaccountetcleveltagbackgroundcolor
   final int userBadgeBgColor;
 
-  /// 用户等级标签文字颜色
+  /// useaccountetcleveltagtextcolor
   final int userBadgeTextColor;
 
-  /// 发布时间描述（如 15分钟前）
+  /// PostTimedescription（e.g. 15minbefore）
   final String publishTime;
 
-  /// 来源位置（如 来自马德里）
+  /// sourcePosition（e.g. from Madrid）
   final String? location;
 
-  /// 话题标签数组（如 #欧冠半决赛）
+  /// topictagcountgroup（e.g. #UCL semiFinal）
   final List<String> hashtags;
 
-  /// 正文内容（富文本以纯文本方式存储，简化处理）
+  /// contentcontent（richtextas plaintextsidestylestore，simplified processing）
   final String content;
 
-  /// 内嵌关联比赛（核心创新机制），可为空
+  /// embedded matchlinkedmatch（core innovation mechanism），canisempty
   final MatchModel? embeddedMatch;
 
-  /// 是否已点赞
+  /// whetheralreadyLike
   bool isLiked;
 
-  /// 点赞数
+  /// Likecount
   int likeCount;
 
-  /// 评论数
+  /// Commentcount
   final int commentCount;
 
-  /// 分享数
+  /// Sharecount
   final int shareCount;
 
   PostModel({
@@ -70,7 +70,7 @@ class PostModel {
     this.shareCount = 0,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
       postId: json['postId'] ?? '',

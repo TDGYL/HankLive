@@ -3,34 +3,34 @@ import '../../theme/app_colors.dart';
 import '../../utils/hank_network_manager.dart';
 import '../../models/hank_player_info_model.dart';
 
-/// HankPlayerDetailTab: 球员详情Tab枚举
-/// info: 基本信息 | transfer: 转会记录 | honor: 荣誉
+/// HankPlayerDetailTab: PlayerDetailsTabenum
+/// info: Info | transfer: Transfers | honor: Honors
 enum HankPlayerDetailTab {
-  /// 基本信息
+  /// Info
   info,
 
-  /// 转会记录
+  /// Transfers
   transfer,
 
-  /// 荣誉
+  /// Honors
   honor,
 }
 
-/// HankPlayerDetailPage: 球员详情页面
-/// 展示球员基本信息、转会记录、荣誉列表
-/// 接口：GET /api/livespeed/football/info（参数：id）
-/// 主题：浅紫色 + 白色
+/// HankPlayerDetailPage: PlayerDetailspage
+/// displayPlayerInfo、Transfers、Honorslist
+/// API：GET /api/livespeed/football/info（paramcount：id）
+/// hometheme：lightpurple + whitecolor
 class HankPlayerDetailPage extends StatefulWidget {
-  /// 球员ID
+  /// PlayerID
   final int playerId;
 
-  /// 球员名称（用于导航栏标题）
+  /// Playername（usenavbartitle）
   final String playerName;
 
-  /// 球员头像URL（用于导航栏快速展示）
+  /// PlayeravatarURL（usenavbarquickdisplay）
   final String playerLogo;
 
-  /// 构造函数
+  /// constructorfunctioncount
   const HankPlayerDetailPage({
     Key? key,
     required this.playerId,
@@ -43,13 +43,13 @@ class HankPlayerDetailPage extends StatefulWidget {
 }
 
 class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
-  /// 球员详情数据（来自接口）
+  /// PlayerDetailsData（fromAPI）
   HankPlayerInfo? _playerInfo;
 
-  /// 是否正在加载
+  /// whetherLoading
   bool _isLoading = true;
 
-  /// 当前Tab
+  /// whenbeforeTab
   HankPlayerDetailTab _currentTab = HankPlayerDetailTab.info;
 
   @override
@@ -58,9 +58,9 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     _fetchPlayerInfo();
   }
 
-  /// 请求球员详情
-  /// 接口：GET /api/livespeed/football/info
-  /// 参数：id（球员ID）
+  /// requestPlayerDetails
+  /// API：GET /api/livespeed/football/info
+  /// paramcount：id（PlayerID）
   Future<void> _fetchPlayerInfo() async {
     final response = await HankNetworkManager().getRequest(
       '/api/livespeed/football/info',
@@ -80,7 +80,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
         });
       }
     } catch (e) {
-      debugPrint('球员详情解析异常: $e');
+      debugPrint('PlayerDetailsparseerror: $e');
       setState(() {
         _isLoading = false;
       });
@@ -108,7 +108,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
               Expanded(child: _buildContent()),
             ] else
               Expanded(
-                child: _buildEmptyView('暂无球员数据'),
+                child: _buildEmptyView('NoPlayerData'),
               ),
           ],
         ),
@@ -116,7 +116,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建导航栏
+  /// buildnavbar
   Widget _buildNavBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -157,7 +157,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建球员信息头部（头像 + 名称 + 基本属性）
+  /// buildPlayerinfoheader（avatar + name + basicproperty）
   Widget _buildHeader() {
     final p = _playerInfo!;
     return Container(
@@ -173,7 +173,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
         children: [
           Row(
             children: [
-              // 球员头像
+              // Playeravatar
               Container(
                 width: 64,
                 height: 64,
@@ -191,7 +191,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
                 ),
               ),
               const SizedBox(width: 16),
-              // 名称 + 国籍
+              // name + Nationality
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,13 +247,13 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
             ],
           ),
           const SizedBox(height: 12),
-          // 基本属性网格
+          // basicpropertygrid
           Row(
             children: [
-              _buildAttrCell('年龄', '${p.age}岁'),
-              _buildAttrCell('身高', '${p.height}cm'),
-              _buildAttrCell('体重', '${p.weight}kg'),
-              _buildAttrCell('身价', p.formattedMarketValue),
+              _buildAttrCell('age', '${p.age}years old'),
+              _buildAttrCell('Height', '${p.height}cm'),
+              _buildAttrCell('Weight', '${p.weight}kg'),
+              _buildAttrCell('Value', p.formattedMarketValue),
             ],
           ),
         ],
@@ -261,9 +261,9 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建头部属性单元格
-  /// [label] - 属性标签
-  /// [value] - 属性值
+  /// buildheaderpropertycell
+  /// [label] - propertytag
+  /// [value] - propertyvalue
   Widget _buildAttrCell(String label, String value) {
     return Expanded(
       child: Column(
@@ -289,10 +289,10 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建Tab导航栏
+  /// buildTabnavbar
   Widget _buildTabBar() {
     final tabs = HankPlayerDetailTab.values;
-    final labels = ['基本信息', '转会记录', '荣誉'];
+    final labels = ['Info', 'Transfers', 'Honors'];
 
     return Container(
       decoration: const BoxDecoration(
@@ -337,7 +337,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建内容区域
+  /// buildcontentarea
   Widget _buildContent() {
     switch (_currentTab) {
       case HankPlayerDetailTab.info:
@@ -349,9 +349,9 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     }
   }
 
-  // ==================== Tab 1: 基本信息 ====================
+  // ==================== Tab 1: Info ====================
 
-  /// 构建基本信息Tab
+  /// buildInfoTab
   Widget _buildInfoTab() {
     final p = _playerInfo!;
     return ListView(
@@ -365,19 +365,19 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
           ),
           child: Column(
             children: [
-              _buildInfoRow('中文名', p.nameZh),
-              _buildInfoRow('英文名', p.nameEn),
-              _buildInfoRow('中文简称', p.shortNameZh),
-              _buildInfoRow('英文简称', p.shortNameEn),
-              _buildInfoRow('国籍', p.nationality),
-              _buildInfoRow('生日', p.formattedBirthday),
-              _buildInfoRow('年龄', '${p.age}岁'),
-              _buildInfoRow('身高', '${p.height}cm'),
-              _buildInfoRow('体重', '${p.weight}kg'),
-              _buildInfoRow('位置', p.positionText),
-              _buildInfoRow('惯用脚', p.preferredFootText),
-              _buildInfoRow('身价', p.formattedMarketValue),
-              _buildInfoRow('合同到期', p.formattedContractUntil, isLast: true),
+              _buildInfoRow('Chinesename', p.nameZh),
+              _buildInfoRow('English name', p.nameEn),
+              _buildInfoRow('Chinese short name', p.shortNameZh),
+              _buildInfoRow('Englishshort name', p.shortNameEn),
+              _buildInfoRow('Nationality', p.nationality),
+              _buildInfoRow('birthday', p.formattedBirthday),
+              _buildInfoRow('age', '${p.age}years old'),
+              _buildInfoRow('Height', '${p.height}cm'),
+              _buildInfoRow('Weight', '${p.weight}kg'),
+              _buildInfoRow('Position', p.positionText),
+              _buildInfoRow('Preferred Foot', p.preferredFootText),
+              _buildInfoRow('Value', p.formattedMarketValue),
+              _buildInfoRow('contracttoexpiry', p.formattedContractUntil, isLast: true),
             ],
           ),
         ),
@@ -385,10 +385,10 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建信息行
-  /// [label] - 标签
-  /// [value] - 值
-  /// [isLast] - 是否最后一行（不显示分割线）
+  /// buildinforow
+  /// [label] - tag
+  /// [value] - value
+  /// [isLast] - whetherlastarow（no divider）
   Widget _buildInfoRow(String label, String value, {bool isLast = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -424,13 +424,13 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  // ==================== Tab 2: 转会记录 ====================
+  // ==================== Tab 2: Transfers ====================
 
-  /// 构建转会记录Tab
+  /// buildTransfersTab
   Widget _buildTransferTab() {
     final transfers = _playerInfo!.transferList;
     if (transfers.isEmpty) {
-      return _buildEmptyView('暂无转会记录');
+      return _buildEmptyView('NoTransfers');
     }
 
     return ListView(
@@ -439,8 +439,8 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建转会记录卡片
-  /// [t] - 转会记录数据
+  /// buildTransferscard
+  /// [t] - TransfersData
   Widget _buildTransferCard(HankPlayerTransfer t) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -452,7 +452,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
       ),
       child: Column(
         children: [
-          // 类型 + 时间
+          // type + Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -483,10 +483,10 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
             ],
           ),
           const SizedBox(height: 10),
-          // 转出球队 → 转入球队
+          // transfer outTeam → transfer inTeam
           Row(
             children: [
-              // 转出球队
+              // transfer outTeam
               Expanded(
                 child: Column(
               children: [
@@ -523,10 +523,10 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
               ],
             ),
               ),
-              // 箭头
+              // arrow
               const Icon(Icons.arrow_forward,
                   size: 16, color: AppColors.violet400),
-              // 转入球队
+              // transfer inTeam
               Expanded(
                 child: Column(
               children: [
@@ -566,7 +566,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
             ],
           ),
           const SizedBox(height: 8),
-          // 转会费
+          // transferfee
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -575,7 +575,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
-              '转会费: ${t.transferDesc}',
+              'transferfee: ${t.transferDesc}',
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w600,
@@ -588,13 +588,13 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  // ==================== Tab 3: 荣誉 ====================
+  // ==================== Tab 3: Honors ====================
 
-  /// 构建荣誉Tab
+  /// buildHonorsTab
   Widget _buildHonorTab() {
     final honors = _playerInfo!.honorList;
     if (honors.isEmpty) {
-      return _buildEmptyView('暂无荣誉数据');
+      return _buildEmptyView('NoHonorsData');
     }
 
     return ListView(
@@ -603,8 +603,8 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建荣誉分组卡片
-  /// [group] - 荣誉分组数据
+  /// buildHonorsgroupingcard
+  /// [group] - HonorsgroupingData
   Widget _buildHonorGroup(HankPlayerHonorGroup group) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -615,7 +615,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
       ),
       child: Column(
         children: [
-          // 分组标题
+          // groupingtitle
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: const BoxDecoration(
@@ -646,7 +646,7 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
                 ),
                 const Spacer(),
                 Text(
-                  '${group.list.length}次',
+                  '${group.list.length}time',
                   style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
@@ -656,15 +656,15 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
               ],
             ),
           ),
-          // 赛季列表
+          // Seasonlist
           ...group.list.map((item) => _buildHonorItemRow(item)),
         ],
       ),
     );
   }
 
-  /// 构建荣誉条目行
-  /// [item] - 荣誉条目数据
+  /// buildHonorsitemitemrow
+  /// [item] - HonorsitemitemData
   Widget _buildHonorItemRow(HankPlayerHonorItem item) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -704,10 +704,10 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  // ==================== 公共组件 ====================
+  // ==================== publiccomponent ====================
 
-  /// 构建头像占位图
-  /// [size] - 占位图尺寸
+  /// buildavatarplaceholderimage
+  /// [size] - placeholderimagesize
   Widget _buildAvatarPlaceholder(double size) {
     return Container(
       width: size,
@@ -718,8 +718,8 @@ class _HankPlayerDetailPageState extends State<HankPlayerDetailPage> {
     );
   }
 
-  /// 构建空状态视图
-  /// [message] - 提示文字
+  /// buildemptystatusvisualimage
+  /// [message] - hinttext
   Widget _buildEmptyView(String message) {
     return Center(
       child: Column(

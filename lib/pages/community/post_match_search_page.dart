@@ -3,10 +3,10 @@ import '../../theme/app_colors.dart';
 import '../../models/hank_search_model.dart';
 import '../../services/hank_search_api_service.dart';
 
-/// HankPostMatchSearchPage: 发帖关联比赛搜索页面
-/// 差异化布局：浅紫色+白色主题，卡片式比赛列表，渐变搜索栏
-/// 功能：搜索比赛 + 热门比赛列表，点击返回选中的比赛
-/// 接口：GET /api/livespeed/index/search，GET /api/livespeed/index/search/match/hot
+/// HankPostMatchSearchPage: New PostlinkedmatchSearchpage
+/// differentiatedlayoutmatch：lightpurple+whitecolorhometheme，cardstylematchlist，gradientSearchbar
+/// feature：Searchmatch + Trendingmatchlist，tapBackselectedmatch
+/// API：GET /api/livespeed/index/search，GET /api/livespeed/index/search/match/hot
 class HankPostMatchSearchPage extends StatefulWidget {
   const HankPostMatchSearchPage({Key? key}) : super(key: key);
 
@@ -16,25 +16,25 @@ class HankPostMatchSearchPage extends StatefulWidget {
 }
 
 class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
-  /// 搜索接口服务
+  /// SearchAPI service
   final HankSearchApiService _apiService = HankSearchApiService();
 
-  /// 搜索关键词
+  /// Searchkeyword
   String _searchKeyword = '';
 
-  /// 搜索结果列表
+  /// Searchresult list
   List<HankSearchMatch> _searchMatches = [];
 
-  /// 热门比赛列表
+  /// Trendingmatchlist
   List<HankSearchMatch> _hotMatches = [];
 
-  /// 是否正在搜索
+  /// whetheractiveinSearch
   bool _isSearchLoading = false;
 
-  /// 是否正在加载热门
+  /// whetherLoadingTrending
   bool _isHotLoading = true;
 
-  /// 搜索框控制器
+  /// Searchfieldcontroller
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -49,8 +49,8 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     super.dispose();
   }
 
-  /// 请求热门比赛
-  /// 接口：GET /api/livespeed/index/search/match/hot
+  /// requestTrendingmatch
+  /// API：GET /api/livespeed/index/search/match/hot
   Future<void> _fetchHotMatches() async {
     setState(() {
       _isHotLoading = true;
@@ -60,16 +60,16 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
 
     if (mounted) {
       setState(() {
-        // 过滤只保留足球比赛（category=1）
+        // filteronly keepFootballmatch（category=1）
         _hotMatches = result.where((m) => m.categoryId == 1).toList();
         _isHotLoading = false;
       });
     }
   }
 
-  /// 请求搜索结果
-  /// 接口：GET /api/livespeed/index/search
-  /// [keyword] - 搜索关键词
+  /// requestSearchresults
+  /// API：GET /api/livespeed/index/search
+  /// [keyword] - Searchkeyword
   Future<void> _fetchSearchData(String keyword) async {
     if (keyword.trim().isEmpty) {
       setState(() {
@@ -87,7 +87,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     if (mounted) {
       setState(() {
         if (result != null) {
-          // 过滤只保留足球比赛
+          // filteronly keepFootballmatch
           _searchMatches = result.matches
               .where((m) => m.categoryId == 1)
               .toList();
@@ -121,7 +121,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     );
   }
 
-  /// 顶部导航栏 + 搜索框
+  /// topnavbar + Searchfield
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 0, 16, 12),
@@ -136,7 +136,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // 导航行
+            // navigate row
             SizedBox(
               height: 44,
               child: Row(
@@ -155,7 +155,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                   ),
                   const Expanded(
                     child: Text(
-                      '选择比赛',
+                      'selectmatch',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -169,7 +169,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
               ),
             ),
             const SizedBox(height: 4),
-            // 搜索框
+            // Searchfield
             Container(
               height: 38,
               decoration: BoxDecoration(
@@ -191,7 +191,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                 },
                 decoration: const InputDecoration(
                   isCollapsed: true,
-                  hintText: '搜索球队名称...',
+                  hintText: 'SearchTeamname...',
                   hintStyle: TextStyle(
                     color: AppColors.slate400,
                     fontSize: 13,
@@ -220,13 +220,13 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     );
   }
 
-  /// 主体内容
+  /// homebodycontent
   Widget _buildBody() {
     return CustomScrollView(
       slivers: [
-        // 搜索结果区域
+        // Searchresultsarea
         if (_searchKeyword.trim().isNotEmpty) ...[
-          _buildSectionHeader('搜索结果'),
+          _buildSectionHeader('Searchresults'),
           if (_isSearchLoading)
             const SliverToBoxAdapter(
               child: Padding(
@@ -249,7 +249,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                 padding: EdgeInsets.all(32),
                 child: Center(
                   child: Text(
-                    '暂无搜索结果',
+                    'NoSearchresults',
                     style: TextStyle(color: AppColors.slate400, fontSize: 12),
                   ),
                 ),
@@ -265,8 +265,8 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
             ),
         ],
 
-        // 热门比赛区域
-        _buildSectionHeader('热门比赛'),
+        // Trendingmatcharea
+        _buildSectionHeader('Trendingmatch'),
         if (_isHotLoading)
           const SliverToBoxAdapter(
             child: Padding(
@@ -289,7 +289,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
               padding: EdgeInsets.all(32),
               child: Center(
                 child: Text(
-                  '暂无热门比赛',
+                  'NoTrendingmatch',
                   style: TextStyle(color: AppColors.slate400, fontSize: 12),
                 ),
               ),
@@ -308,7 +308,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     );
   }
 
-  /// 区域标题（吸顶）
+  /// areatitle（sticky）
   Widget _buildSectionHeader(String title) {
     return SliverToBoxAdapter(
       child: Padding(
@@ -338,7 +338,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     );
   }
 
-  /// 单条比赛卡片（差异化：白底圆角卡片 + 紫色VS标签）
+  /// singlematchcard（differentiated：whitebottomroundedcard + purpleVStag）
   Widget _buildMatchCard(HankSearchMatch match) {
     return GestureDetector(
       onTap: () => Navigator.pop(context, match),
@@ -360,7 +360,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
         ),
         child: Column(
           children: [
-            // 联赛名称
+            // Leaguename
             if (match.competitionName != null &&
                 match.competitionName!.isNotEmpty)
               Padding(
@@ -386,10 +386,10 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                   ],
                 ),
               ),
-            // 对阵双方
+            // two sides
             Row(
               children: [
-                // 主队
+                // Home
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -411,7 +411,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                     ],
                   ),
                 ),
-                // VS 标签
+                // VS tag
                 Container(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
@@ -431,7 +431,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
                     ),
                   ),
                 ),
-                // 客队
+                // Away
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -461,7 +461,7 @@ class _HankPostMatchSearchPageState extends State<HankPostMatchSearchPage> {
     );
   }
 
-  /// 球队Logo
+  /// TeamLogo
   Widget _buildTeamLogo(String? url, double size) {
     return Container(
       width: size,

@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../models/team_model.dart';
 
-/// TeamLogoWidget: 球队Logo展示组件
-/// 优先展示网络图片，图片加载失败或无URL时展示首字母占位
+/// TeamLogoWidget: TeamLogodisplaycomponent
+/// preferdisplaynetworkimage，imageFailed to loadornoneURLwhendisplayinitialplaceholder
 class TeamLogoWidget extends StatelessWidget {
-  /// 球队数据
+  /// TeamData
   final TeamModel team;
 
-  /// Logo尺寸（边长）
+  /// Logosize（size）
   final double size;
 
-  /// 是否显示环形边框
+  /// whetherdisplayborderfield
   final bool showRing;
 
-  /// 环形边框颜色
+  /// borderfieldcolor
   final Color? ringColor;
 
   TeamLogoWidget({

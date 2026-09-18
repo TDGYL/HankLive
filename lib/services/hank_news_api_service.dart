@@ -2,29 +2,29 @@ import '../utils/hank_network_manager.dart';
 import '../models/hank_news_api_model.dart';
 import '../models/news_model.dart';
 
-/// HankNewsApiService: 资讯列表接口服务
-/// 封装 /api/livespeed/info/list GET 请求
-/// 返回数据通过 HankNewsItem → NewsModel 转换供 UI 使用
+/// HankNewsApiService: newslistAPI service
+/// wrap /api/livespeed/info/list GET request
+/// BackDatapasspass HankNewsItem → NewsModel convertfor UI useuse
 class HankNewsApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankNewsApiService _instance = HankNewsApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankNewsApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankNewsApiService._internal();
 
-  /// 接口路径
+  /// APIpath
   static const String _apiPath = '/api/livespeed/info/list';
 
-  /// 请求资讯列表
-  /// [page] - 分页页码（从1开始）
-  /// [size] - 每页条数
-  /// [type] - 文章类型，默认1
-  /// 返回：HankNewsData 原始响应数据
+  /// requestnewslist
+  /// [page] - categorypagepagecode（from1start）
+  /// [size] - eachpageitemcount
+  /// [type] - articletype，default1
+  /// Back：HankNewsData rawresponseData
   Future<HankNewsData?> fetchNewsList({
     int page = 1,
     int size = 10,
@@ -48,9 +48,9 @@ class HankNewsApiService {
     return null;
   }
 
-  /// 请求资讯列表并转换为 NewsModel 列表
-  /// 参数同 [fetchNewsList]
-  /// 返回：List<NewsModel>，供 UI 组件直接使用
+  /// requestnewslistandconvert to NewsModel list
+  /// paramcountsame [fetchNewsList]
+  /// Back：List<NewsModel>，for UI componentdirectlyuseuse
   Future<List<NewsModel>> fetchNewsModels({
     int page = 1,
     int size = 10,
@@ -69,9 +69,9 @@ class HankNewsApiService {
     return data.results.map((item) => _convertToNewsModel(item)).toList();
   }
 
-  /// 将接口模型 HankNewsItem 转换为 UI 模型 NewsModel
-  /// [item] - 接口返回的单条资讯数据
-  /// 返回：NewsModel
+  /// convert APImodel HankNewsItem convert to UI model NewsModel
+  /// [item] - APIBacksinglenewsData
+  /// Back：NewsModel
   NewsModel _convertToNewsModel(HankNewsItem item) {
     return NewsModel(
       newsId: item.id?.toString() ?? '',
@@ -82,17 +82,17 @@ class HankNewsApiService {
       categoryTag: _getCategoryTag(item.type),
       categoryBgColor: 0xFF7C3AED,
       categoryTextColor: 0xFFFFFFFF,
-      source: item.author ?? item.source ?? '绿茵快讯',
+      source: item.author ?? item.source ?? 'pitchnews flash',
       timeDesc: _formatPublishTime(item.createdAt),
       readCountDesc: _formatReadCount(item.contentCounts),
       commentCount: item.intelligenceCounts ?? 0,
     );
   }
 
-  /// 请求资讯详情
-  /// 接口：GET /api/livespeed/info/detail
-  /// [id] - 资讯ID
-  /// 返回：HankNewsItem 资讯详情
+  /// requestnewsDetails
+  /// API：GET /api/livespeed/info/detail
+  /// [id] - newsID
+  /// Back：HankNewsItem newsDetails
   Future<HankNewsItem?> fetchNewsDetail({required int id}) async {
     final response = await HankNetworkManager().getRequest(
       '/api/livespeed/info/detail',
@@ -106,25 +106,25 @@ class HankNewsApiService {
     return null;
   }
 
-  /// 根据文章类型获取分类标签
-  /// [type] - 文章类型ID
-  /// 返回：分类标签文字
+  /// rootbased onarticletypegetcategorytypetag
+  /// [type] - articletypeID
+  /// Back：categorytypetagtext
   String _getCategoryTag(int? type) {
     switch (type) {
       case 1:
-        return '深度战术';
+        return 'darkdepthtactical';
       case 2:
-        return '快讯';
+        return 'news flash';
       case 3:
-        return '独家';
+        return 'exclusive';
       default:
-        return '资讯';
+        return 'news';
     }
   }
 
-  /// 格式化发布时间为相对时间描述
-  /// [timestamp] - 时间戳（秒）
-  /// 返回：如 "2小时前"、"3天前"
+  /// formatPostTimeisrelativeTimedescription
+  /// [timestamp] - Timetimestamp（seconds）
+  /// Back：e.g. "2underwhenbefore"、"3daybefore"
   String _formatPublishTime(int? timestamp) {
     if (timestamp == null || timestamp == 0) return '';
     final now = DateTime.now();
@@ -132,24 +132,24 @@ class HankNewsApiService {
     final diff = now.difference(publishDate);
 
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}分钟前';
+      return '${diff.inMinutes}minbefore';
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}小时前';
+      return '${diff.inHours}underwhenbefore';
     } else if (diff.inDays < 30) {
-      return '${diff.inDays}天前';
+      return '${diff.inDays}daybefore';
     } else {
       return '${publishDate.month}-${publishDate.day}';
     }
   }
 
-  /// 格式化阅读量
-  /// [count] - 阅读数
-  /// 返回：如 "1.8万阅读"
+  /// formatreadingcount
+  /// [count] - readingcount
+  /// Back：e.g. "1.80k views"
   String _formatReadCount(int? count) {
     if (count == null || count == 0) return '';
     if (count >= 10000) {
-      return '${(count / 10000).toStringAsFixed(1)}万阅读';
+      return '${(count / 10000).toStringAsFixed(1)}0k views';
     }
-    return '$count阅读';
+    return '$count reading';
   }
 }

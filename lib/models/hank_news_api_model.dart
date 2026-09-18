@@ -1,15 +1,15 @@
-/// HankNewsData: 资讯列表接口响应数据体
-/// 包含总数和资讯项列表
+/// HankNewsData: newslistAPIresponseDatabody
+/// containstotalcountandnewsitem list
 class HankNewsData {
-  /// 数据总数
+  /// Datatotalcount
   final int? total;
 
-  /// 资讯项列表
+  /// newsitem list
   final List<HankNewsItem> results;
 
   HankNewsData({this.total, this.results = const []});
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankNewsData.fromJson(Map<String, dynamic> json) {
     final list = json['results'] as List?;
     List<HankNewsItem> items = [];
@@ -23,88 +23,88 @@ class HankNewsData {
   }
 }
 
-/// HankNewsItem: 单条资讯数据项
-/// 映射接口返回的 snake_case 字段为 camelCase 属性
+/// HankNewsItem: singlenewsDataitem
+/// mappingAPIBack snake_case field is camelCase property
 class HankNewsItem {
-  /// 文章唯一ID
+  /// articleuniqueID
   final int? id;
 
-  /// 文章标题
+  /// articletitle
   final String? title;
 
-  /// 封面图URL
+  /// coverimageURL
   final String? cover;
 
-  /// 文章类型
+  /// articletype
   final int? type;
 
-  /// 作者
+  /// author
   final String? author;
 
-  /// 作者头像URL
+  /// authoravatarURL
   final String? authorAvatar;
 
-  /// 来源
+  /// source
   final String? source;
 
-  /// 来源URL
+  /// sourceURL
   final String? sourceUrl;
 
-  /// 创建时间戳（秒）
+  /// createdTimetimestamp（seconds）
   final int? createdAt;
 
-  /// 上线时间戳（秒）
+  /// uplineTimetimestamp（seconds）
   final int? onlineAt;
 
-  /// 下线时间戳（秒）
+  /// downlineTimetimestamp（seconds）
   final int? offlineAt;
 
-  /// 状态
+  /// status
   final int? status;
 
-  /// 内容
+  /// content
   final String? content;
 
-  /// 是否支持
+  /// whethersupport
   final bool? isSupport;
 
-  /// 视频方向
+  /// Videodirection
   final int? videoDirection;
 
-  /// H5页面URL
+  /// H5pageURL
   final String? h5Url;
 
-  /// 是否关注
+  /// whetherFollow
   final bool? isFollow;
 
-  /// 阅读量
+  /// readingcount
   final int? contentCounts;
 
-  /// 视频高度
+  /// Videoheight
   final int? videoHeight;
 
-  /// 视频宽度
+  /// Videowidthdepth
   final int? videoWidth;
 
-  /// 是否直播中
+  /// whetherLivein
   final bool? living;
 
-  /// 专家ID
+  /// expertID
   final int? expertId;
 
-  /// 补丁信息
+  /// patchinfo
   final String? patch;
 
-  /// 分组ID
+  /// groupingID
   final String? groupId;
 
-  /// 权重
+  /// weight
   final int? weight;
 
-  /// 竖屏封面URL
+  /// portraitcoverURL
   final String? verticalCoverUrl;
 
-  /// 情报数
+  /// intelcount
   final int? intelligenceCounts;
 
   HankNewsItem({
@@ -137,7 +137,7 @@ class HankNewsItem {
     this.intelligenceCounts,
   });
 
-  /// 从JSON解析（snake_case → camelCase）
+  /// fromJSONparse（snake_case → camelCase）
   factory HankNewsItem.fromJson(Map<String, dynamic> json) {
     return HankNewsItem(
       id: json['id'] != null ? (json['id'] as num).toInt() : null,

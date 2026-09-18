@@ -6,25 +6,25 @@ import '../models/hank_odds_history_model.dart';
 import '../models/hank_lineup_model.dart';
 import '../models/hank_h2h_model.dart';
 
-/// HankMatchDetailApiService: 比赛详情接口服务
-/// 封装 /api/livespeed/football/match/detail 和 /api/livespeed/football/match/process 接口
-/// 参考ZogoLive的FootballDetailPage请求逻辑
+/// HankMatchDetailApiService: matchDetailsAPI service
+/// wrap /api/livespeed/football/match/detail and /api/livespeed/football/match/process API
+/// referenceZogoLiveFootballDetailPagerequestlogic
 class HankMatchDetailApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankMatchDetailApiService _instance = HankMatchDetailApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankMatchDetailApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankMatchDetailApiService._internal();
 
-  /// 请求比赛详情
-  /// 接口：GET /api/livespeed/football/match/detail
-  /// 参数：match_id - 比赛ID
-  /// 返回：Map<String, dynamic> 原始响应数据，供页面解析比赛信息
+  /// requestmatchDetails
+  /// API：GET /api/livespeed/football/match/detail
+  /// paramcount：match_id - matchID
+  /// Back：Map<String, dynamic> rawresponseData，forpageparsematchinfo
   Future<Map<String, dynamic>?> fetchMatchDetail({
     required int matchId,
   }) async {
@@ -40,10 +40,10 @@ class HankMatchDetailApiService {
     return null;
   }
 
-  /// 请求比赛进程数据（incidents + stats）
-  /// 接口：GET /api/livespeed/football/match/process
-  /// 参数：match_id - 比赛ID
-  /// 返回：HankProcessData 包含赛况事件和技术统计
+  /// requestmatchprogressData（incidents + stats）
+  /// API：GET /api/livespeed/football/match/process
+  /// paramcount：match_id - matchID
+  /// Back：HankProcessData containsmatch eventseventandtechnicalstats
   Future<HankProcessData?> fetchMatchProcess({
     required int matchId,
   }) async {
@@ -59,10 +59,10 @@ class HankMatchDetailApiService {
     return null;
   }
 
-  /// 请求比赛指数数据（亚盘/欧赔/大小球/角球）
-  /// 接口：GET /api/livespeed/football/match/odds
-  /// 参数：match_id - 比赛ID
-  /// 返回：HankOddsData 包含四种盘口类型的博彩公司赔率列表
+  /// requestmatchoddscountData（AH/1X2/O/Ugoal/Corners）
+  /// API：GET /api/livespeed/football/match/odds
+  /// paramcount：match_id - matchID
+  /// Back：HankOddsData containsfour typesHandicaptypebookmakerBookmakerOddslist
   Future<HankOddsData?> fetchMatchOdds({
     required int matchId,
   }) async {
@@ -78,10 +78,10 @@ class HankMatchDetailApiService {
     return null;
   }
 
-  /// 请求指数历史数据（亚盘/欧赔/大小球/角球）
-  /// 接口：GET /api/livespeed/football/match/odd-histories
-  /// 参数：match_id - 比赛ID, company_id - 博彩公司ID
-  /// 返回：HankOddsHistoryData 包含四种盘口类型的历史赔率列表
+  /// requestoddscounthistoryData（AH/1X2/O/Ugoal/Corners）
+  /// API：GET /api/livespeed/football/match/odd-histories
+  /// paramcount：match_id - matchID, company_id - bookmakerBookmakerID
+  /// Back：HankOddsHistoryData containsfour typesHandicaptypehistoryOddslist
   Future<HankOddsHistoryData?> fetchOddsHistory({
     required int matchId,
     required String companyId,
@@ -102,10 +102,10 @@ class HankMatchDetailApiService {
     return null;
   }
 
-  /// 请求比赛阵容数据（首发/替补/伤停/教练/阵型）
-  /// 接口：GET /api/livespeed/football/match/lineup
-  /// 参数：match_id - 比赛ID
-  /// 返回：HankLineupData 包含双方首发、替补、伤停、教练、阵型、身价
+  /// requestmatchLineupData（starter/substitute/injured/Coach/formation）
+  /// API：GET /api/livespeed/football/match/lineup
+  /// paramcount：match_id - matchID
+  /// Back：HankLineupData containsd u a lsidestarter、substitute、injured、Coach、formation、Value
   Future<HankLineupData?> fetchMatchLineup({
     required int matchId,
   }) async {
@@ -121,10 +121,10 @@ class HankMatchDetailApiService {
     return null;
   }
 
-  /// 请求历史交锋数据
-  /// 接口：GET /api/livespeed/football/match/analysis
-  /// 参数：match_id - 比赛ID
-  /// 返回：List<HankH2HMatch> 全部历史交锋数据，由调用方根据筛选条件截取
+  /// requestH2HData
+  /// API：GET /api/livespeed/football/match/analysis
+  /// paramcount：match_id - matchID
+  /// Back：List<HankH2HMatch> AllH2HData，called byusesiderootbased onfilteritemitemtruncateget
   Future<List<HankH2HMatch>> fetchH2HData({
     required int matchId,
   }) async {
@@ -148,7 +148,7 @@ class HankMatchDetailApiService {
         }
       }
     } catch (e) {
-      debugPrint('H2H数据解析异常: $e');
+      debugPrint('H2HDataparseerror: $e');
     }
 
     return [];

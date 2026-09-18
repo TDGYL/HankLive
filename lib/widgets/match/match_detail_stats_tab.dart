@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/hank_process_model.dart';
 
-/// MatchDetailStatsTab: 技术统计Tab组件
-/// 展示球队技术统计对比条（控球率、射门、角球等）
-/// 使用接口 /api/livespeed/football/match/process 的 stats 数据
-/// 已删除比赛主导率柱状图UI
-/// 浅紫色+白色主题风格，参考ZogoLive的_buildStatsTab
+/// MatchDetailStatsTab: technicalstatsTabcomponent
+/// displayTeamtechnicalstatsmatchmatchitem（Possession、Shots、Cornersetc）
+/// useAPI /api/livespeed/football/match/process  stats Data
+/// alreadyDeletematchhomenavratebarstatusimageUI
+/// lightpurple+whitecolorhomethemestyle，referenceZogoLive_buildStatsTab
 class MatchDetailStatsTab extends StatelessWidget {
-  /// 技术统计列表（来自接口stats）
+  /// technicalstatslist（fromAPIstats）
   final List<HankStatItem> stats;
 
   MatchDetailStatsTab({
@@ -23,7 +23,7 @@ class MatchDetailStatsTab extends StatelessWidget {
         padding: EdgeInsets.all(40),
         child: Center(
           child: Text(
-            '暂无统计数据',
+            'NostatsData',
             style: TextStyle(fontSize: 14, color: AppColors.slate500),
           ),
         ),
@@ -53,14 +53,14 @@ class MatchDetailStatsTab extends StatelessWidget {
     );
   }
 
-  /// 单行统计对比
-  /// 采用与ZogoLive相同的布局：主队数值 | 统计项名称 | 客队数值 + 双向进度条
+  /// single rowstatsmatchmatch
+  /// useusewithZogoLivesame layoutmatch：Homecountvalue | stat itemname | Awaycountvalue + d u a ldirectionprogressitem
   Widget _buildStatRow(HankStatItem stat) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(
         children: [
-          // 数值行
+          // countvaluerow
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -90,10 +90,10 @@ class MatchDetailStatsTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // 双向进度条
+          // d u a ldirectionprogressitem
           Row(
             children: [
-              // 主队进度条（从右向左）
+              // Homeprogressitem（fromrightdirectionleft）
               Expanded(
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
@@ -109,7 +109,7 @@ class MatchDetailStatsTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              // 客队进度条（从左向右）
+              // Awayprogressitem（fromleft to right）
               Expanded(
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(

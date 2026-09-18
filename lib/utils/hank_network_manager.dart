@@ -1,39 +1,39 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-/// HankApiResponse: 网络请求响应实体
-/// 封装接口返回的 code、data、message
+/// HankApiResponse: network response entity
+/// wrapAPIBack code、data、message
 class HankApiResponse<T> {
-  /// 业务状态码（0表示成功）
+  /// businessstatuscode（0means success）
   final int? code;
 
-  /// 响应数据体
+  /// responseDatabody
   final T? data;
 
-  /// 响应消息描述
+  /// response message
   final String? message;
 
   HankApiResponse({this.code, this.data, this.message});
 
-  /// 是否请求成功
+  /// whetherRequest successful
   bool get isSuccess => code == 0;
 }
 
-/// HankNetworkManager: 网络请求管理类
-/// 基于 Dio 封装的单例网络请求工具，含拦截器日志、Token管理、GET/POST请求
+/// HankNetworkManager: networkrequestmanagetype
+/// based on Dio wrapsingletonnetworkrequestutility，with interceptor logging、Tokenmanage、GET/POSTrequest
 class HankNetworkManager {
-  /// 单例实例
+  /// singleton instance
   static final HankNetworkManager _instance = HankNetworkManager._internal();
 
-  /// Dio 实例
+  /// Dio instance
   late Dio _dio;
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankNetworkManager() {
     return _instance;
   }
 
-  /// 私有构造，初始化 Dio 配置和拦截器
+  /// private constructor，init Dio configandinterceptor
   HankNetworkManager._internal() {
     _dio = Dio(BaseOptions(
       baseUrl: 'https://api.livespeeds.com',
@@ -45,11 +45,11 @@ class HankNetworkManager {
         'Accept': 'application/json',
         'x-platform': 'IOS',
         'Accept-Language': 'en-US',
-        'x-version': '1.0.0'
+        'x-version': '6.0.0'
       },
     ));
 
-    // 添加请求/响应/错误拦截器
+    // addrequest/response/error interceptor
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
         debugPrint(
@@ -94,20 +94,20 @@ class HankNetworkManager {
     ));
   }
 
-  /// 设置 Authorization Token
+  /// Settings Authorization Token
   void setAuthToken(String token) {
     _dio.options.headers['authorization'] = token;
   }
 
-  /// 清除 Authorization Token
+  /// clear Authorization Token
   void clearAuthToken() {
     _dio.options.headers.remove('authorization');
   }
 
-  /// GET 请求
-  /// [path] 接口路径
-  /// [queryParameters] 查询参数
-  /// 返回 HankApiResponse 封装结果
+  /// GET request
+  /// [path] APIpath
+  /// [queryParameters] searchqueryparamcount
+  /// Back HankApiResponse wrapresults
   Future<HankApiResponse<dynamic>> getRequest(String path,
       {Map<String, dynamic>? queryParameters}) async {
     try {
@@ -118,10 +118,10 @@ class HankNetworkManager {
     }
   }
 
-  /// POST 请求
-  /// [path] 接口路径
-  /// [data] 请求体数据
-  /// 返回 HankApiResponse 封装结果
+  /// POST request
+  /// [path] APIpath
+  /// [data] request bodyData
+  /// Back HankApiResponse wrapresults
   Future<HankApiResponse<dynamic>> postRequest(String path,
       {dynamic data}) async {
     try {
@@ -132,7 +132,7 @@ class HankNetworkManager {
     }
   }
 
-  /// 解析响应数据
+  /// parse responseData
   HankApiResponse<dynamic> _parseResponse(Response response) {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = response.data;
@@ -149,7 +149,7 @@ class HankNetworkManager {
     }
   }
 
-  /// 解析异常信息
+  /// parseerrorinfo
   HankApiResponse<dynamic> _parseError(dynamic error) {
     String msg = 'Unknown Error';
     if (error is DioException) {

@@ -1,64 +1,64 @@
 import 'team_model.dart';
 
-/// MatchStatus: 比赛状态枚举
-/// live: 直播中 | upcoming: 未开赛 | finished: 已完赛
+/// MatchStatus: matchstatusenum
+/// live: Livein | upcoming: not started | finished: alreadyfinishedmatch
 enum MatchStatus { live, upcoming, finished }
 
-/// MatchModel: 比赛信息模型
-/// 包含对阵双方、比分、赛事信息、AI胜率等
+/// MatchModel: matchinfomodel
+/// containstwo sides、score、matchinfo、AIWrateetc
 class MatchModel {
-  /// 比赛唯一ID
+  /// matchuniqueID
   final String matchId;
 
-  /// 联赛名称（如：英格兰足球超级联赛）
+  /// Leaguename（e.g.：EnglandFootballoverlevelLeague）
   final String leagueName;
 
-  /// 联赛图标颜色（用于奖杯icon）
+  /// Leagueiconcolor（for trophyicon）
   final int leagueColor;
 
-  /// 主队信息
+  /// Homeinfo
   final TeamModel homeTeam;
 
-  /// 客队信息
+  /// Awayinfo
   final TeamModel awayTeam;
 
-  /// 主队比分
+  /// Homescore
   final int? homeScore;
 
-  /// 客队比分
+  /// Awayscore
   final int? awayScore;
 
-  /// 比赛开始时间字符串（如: 20:00, 明日 03:45）
+  /// matchstartTimestring（e.g.: 20:00, Tomorrow 03:45）
   final String matchTime;
 
-  /// 比赛状态
+  /// matchstatus
   final MatchStatus status;
 
-  /// 进行到的时间（仅直播状态，如: 78'）
+  /// enterrowtoTime（onlyLivestatus，e.g.: 78'）
   final String? liveMinute;
 
-  /// 半场比分（如: 1-0）
+  /// HTscore（e.g.: 1-0）
   final String? halfTimeScore;
 
-  /// 进球事件摘要数组（主队+客队）
+  /// Goalsevent summarycountgroup（Home+Away）
   final List<String> goalEvents;
 
-  /// 是否是精选Banner比赛（深色大卡片样式）
+  /// isFeaturedBannermatch（dark card style）
   final bool isFeatured;
 
-  /// 是否是关注的比赛
+  /// isFollowmatch
   final bool isFollowed;
 
-  /// AI预测主队胜率 0-100
+  /// AIpredictionHomeWrate 0-100
   final int homeWinRate;
 
-  /// AI预测平局率 0-100
+  /// AIpredictionDmatchrate 0-100
   final int drawRate;
 
-  /// AI预测客队胜率 0-100
+  /// AIpredictionAwayWrate 0-100
   final int awayWinRate;
 
-  /// 比赛关联标签（用于社区搜索、挂载）
+  /// matchlinkedtag（useCommunitySearch、mount）
   final String? matchTag;
 
   MatchModel({
@@ -82,7 +82,7 @@ class MatchModel {
     this.matchTag,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory MatchModel.fromJson(Map<String, dynamic> json) {
     return MatchModel(
       matchId: json['matchId'] ?? '',
@@ -106,7 +106,7 @@ class MatchModel {
     );
   }
 
-  /// 状态枚举转换
+  /// statusenumconvert
   static MatchStatus _matchStatusFromString(String s) {
     switch (s) {
       case 'live':

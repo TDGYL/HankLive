@@ -3,29 +3,29 @@ import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
 import '../../pages/match/team_detail_page.dart';
 
-/// MatchDetailScoreboard: 比赛详情顶部计分板组件
-/// 展示比赛状态、对阵双方、比分、进球事件摘要
-/// 浅紫色渐变背景风格，与index.html保持一致
+/// MatchDetailScoreboard: matchDetailstopstatscategoryboardcomponent
+/// displaymatchstatus、two sides、score、Goalsevent summary
+/// lightpurplegradientbackgroundstyle，withindex.htmlkeepamatch
 class MatchDetailScoreboard extends StatelessWidget {
-  /// 比赛数据
+  /// matchData
   final MatchModel match;
 
-  /// 比赛轮次信息（如: 英超 第28轮）
+  /// matchRoundinfo（e.g.: Premier League 28round）
   final String roundInfo;
 
-  /// 比赛场地信息（如: 伦敦体育场 · 主裁判: 迈克尔·奥利弗）
+  /// matchmatchvenueinfo（e.g.: LondonSportsmatch · homeReferee: Michael·Oliver）
   final String venueInfo;
 
-  /// 主队进球事件列表
+  /// HomeGoalseventlist
   final List<String> homeGoalEvents;
 
-  /// 客队进球事件列表
+  /// AwayGoalseventlist
   final List<String> awayGoalEvents;
 
-  /// 半场比分（如: 1-0）
+  /// HTscore（e.g.: 1-0）
   final String? halfTimeScore;
 
-  /// 比赛进行分钟数（如: 67）
+  /// matchenterrowmincount（e.g.: 67）
   final int? liveMinute;
 
   MatchDetailScoreboard({
@@ -65,13 +65,13 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 顶部状态行：比赛状态 + 动画直播/提醒
-  /// 使用Flexible避免右侧溢出
+  /// topstatusrow：matchstatus + animationLive/extractremind
+  /// useuseFlexibleavoidrightoverflowout
   Widget _buildStatusRow() {
     final isLive = match.status == MatchStatus.live;
     return Row(
       children: [
-        // 比赛状态标签
+        // matchstatustag
         Flexible(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -101,10 +101,10 @@ class MatchDetailScoreboard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     isLive
-                        ? "进行中 ${liveMinute ?? match.liveMinute ?? ''}'"
+                        ? "In Progress ${liveMinute ?? match.liveMinute ?? ''}'"
                         : match.status == MatchStatus.finished
-                            ? '已完赛'
-                            : '未开赛',
+                            ? 'alreadyfinishedmatch'
+                            : 'not started',
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 11,
@@ -121,11 +121,11 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 主队 vs 客队 + 比分
+  /// Home vs Away + score
   Widget _buildTeamsAndScore(BuildContext context) {
     return Row(
       children: [
-        // 主队
+        // Home
         Expanded(
           flex: 3,
           child: _buildTeamColumn(
@@ -135,12 +135,12 @@ class MatchDetailScoreboard extends StatelessWidget {
             isHome: true,
           ),
         ),
-        // 比分
+        // score
         Expanded(
           flex: 1,
           child: _buildScoreColumn(),
         ),
-        // 客队
+        // Away
         Expanded(
           flex: 3,
           child: _buildTeamColumn(
@@ -154,13 +154,13 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 球队列：Logo + 名称
-  /// 点击Logo跳转球队详情页面
-  /// 优先加载网络Logo图片，加载失败时显示首字母占位
+  /// Teamcolumn：Logo + name
+  /// tapLogonavTeamDetailspage
+  /// preferloadnetworkLogoimage，Failed to loadwhendisplayinitialplaceholder
   Widget _buildTeamColumn(BuildContext context, String name, String? logoUrl, {required bool isHome}) {
     return Column(
       children: [
-        // Logo（可点击跳转球队详情）
+        // Logo（cantapnavTeamDetails）
         GestureDetector(
           onTap: () => _navigateToTeamDetail(context, name, logoUrl),
           child: Container(
@@ -201,7 +201,7 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// Logo占位（首字母）
+  /// Logoplaceholder（initial）
   Widget _buildLogoPlaceholder(String name) {
     return Center(
       child: Text(
@@ -215,9 +215,9 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 跳转到球队详情页面
-  /// [teamName] 球队名称
-  /// [logoUrl] 球队Logo URL
+  /// navigate toTeamDetailspage
+  /// [teamName] Teamname
+  /// [logoUrl] TeamLogo URL
   void _navigateToTeamDetail(BuildContext context, String teamName, String? logoUrl) {
     int teamId = 0;
     if (teamName == match.homeTeam.teamName) {
@@ -239,13 +239,13 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 比分列
+  /// scorecolumn
   Widget _buildScoreColumn() {
     final homeScore = match.homeScore ?? 0;
     final awayScore = match.awayScore ?? 0;
     return Column(
       children: [
-        // 比分（用FittedBox防止溢出）
+        // score（useFittedBoxpreventoverflowout）
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Row(
@@ -282,7 +282,7 @@ class MatchDetailScoreboard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        // 半场比分
+        // HTscore
         if (halfTimeScore != null)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -292,7 +292,7 @@ class MatchDetailScoreboard extends StatelessWidget {
               border: Border.all(color: Colors.white.withOpacity(0.2)),
             ),
             child: Text(
-              '半场: $halfTimeScore',
+              'HT: $halfTimeScore',
               style: const TextStyle(
                 fontSize: 10,
                 color: Colors.white70,
@@ -304,7 +304,7 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 进球事件摘要
+  /// Goalsevent summary
   Widget _buildGoalEvents() {
     if (homeGoalEvents.isEmpty && awayGoalEvents.isEmpty) {
       return const SizedBox.shrink();
@@ -320,14 +320,14 @@ class MatchDetailScoreboard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 主队进球
+          // HomeGoals
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: homeGoalEvents.map((e) => _buildGoalChip(e, true)).toList(),
             ),
           ),
-          // 客队进球
+          // AwayGoals
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -339,7 +339,7 @@ class MatchDetailScoreboard extends StatelessWidget {
     );
   }
 
-  /// 进球事件条目
+  /// Goalsevent item
   Widget _buildGoalChip(String text, bool isHome) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),

@@ -9,22 +9,24 @@ import 'community_detail_page.dart';
 import 'post_community_page.dart';
 import '../login/login_page.dart';
 
-/// CommunitySubTab: 社区列表二级Tab枚举
-/// 对应接口 type 参数：推荐=1，最近=2，关注=3
+/// CommunitySubTab: CommunitylistsecondlevelTabenum
+/// maps to API type paramcount：Featured=1，recent=2，Follow=3
 enum CommunitySubTab {
-  /// 推荐 type=1
+  /// Featured type=1
   recommend,
-  /// 最近 type=2
+
+  /// recent type=2
   recent,
-  /// 关注 type=3
+
+  /// Follow type=3
   follow,
 }
 
-/// CommunityPage: 球友社区页面
-/// 含3个二级Tab：推荐/最近/关注
-/// 数据通过 HankCommunityApiService 请求接口获取
-/// 帖子卡片含话题标签（image字段）在比赛信息上方
-/// 支持下拉刷新 + 上拉加载更多
+/// CommunityPage: goalfanCommunitypage
+/// contains3eachsecondlevelTab：Featured/recent/Follow
+/// Datapasspass HankCommunityApiService requestAPIget
+/// Postcardcontainstopictag（imagefield）inmatchinfoupside
+/// supportPull to refresh + uppullloadMore
 class CommunityPage extends StatefulWidget {
   const CommunityPage({Key? key}) : super(key: key);
 
@@ -33,31 +35,31 @@ class CommunityPage extends StatefulWidget {
 }
 
 class _CommunityPageState extends State<CommunityPage> {
-  /// 当前选中的子Tab
+  /// whenbeforeselectedchildTab
   CommunitySubTab _currentSubTab = CommunitySubTab.recommend;
 
-  /// 帖子数据列表
+  /// PostDatalist
   List<PostModel> _posts = [];
 
-  /// 是否正在下拉刷新
+  /// whetheractiveinPull to refresh
   bool _isRefreshing = false;
 
-  /// 是否正在上拉加载
+  /// whetheractiveinuppullload
   bool _isLoading = false;
 
-  /// 是否没有更多数据
+  /// whethernohasMoreData
   bool _hasNoMore = false;
 
-  /// 分页页码
+  /// categorypagepagecode
   int _page = 1;
 
-  /// 每页条数
+  /// eachpageitemcount
   final int _size = 10;
 
-  /// API服务实例
+  /// APIservice instance
   final HankCommunityApiService _apiService = HankCommunityApiService();
 
-  /// 滚动控制器（用于上拉加载监听）
+  /// scrollcontroller（useuppullloadlisten）
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -74,7 +76,7 @@ class _CommunityPageState extends State<CommunityPage> {
     super.dispose();
   }
 
-  /// 滚动监听：到达底部触发加载更多
+  /// scroll listener：toreachedbottomtriggerloadMore
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 100) {
@@ -84,7 +86,7 @@ class _CommunityPageState extends State<CommunityPage> {
     }
   }
 
-  /// 将 CommunitySubTab 转换为接口对应的 HankCommunityTab
+  /// will CommunitySubTab convert toAPImaps to HankCommunityTab
   HankCommunityTab _getApiTab(CommunitySubTab tab) {
     switch (tab) {
       case CommunitySubTab.recommend:
@@ -96,8 +98,8 @@ class _CommunityPageState extends State<CommunityPage> {
     }
   }
 
-  /// 请求社区帖子列表数据
-  /// [isRefresh] - true=刷新（重置page=1），false=加载更多
+  /// requestCommunityPostlistData
+  /// [isRefresh] - true=refresh（resetpage=1），false=loadMore
   Future<void> _fetchPosts({required bool isRefresh}) async {
     if (_isLoading || _isRefreshing) return;
 
@@ -148,9 +150,9 @@ class _CommunityPageState extends State<CommunityPage> {
     _fetchPosts(isRefresh: true);
   }
 
-  /// 拉黑帖子（二次确认弹窗 + 接口请求）
-  /// [post] - 被拉黑的帖子模型
-  /// 接口：POST /api/livespeed/community/block_post
+  /// blockPost（secondtimeConfirmpopup + APIrequest）
+  /// [post] - byblockPostmodel
+  /// API：POST /api/livespeed/community/block_post
   Future<void> _blockPost(PostModel post) async {
     if (!HankAuthManager().isLoggedIn) {
       Navigator.push(
@@ -164,16 +166,21 @@ class _CommunityPageState extends State<CommunityPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('拉黑帖子', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('确定要拉黑这篇帖子吗？拉黑后将不再显示该帖子。', style: TextStyle(fontSize: 13, color: AppColors.slate600)),
+        title: const Text('blockPost',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text(
+            'OKneedblockthis postPost?？blockafterwillnotagaindisplaythisPost。',
+            style: TextStyle(fontSize: 13, color: AppColors.slate600)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消', style: TextStyle(color: AppColors.slate500)),
+            child: const Text('Cancel',
+                style: TextStyle(color: AppColors.slate500)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('拉黑', style: TextStyle(color: AppColors.rose500)),
+            child:
+                const Text('block', style: TextStyle(color: AppColors.rose500)),
           ),
         ],
       ),
@@ -192,16 +199,17 @@ class _CommunityPageState extends State<CommunityPage> {
 
     if (response.isSuccess && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已拉黑'), duration: Duration(seconds: 1)),
+        const SnackBar(
+            content: Text('alreadyblock'), duration: Duration(seconds: 1)),
       );
-      // 从列表中过滤掉被拉黑的帖子
+      // fromlistinfilterremovebyblockPost
       setState(() {
         _posts.removeWhere((p) => int.tryParse(p.postId) == postId);
       });
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response.message ?? '拉黑失败，请重试'),
+          content: Text(response.message ?? 'blockfailed，please retry'),
           duration: const Duration(seconds: 1),
         ),
       );
@@ -232,7 +240,7 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  /// 头部：标题 + 发帖按钮 + 二级Tab
+  /// header：title + New Postbutton + secondlevelTab
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
@@ -249,7 +257,7 @@ class _CommunityPageState extends State<CommunityPage> {
             Row(
               children: [
                 const Text(
-                  '球友社区',
+                  'Community',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -259,6 +267,15 @@ class _CommunityPageState extends State<CommunityPage> {
                 const Spacer(),
                 GestureDetector(
                   onTap: () {
+                    if (!HankAuthManager().isLoggedIn) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HankLoginPage(),
+                        ),
+                      );
+                      return;
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -271,8 +288,8 @@ class _CommunityPageState extends State<CommunityPage> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: AppColors.violet600,
                       borderRadius: BorderRadius.circular(999),
@@ -289,7 +306,7 @@ class _CommunityPageState extends State<CommunityPage> {
                         Icon(Icons.add, size: 14, color: Colors.white),
                         SizedBox(width: 4),
                         Text(
-                          '发帖',
+                          'New Post',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.white,
@@ -310,7 +327,7 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  /// 二级Tab：推荐 / 最近 / 关注
+  /// secondlevelTab：Featured / recent / Follow
   Widget _buildSubTabs() {
     return Container(
       decoration: const BoxDecoration(
@@ -324,9 +341,9 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildSubTabButton(CommunitySubTab.recommend, '推荐'),
-          _buildSubTabButton(CommunitySubTab.recent, '最近'),
-          _buildSubTabButton(CommunitySubTab.follow, '关注'),
+          _buildSubTabButton(CommunitySubTab.recommend, 'Featured'),
+          _buildSubTabButton(CommunitySubTab.recent, 'recent'),
+          _buildSubTabButton(CommunitySubTab.follow, 'Follow'),
         ],
       ),
     );
@@ -394,9 +411,9 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  /// 内容区域
+  /// contentarea
   Widget _buildContent() {
-    // 首次加载中
+    // firsttimeLoading
     if (_isRefreshing && _posts.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(
@@ -406,7 +423,7 @@ class _CommunityPageState extends State<CommunityPage> {
       );
     }
 
-    // 空数据
+    // emptyData
     if (_posts.isEmpty) {
       return Center(
         child: Column(
@@ -419,7 +436,7 @@ class _CommunityPageState extends State<CommunityPage> {
             ),
             SizedBox(height: 12),
             Text(
-              '暂无帖子数据',
+              'NoPostData',
               style: TextStyle(color: AppColors.slate500, fontSize: 12),
             ),
           ],
@@ -435,7 +452,7 @@ class _CommunityPageState extends State<CommunityPage> {
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 88),
         itemCount: _posts.length + 1, // +1 for footer
         itemBuilder: (ctx, index) {
-          // 底部加载/没有更多指示器
+          // bottomload/nohasMoreindicator
           if (index == _posts.length) {
             return _buildFooter();
           }
@@ -466,7 +483,7 @@ class _CommunityPageState extends State<CommunityPage> {
               onCommentTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('评论区展开'),
+                    content: Text('CommentareaExpand'),
                     duration: Duration(seconds: 1),
                   ),
                 );
@@ -474,7 +491,7 @@ class _CommunityPageState extends State<CommunityPage> {
               onShareTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('分享成功'),
+                    content: Text('Sharesuccess'),
                     duration: Duration(seconds: 1),
                   ),
                 );
@@ -486,7 +503,7 @@ class _CommunityPageState extends State<CommunityPage> {
     );
   }
 
-  /// 列表底部指示器（加载中 / 没有更多）
+  /// listbottomindicator（Loading / nohasMore）
   Widget _buildFooter() {
     if (_hasNoMore) {
       return Padding(
@@ -498,7 +515,7 @@ class _CommunityPageState extends State<CommunityPage> {
               Container(width: 24, height: 1, color: AppColors.violet200),
               const SizedBox(width: 8),
               const Text(
-                '没有更多了',
+                'nohasMore',
                 style: TextStyle(fontSize: 11, color: AppColors.slate500),
               ),
               const SizedBox(width: 8),

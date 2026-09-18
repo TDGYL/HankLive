@@ -9,28 +9,33 @@ import 'match_detail_page.dart';
 import 'hank_league_filter_page.dart';
 import '../search/search_page.dart';
 
-/// MatchSubTab: 比赛列表二级Tab枚举
-/// 对应接口 tab 参数：关注=4，全部=0，进行中=1，推荐=5，赛程=2，赛果=3
+/// MatchSubTab: matchlistsecondlevelTabenum
+/// maps to API tab paramcount：Follow=4，All=0，In Progress=1，Featured=5，Fixtures=2，result=3
 enum MatchSubTab {
-  /// 关注 tab=4
+  /// Follow tab=4
   follow,
-  /// 全部 tab=0
+
+  /// All tab=0
   all,
-  /// 进行中 tab=1
+
+  /// In Progress tab=1
   live,
-  /// 推荐 tab=5
+
+  /// Featured tab=5
   recommend,
-  /// 赛程 tab=2
+
+  /// Fixtures tab=2
   schedule,
-  /// 赛果 tab=3
+
+  /// result tab=3
   results,
 }
 
-/// MatchPage: 比赛列表页
-/// 含6个二级Tab：关注/全部/进行中/推荐/赛程/赛果
-/// 赛程和赛果Tab含日历选择按钮 + 6天日期横滑条
-/// 数据通过 HankMatchApiService 请求接口获取
-/// 支持下拉刷新 + 上拉加载更多
+/// MatchPage: matchlistpage
+/// contains6eachsecondlevelTab：Follow/All/In Progress/Featured/Fixtures/result
+/// FixturesandresultTabcontainscalendarselectbutton + 6dayDatescrollitem
+/// Datapasspass HankMatchApiService requestAPIget
+/// supportPull to refresh + uppullloadMore
 class MatchPage extends StatefulWidget {
   const MatchPage({Key? key}) : super(key: key);
 
@@ -39,56 +44,56 @@ class MatchPage extends StatefulWidget {
 }
 
 class _MatchPageState extends State<MatchPage> {
-  /// 当前选中的子Tab
+  /// whenbeforeselectedchildTab
   MatchSubTab _currentSubTab = MatchSubTab.recommend;
 
-  /// 日历当前选中的日期
+  /// calendarwhenbeforeselectedDate
   DateTime _selectedDate = DateTime.now();
 
-  /// 日期横滑条锚点日期（仅在日历选项卡确认时更新，点击横滑条不更新）
-  /// 赛程：锚点为横滑条第一个日期；赛果：锚点为横滑条最后一个日期
+  /// DatescrollitemanchorDate（onlyincalendarselectitemcardConfirmwhenupdate，tapscrollitemnotupdate）
+  /// Fixtures：anchorisscrollitemaeachDate；result：anchorisscrollitemlastaeachDate
   DateTime _anchorDate = DateTime.now();
 
-  /// 赛程模式下缓存的选中日期
+  /// FixturesmodestyledowncacheselectedDate
   DateTime? _scheduleSelectedDate;
 
-  /// 赛程模式下缓存的锚点日期
+  /// FixturesmodestyledowncacheanchorDate
   DateTime? _scheduleAnchorDate;
 
-  /// 赛果模式下缓存的选中日期
+  /// resultmodestyledowncacheselectedDate
   DateTime? _resultsSelectedDate;
 
-  /// 赛果模式下缓存的锚点日期
+  /// resultmodestyledowncacheanchorDate
   DateTime? _resultsResultsAnchorDate;
 
-  /// 比赛数据列表
+  /// matchDatalist
   List<MatchModel> _matches = [];
 
-  /// 是否正在加载（首次加载 / 上拉加载）
+  /// whetherLoading（firsttimeload / uppullload）
   bool _isLoading = false;
 
-  /// 是否正在下拉刷新
+  /// whetheractiveinPull to refresh
   bool _isRefreshing = false;
 
-  /// 是否没有更多数据
+  /// whethernohasMoreData
   bool _hasNoMore = false;
 
-  /// 分页页码
+  /// categorypagepagecode
   int _page = 1;
 
-  /// 每页条数
+  /// eachpageitemcount
   final int _size = 10;
 
-  /// API服务实例
+  /// APIservice instance
   final HankMatchApiService _apiService = HankMatchApiService();
 
-  /// 滚动控制器（用于上拉加载监听）
+  /// scrollcontroller（useuppullloadlisten）
   final ScrollController _scrollController = ScrollController();
 
-  /// 日期横滑条滚动控制器（用于日历选择后自动滚动）
+  /// Datescrollitemscrollcontroller（usecalendarselectafterautoscroll）
   ScrollController _dateStripController = ScrollController();
 
-  /// 筛选选中的联赛ID列表
+  /// filterselectedLeagueIDlist
   List<int> _selectedCompetitionIds = [];
 
   @override
@@ -106,7 +111,7 @@ class _MatchPageState extends State<MatchPage> {
     super.dispose();
   }
 
-  /// 滚动监听：到达底部触发加载更多
+  /// scroll listener：toreachedbottomtriggerloadMore
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 100) {
@@ -116,7 +121,7 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  /// 将 MatchSubTab 转换为接口对应的 HankMatchTab
+  /// will MatchSubTab convert toAPImaps to HankMatchTab
   HankMatchTab _getApiTab(MatchSubTab tab) {
     switch (tab) {
       case MatchSubTab.follow:
@@ -134,13 +139,13 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  /// 获取当前选中日期的时间戳（秒）
+  /// getwhenbeforeselectedDateTimetimestamp（seconds）
   int _getSelectedTimestamp() {
     return _selectedDate.millisecondsSinceEpoch ~/ 1000;
   }
 
-  /// 请求比赛列表数据
-  /// [isRefresh] - true=刷新（重置page=1），false=加载更多
+  /// requestmatchlistData
+  /// [isRefresh] - true=refresh（resetpage=1），false=loadMore
   Future<void> _fetchMatches({required bool isRefresh}) async {
     if (_isLoading || _isRefreshing) return;
 
@@ -178,7 +183,7 @@ class _MatchPageState extends State<MatchPage> {
           _page = requestPage;
           _isLoading = false;
         }
-        // 返回数据不足一页，标记没有更多
+        // BackDatanotfootballapage，markrecordnohasMore
         if (result.length < _size) {
           _hasNoMore = true;
         }
@@ -186,20 +191,20 @@ class _MatchPageState extends State<MatchPage> {
     }
   }
 
-  /// 是否显示日历按钮
+  /// whetherdisplaycalendarbutton
   bool get _showCalendar =>
       _currentSubTab == MatchSubTab.schedule ||
       _currentSubTab == MatchSubTab.results;
 
-  /// 日历标题
+  /// calendartitle
   String get _calendarTitle {
-    if (_currentSubTab == MatchSubTab.schedule) return '赛程日期选择';
-    if (_currentSubTab == MatchSubTab.results) return '赛果日期选择';
-    return '日期选择';
+    if (_currentSubTab == MatchSubTab.schedule) return 'FixturesDateselect';
+    if (_currentSubTab == MatchSubTab.results) return 'resultDateselect';
+    return 'Dateselect';
   }
 
   void _switchSubTab(MatchSubTab tab) {
-    // 保存离开Tab的日期缓存
+    // SaveleaveTabDatecache
     if (_currentSubTab == MatchSubTab.schedule) {
       _scheduleSelectedDate = _selectedDate;
       _scheduleAnchorDate = _anchorDate;
@@ -208,7 +213,7 @@ class _MatchPageState extends State<MatchPage> {
       _resultsResultsAnchorDate = _anchorDate;
     }
 
-    // 恢复目标Tab的缓存日期
+    // restore targetTabcacheDate
     DateTime newSelectedDate;
     DateTime newAnchorDate;
     if (tab == MatchSubTab.schedule && _scheduleSelectedDate != null) {
@@ -222,7 +227,7 @@ class _MatchPageState extends State<MatchPage> {
       newAnchorDate = DateTime.now();
     }
 
-    // 创建带正确初始偏移的新controller，避免重建后出现滑动动效
+    // createdwithactiveOKinitialoffsetnewcontroller，avoid scroll effect after rebuild
     const itemWidth = 64.0;
     _dateStripController.dispose();
     _dateStripController = ScrollController(
@@ -240,7 +245,7 @@ class _MatchPageState extends State<MatchPage> {
     _fetchMatches(isRefresh: true);
   }
 
-  /// 跳转到比赛详情页
+  /// navigate tomatchDetailspage
   void _navigateToDetail(MatchModel match) {
     Navigator.push(
       context,
@@ -257,18 +262,18 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 打开日历底部弹窗
+  /// opencalendarbottompopup
   void _openCalendar() {
     final now = DateTime.now();
     DateTime firstDate;
     DateTime lastDate;
 
     if (_currentSubTab == MatchSubTab.schedule) {
-      // 赛程：仅可选当天及以后（当天 ~ 一年后）
+      // Fixtures：onlyoptionalwhendayandwithafter（whenday ~ ayearafter）
       firstDate = now;
       lastDate = now.add(const Duration(days: 365));
     } else {
-      // 赛果：仅可选当天及之前（一年前 ~ 当天）
+      // result：onlyoptionalwhendayand beforebefore（ayearbefore ~ whenday）
       firstDate = now.subtract(const Duration(days: 365));
       lastDate = now;
     }
@@ -287,33 +292,33 @@ class _MatchPageState extends State<MatchPage> {
           _selectedDate = selected;
           _anchorDate = selected;
         });
-        // 仅在日历选项卡确认日期时刷新横滑条数据
+        // onlyincalendarselectitemcardConfirmDatewhenrefresh scrollitemData
         _scrollDateStripToSelected();
         _fetchMatches(isRefresh: true);
       }
     });
   }
 
-  /// 日历选择后，滚动日期横滑条到选中日期位置（无动画）
-  /// 赛程：选中日期在第一个，滚动到最左
-  /// 赛果：选中日期在最后一个，滚动到最右
+  /// calendarselectafter，scrollDatescrollitemtoselectedDatePosition（noneanimation）
+  /// Fixtures：selectedDateinaeach，scrolltomostleft
+  /// result：selectedDateinlastaeach，scrolltomostright
   void _scrollDateStripToSelected() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_dateStripController.hasClients) return;
 
-      // 每个日期项宽度56 + 间距8 = 64
+      // eacheachDateitemwidthdepth56 + betweendistance8 = 64
       const itemWidth = 64.0;
       if (_currentSubTab == MatchSubTab.schedule) {
-        // 赛程：选中日期是第一个，滚动到最左
+        // Fixtures：selectedDateisaeach，scrolltomostleft
         _dateStripController.jumpTo(0);
       } else {
-        // 赛果：选中日期是最后一个，滚动到最右
+        // result：selectedDateislastaeach，scrolltomostright
         _dateStripController.jumpTo(5 * itemWidth);
       }
     });
   }
 
-  /// 格式化选中日期显示
+  /// formatselectedDatedisplay
   String get _selectedDateText {
     return '${_selectedDate.month}/${_selectedDate.day}';
   }
@@ -342,10 +347,10 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 比赛列表区域（含下拉刷新 + 上拉加载 + 加载态 + 空态）
-  /// 底部 padding 留出底部导航栏空间，防止Tab遮挡列表
+  /// matchlistarea（containsPull to refresh + uppullload + loadstate + emptystate）
+  /// bottom padding leavebottomnavbaremptybetween，preventTabblocklist
   Widget _buildMatchList() {
-    // 首次加载中
+    // firsttimeLoading
     if (_isRefreshing && _matches.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(
@@ -355,7 +360,7 @@ class _MatchPageState extends State<MatchPage> {
       );
     }
 
-    // 空数据
+    // emptyData
     if (_matches.isEmpty) {
       return Center(
         child: Column(
@@ -368,7 +373,7 @@ class _MatchPageState extends State<MatchPage> {
             ),
             SizedBox(height: 12),
             Text(
-              '暂无比赛数据',
+              'No matchesData',
               style: TextStyle(color: AppColors.slate500, fontSize: 12),
             ),
           ],
@@ -384,7 +389,7 @@ class _MatchPageState extends State<MatchPage> {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
         itemCount: _matches.length + 1, // +1 for footer
         itemBuilder: (ctx, index) {
-          // 底部加载/没有更多指示器
+          // bottomload/nohasMoreindicator
           if (index == _matches.length) {
             return _buildFooter();
           }
@@ -411,7 +416,7 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 列表底部指示器（加载中 / 没有更多）
+  /// listbottomindicator（Loading / nohasMore）
   Widget _buildFooter() {
     if (_hasNoMore) {
       return Padding(
@@ -427,7 +432,7 @@ class _MatchPageState extends State<MatchPage> {
               ),
               const SizedBox(width: 8),
               const Text(
-                '没有更多了',
+                'nohasMore',
                 style: TextStyle(
                   fontSize: 11,
                   color: AppColors.slate500,
@@ -483,7 +488,7 @@ class _MatchPageState extends State<MatchPage> {
                 ),
                 const SizedBox(width: 8),
                 const Text(
-                  '紫极球坛',
+                  'HankLive',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -521,7 +526,7 @@ class _MatchPageState extends State<MatchPage> {
                           const SizedBox(width: 6),
                           const Expanded(
                             child: Text(
-                              '搜索球队/联赛',
+                              'SearchTeam/League',
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Color(0xB37C3AED),
@@ -556,7 +561,7 @@ class _MatchPageState extends State<MatchPage> {
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('无未读通知'),
+                        content: Text('noneunreadnotifications'),
                         duration: Duration(seconds: 1),
                       ),
                     );
@@ -612,14 +617,14 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 是否显示筛选按钮
+  /// whetherdisplayfilterbutton
   bool get _showFilterButton =>
       _currentSubTab == MatchSubTab.all ||
       _currentSubTab == MatchSubTab.live ||
       _currentSubTab == MatchSubTab.schedule ||
       _currentSubTab == MatchSubTab.results;
 
-  /// 菜单+筛选按钮行（筛选按钮与菜单垂直对齐，菜单靠左）
+  /// menu+filterbuttonrow（filterbuttonwithmenuvertical align，menucloseleft）
   Widget _buildSubTabsRow() {
     return Container(
       decoration: const BoxDecoration(
@@ -637,12 +642,12 @@ class _MatchPageState extends State<MatchPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildSubTabButton(MatchSubTab.follow, '关注'),
-                  _buildSubTabButton(MatchSubTab.recommend, '推荐'),
-                  _buildSubTabButton(MatchSubTab.all, '全部'),
-                  _buildSubTabButton(MatchSubTab.live, '进行中'),
-                  _buildSubTabButton(MatchSubTab.schedule, '赛程'),
-                  _buildSubTabButton(MatchSubTab.results, '赛果'),
+                  _buildSubTabButton(MatchSubTab.follow, 'Follow'),
+                  _buildSubTabButton(MatchSubTab.recommend, 'Featured'),
+                  _buildSubTabButton(MatchSubTab.all, 'All'),
+                  _buildSubTabButton(MatchSubTab.live, 'In Progress'),
+                  _buildSubTabButton(MatchSubTab.schedule, 'Fixtures'),
+                  _buildSubTabButton(MatchSubTab.results, 'result'),
                 ],
               ),
             ),
@@ -747,7 +752,7 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 日历按钮：点击后底部弹出日历选项卡
+  /// calendarbutton：tapafterbottompopupcalendarselectitemcard
   Widget _buildCalendarButton() {
     return Container(
       padding: const EdgeInsets.only(top: 8),
@@ -777,8 +782,7 @@ class _MatchPageState extends State<MatchPage> {
           GestureDetector(
             onTap: _openCalendar,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: AppColors.violet600,
                 borderRadius: BorderRadius.circular(8),
@@ -799,7 +803,7 @@ class _MatchPageState extends State<MatchPage> {
                   ),
                   SizedBox(width: 4),
                   Text(
-                    '选择日期',
+                    'selectDate',
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -815,19 +819,19 @@ class _MatchPageState extends State<MatchPage> {
     );
   }
 
-  /// 生成6天日期列表
-  /// 赛程：以锚点日期为起点，往后追加5天（锚点日期+5天）
-  /// 赛果：以锚点日期为终点，往前追加5天（前5天+锚点日期）
-  /// 锚点日期仅在日历选项卡确认时更新，点击横滑条不影响列表
+  /// generatecomplete6dayDatelist
+  /// Fixtures：anchorDateisstartpoint，toafterappend5day（anchorDate+5day）
+  /// result：anchorDateisend point，tobeforeappend5day（before5day+anchorDate）
+  /// anchorDateonlyincalendarselectitemcardConfirmwhenupdate，tapscrollitemno effectlist
   List<DateTime> _getDateList() {
     final List<DateTime> list = [];
     if (_currentSubTab == MatchSubTab.schedule) {
-      // 赛程：锚点日期为第一个，往后追加5天
+      // Fixtures：anchorDateisaeach，toafterappend5day
       for (int i = 0; i < 6; i++) {
         list.add(_anchorDate.add(Duration(days: i)));
       }
     } else {
-      // 赛果：锚点日期为最后一个，往前追加5天
+      // result：anchorDateislastaeach，tobeforeappend5day
       for (int i = 5; i >= 0; i--) {
         list.add(_anchorDate.subtract(Duration(days: i)));
       }
@@ -835,15 +839,15 @@ class _MatchPageState extends State<MatchPage> {
     return list;
   }
 
-  /// 判断两个日期是否同一天
+  /// checktwoeachDatewhethersameaday
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  /// 日期横滑条：展示6天，高亮与日历选择联动
+  /// Datescrollitem：display6day，highlightwithcalendarselectlinkedanimation
   Widget _buildDateStrip() {
     final dates = _getDateList();
-    final weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    final weekDays = ['Sun', 'a', 'second', 'three', 'Thu', 'Friday', 'Sat'];
     return SizedBox(
       height: 52,
       child: ListView.separated(
@@ -864,8 +868,7 @@ class _MatchPageState extends State<MatchPage> {
             },
             child: Container(
               width: 56,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
               decoration: BoxDecoration(
                 color: selected
                     ? AppColors.violet600
@@ -888,7 +891,7 @@ class _MatchPageState extends State<MatchPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    isToday ? '今天' : weekDays[d.weekday % 7],
+                    isToday ? 'Today' : weekDays[d.weekday % 7],
                     style: TextStyle(
                       fontSize: 9,
                       color: selected

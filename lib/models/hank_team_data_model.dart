@@ -1,47 +1,47 @@
-/// HankTeamData: 球队详情数据模型
-/// 对应接口 GET /api/livespeed/football/team/data 返回的数据体
-/// 包含球队基本信息、联赛、场馆、教练、身价等
+/// HankTeamData: TeamDetailsDatamodel
+/// maps to API GET /api/livespeed/football/team/data BackDatabody
+/// containsTeamInfo、League、matchvenue、Coach、Valueetc
 class HankTeamData {
-  /// 联赛ID
+  /// LeagueID
   final int? competitionId;
 
-  /// 联赛名称
+  /// Leaguename
   final String? competitionName;
 
-  /// 球队名称
+  /// Teamname
   final String? name;
 
-  /// 球队Logo URL
+  /// TeamLogo URL
   final String? logo;
 
-  /// 成立年份
+  /// foundedyear
   final int? foundationTime;
 
-  /// 国家名称
+  /// Countryname
   final String? countryName;
 
-  /// 国家旗帜URL
+  /// CountryflagURL
   final String? countryLogo;
 
-  /// 主场名称
+  /// homematchname
   final String? venueName;
 
-  /// 主场容量
+  /// homematchcapacitycount
   final int? venueCapacity;
 
-  /// 主教练姓名
+  /// homeCoachname
   final String? managerName;
 
-  /// 主教练头像URL
+  /// homeCoachavatarURL
   final String? managerLogo;
 
-  /// 球队总身价（欧元）
+  /// TeamtotalValue（EUR）
   final int? marketValue;
 
-  /// 是否已订阅
+  /// whetheralreadysubscribe
   final bool? isSubscribe;
 
-  /// 官方网站
+  /// official website
   final String? website;
 
   HankTeamData({
@@ -61,8 +61,8 @@ class HankTeamData {
     this.website,
   });
 
-  /// 从JSON解析
-  /// 字段映射：competition_id→competitionId, foundation_time→foundationTime 等
+  /// fromJSONparse
+  /// field mapping：competition_id→competitionId, foundation_time→foundationTime etc
   factory HankTeamData.fromJson(Map<String, dynamic> json) {
     return HankTeamData(
       competitionId: json['competition_id'] != null

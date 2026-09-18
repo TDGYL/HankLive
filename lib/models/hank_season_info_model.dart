@@ -1,13 +1,13 @@
-/// HankSeasonInfo: 赛季信息模型
-/// 对应接口 GET /api/livespeed/football/competition/season-list 返回的数据元素
+/// HankSeasonInfo: Seasoninfomodel
+/// maps to API GET /api/livespeed/football/competition/season-list BackDataelement
 class HankSeasonInfo {
-  /// 赛季ID
+  /// SeasonID
   final int seasonId;
 
-  /// 赛季年份（如 "2024-2025"）
+  /// Seasonyear（e.g. "2024-2025"）
   final String year;
 
-  /// 是否为当前赛季（1=是, 0=否）
+  /// is currentSeason（1=is, 0=no）
   final int isCurrent;
 
   HankSeasonInfo({
@@ -16,7 +16,7 @@ class HankSeasonInfo {
     required this.isCurrent,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankSeasonInfo.fromJson(Map<String, dynamic> json) {
     return HankSeasonInfo(
       seasonId: json['season_id'] as int? ?? 0,

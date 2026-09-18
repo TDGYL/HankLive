@@ -3,13 +3,13 @@ import '../../theme/app_colors.dart';
 import '../../models/hank_competition_filter_model.dart';
 import '../../utils/hank_network_manager.dart';
 
-/// HankLeagueFilterPage: 联赛筛选页面
-/// 功能：左侧分类菜单 + 右侧联赛列表（带勾选），支持全选/反选/重置
-/// 接口：GET /api/livespeed/football/competition-filter，参数 tab=0
-/// 主题：浅紫色 + 白色
-/// 参照 leagueList.html 布局，去除五大联赛按钮
+/// HankLeagueFilterPage: Leaguefilterpage
+/// feature：leftcategorytypemenu + rightLeaguelist（withcheckselect），supportallselect/invert/reset
+/// API：GET /api/livespeed/football/competition-filter，paramcount tab=0
+/// hometheme：lightpurple + whitecolor
+/// reference leagueList.html layoutmatch，exclude top 5Leaguebutton
 class HankLeagueFilterPage extends StatefulWidget {
-  /// 构造函数
+  /// constructorfunctioncount
   const HankLeagueFilterPage({Key? key}) : super(key: key);
 
   @override
@@ -17,19 +17,19 @@ class HankLeagueFilterPage extends StatefulWidget {
 }
 
 class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
-  /// 分类列表（菜单数据）
+  /// categorytypelist（menuData）
   List<HankFilterCategory> _categories = [];
 
-  /// 当前选中的分类索引
+  /// whenbeforeselectedcategorytypeindex
   int _selectedCategoryIndex = 0;
 
-  /// 已选中的联赛ID集合
+  /// selectedinLeagueIDcollection
   final Set<int> _selectedIds = {};
 
-  /// 是否正在加载
+  /// whetherLoading
   bool _isLoading = true;
 
-  /// 总比赛场次（已选联赛的比赛数总和）
+  /// totalmatchmatchtime（selectedLeaguematchcounttotaland）
   int _totalMatches = 0;
 
   @override
@@ -38,9 +38,9 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     _fetchFilterData();
   }
 
-  /// 请求联赛筛选数据
-  /// 接口：GET /api/livespeed/football/competition-filter
-  /// 参数：tab=0
+  /// requestLeaguefilterData
+  /// API：GET /api/livespeed/football/competition-filter
+  /// paramcount：tab=0
   Future<void> _fetchFilterData() async {
     final response = await HankNetworkManager()
         .getRequest('/api/livespeed/football/competition-filter', queryParameters: {
@@ -61,22 +61,22 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     }
   }
 
-  /// 获取当前分类下的联赛列表
+  /// getwhenbeforecategorytypedownLeaguelist
   List<HankCompetition> get _currentCompetitions {
     if (_categories.isEmpty) return [];
     return _categories[_selectedCategoryIndex].competitions;
   }
 
-  /// 切换分类
-  /// [index] - 目标分类索引
+  /// togglecategorytype
+  /// [index] - itemmarkcategorytypeindex
   void _switchCategory(int index) {
     setState(() {
       _selectedCategoryIndex = index;
     });
   }
 
-  /// 切换联赛选中状态
-  /// [competition] - 联赛实体
+  /// toggleLeagueselectedstatus
+  /// [competition] - Leagueentitybody
   void _toggleCompetition(HankCompetition competition) {
     setState(() {
       if (_selectedIds.contains(competition.id)) {
@@ -88,7 +88,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     });
   }
 
-  /// 全选当前分类下的所有联赛
+  /// allselectwhenbeforecategorytypedownthehasLeague
   void _selectAll() {
     setState(() {
       for (final c in _currentCompetitions) {
@@ -98,7 +98,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     });
   }
 
-  /// 反选当前分类下的所有联赛
+  /// invertwhenbeforecategorytypedownthehasLeague
   void _invertSelection() {
     setState(() {
       for (final c in _currentCompetitions) {
@@ -112,7 +112,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     });
   }
 
-  /// 重置所有选择
+  /// resetthehasselect
   void _resetSelection() {
     setState(() {
       _selectedIds.clear();
@@ -120,7 +120,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     });
   }
 
-  /// 更新已选联赛的总比赛场次
+  /// updateselectedLeaguetotalmatchmatchtime
   void _updateTotalMatches() {
     int count = 0;
     for (final category in _categories) {
@@ -133,7 +133,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     _totalMatches = count;
   }
 
-  /// 获取当前分类下已选中的数量
+  /// getwhenbeforecategorytypedownselectedincountcount
   int get _currentSelectedCount {
     int count = 0;
     for (final c in _currentCompetitions) {
@@ -161,13 +161,13 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建顶部导航栏
+  /// buildtopnavbar
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
-      title: const Text('联赛筛选',
+      title: const Text('Leaguefilter',
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700,
               color: AppColors.slate800)),
@@ -179,26 +179,26 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
       actions: [
         TextButton(
           onPressed: _resetSelection,
-          child: const Text('重置',
+          child: const Text('reset',
               style: TextStyle(fontSize: 13, color: AppColors.violet600)),
         ),
       ],
     );
   }
 
-  /// 构建操作栏（全选、反选、已选数量）
+  /// buildactionbar（allselect、invert、selectedcountcount）
   Widget _buildActionBar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       color: Colors.white,
       child: Row(
         children: [
-          _buildQuickButton('全选', _selectAll),
+          _buildQuickButton('allselect', _selectAll),
           const SizedBox(width: 8),
-          _buildQuickButton('反选', _invertSelection),
+          _buildQuickButton('invert', _invertSelection),
           const Spacer(),
           Text(
-            '已选 $_currentSelectedCount/${_currentCompetitions.length} 项',
+            'selected $_currentSelectedCount/${_currentCompetitions.length} item',
             style: const TextStyle(fontSize: 11, color: AppColors.slate500),
           ),
         ],
@@ -206,7 +206,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建快捷按钮（全选/反选）
+  /// buildquickbutton（allselect/invert）
   Widget _buildQuickButton(String label, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -223,7 +223,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建主体内容（左侧菜单 + 右侧联赛列表）
+  /// buildhomebodycontent（leftmenu + rightLeaguelist）
   Widget _buildContentBody() {
     return Row(
       children: [
@@ -233,7 +233,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建左侧分类菜单
+  /// buildleftcategorytypemenu
   Widget _buildCategoryMenu() {
     return Container(
       width: 90,
@@ -291,7 +291,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建右侧联赛列表
+  /// buildrightLeaguelist
   Widget _buildCompetitionList() {
     final competitions = _currentCompetitions;
     if (competitions.isEmpty) {
@@ -309,7 +309,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建单条联赛卡片
+  /// buildsingleLeaguecard
   Widget _buildCompetitionCard(HankCompetition competition) {
     final isChecked = _selectedIds.contains(competition.id);
     return GestureDetector(
@@ -326,7 +326,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
         ),
         child: Row(
           children: [
-            // 联赛logo
+            // Leaguelogo
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: competition.logo.isNotEmpty
@@ -340,7 +340,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
                   : _buildLogoPlaceholder(),
             ),
             const SizedBox(width: 10),
-            // 联赛名称
+            // Leaguename
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,7 +357,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${competition.matches} 场比赛',
+                    '${competition.matches} matchmatch',
                     style: const TextStyle(
                       fontSize: 10,
                       color: AppColors.slate400,
@@ -366,7 +366,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
                 ],
               ),
             ),
-            // 勾选框
+            // checkselectfield
             Container(
               width: 20,
               height: 20,
@@ -388,7 +388,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建logo占位图
+  /// buildlogoplaceholderimage
   Widget _buildLogoPlaceholder() {
     return Container(
       width: 32,
@@ -401,7 +401,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
     );
   }
 
-  /// 构建空状态视图
+  /// buildemptystatusvisualimage
   Widget _buildEmptyView() {
     return Center(
       child: Column(
@@ -409,14 +409,14 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
         children: [
           const Icon(Icons.folder_open, size: 48, color: AppColors.slate400),
           const SizedBox(height: 8),
-          const Text('暂无联赛数据',
+          const Text('NoLeagueData',
               style: TextStyle(fontSize: 12, color: AppColors.slate400)),
         ],
       ),
     );
   }
 
-  /// 构建底部确认栏
+  /// buildbottomConfirmbar
   Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -438,13 +438,13 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
               Text.rich(
                 TextSpan(
                   children: [
-                    const TextSpan(text: '已选 ',
+                    const TextSpan(text: 'selected ',
                         style: TextStyle(fontSize: 11, color: AppColors.slate500)),
                     TextSpan(text: '${_selectedIds.length}',
                         style: const TextStyle(
                             fontSize: 13, fontWeight: FontWeight.w700,
                             color: AppColors.slate800)),
-                    const TextSpan(text: ' 个联赛',
+                    const TextSpan(text: ' eachLeague',
                         style: TextStyle(fontSize: 11, color: AppColors.slate500)),
                   ],
                 ),
@@ -453,13 +453,13 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
               Text.rich(
                 TextSpan(
                   children: [
-                    const TextSpan(text: '涵盖 ',
+                    const TextSpan(text: 'covers ',
                         style: TextStyle(fontSize: 10, color: AppColors.slate400)),
                     TextSpan(text: '$_totalMatches',
                         style: const TextStyle(
                             fontSize: 11, fontWeight: FontWeight.w600,
                             color: AppColors.violet600)),
-                    const TextSpan(text: ' 场比赛',
+                    const TextSpan(text: ' matchmatch',
                         style: TextStyle(fontSize: 10, color: AppColors.slate400)),
                   ],
                 ),
@@ -484,7 +484,7 @@ class _HankLeagueFilterPageState extends State<HankLeagueFilterPage> {
                   ),
                 ],
               ),
-              child: const Text('确 定',
+              child: const Text('OK set',
                   style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w700,
                       color: Colors.white)),

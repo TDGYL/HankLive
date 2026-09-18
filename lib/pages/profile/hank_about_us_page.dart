@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../../theme/app_colors.dart';
 
-/// HankAboutUsPage: 关于我们页面
-/// 功能：展示App Logo、版本号、服务协议、隐私政策、官网入口
-/// 差异化：浅紫+白色主题，圆形渐变Logo，白色圆角卡片列表
-/// 参照 ZogoLive about_us_page.dart 的功能和数据
+/// HankAboutUsPage: About Uspage
+/// feature：displayApp Logo、Version、serviceagreement、Privacy Policy、official website entry
+/// differentiated：light purple+whitecolorhometheme，circlegradientLogo，whitecolorroundedcardlist
+/// reference ZogoLive about_us_page.dart featureandData
 class HankAboutUsPage extends StatefulWidget {
   const HankAboutUsPage({Key? key}) : super(key: key);
 
@@ -15,22 +15,22 @@ class HankAboutUsPage extends StatefulWidget {
 }
 
 class _HankAboutUsPageState extends State<HankAboutUsPage> {
-  /// 应用版本号
+  /// shoulduseVersion
   static const String _appVersion = 'v1.0.0';
 
-  /// 服务协议URL
+  /// serviceagreementURL
   static const String _userAgreementUrl =
       'https://www.livespeeds.com/user-agreement?platform=IOS';
 
-  /// 隐私政策URL
+  /// Privacy PolicyURL
   static const String _privacyAgreementUrl =
       'https://www.livespeeds.com/privacy-agreement?platform=IOS';
 
-  /// 官网地址
+  /// officialwebaddress
   static const String _officialWebsite = 'https://www.livespeeds.com';
 
-  /// 跳转WebView加载协议页面
-  /// [title] 页面标题，[url] 加载地址
+  /// navWebViewloadagreementpage
+  /// [title] pagetitle，[url] loadaddress
   void _pushToWebView({required String title, required String url}) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -42,19 +42,19 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
     );
   }
 
-  /// 复制官网地址到剪贴板
+  /// copyofficialwebaddresstoclipboardboard
   Future<void> _copyWebsite() async {
     await Clipboard.setData(const ClipboardData(text: _officialWebsite));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('已复制'), duration: Duration(seconds: 1)),
+        const SnackBar(content: Text('Copied'), duration: Duration(seconds: 1)),
       );
     }
   }
 
-  /// 构建列表项
-  /// [icon] 图标，[iconColor] 图标颜色，[title] 标题
-  /// [trailing] 右侧内容，[onTap] 点击回调
+  /// buildlistitem
+  /// [icon] icon，[iconColor] iconcolor，[title] title
+  /// [trailing] right content，[onTap] tapcallback
   Widget _buildListItem(
     IconData icon,
     Color iconColor,
@@ -98,7 +98,7 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text('关于我们',
+        title: const Text('About Us',
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700,
                 color: AppColors.slate800)),
@@ -112,7 +112,7 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 40),
-          // Logo（渐变圆形 + 足球图标）
+          // Logo（gradient circle + Footballicon）
           Center(
             child: Container(
               width: 80,
@@ -135,7 +135,7 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
             ),
           ),
           const SizedBox(height: 12),
-          // 应用名称
+          // shouldusename
           const Center(
             child: Text('HankLive',
                 style: TextStyle(
@@ -143,14 +143,14 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
                     color: AppColors.slate800)),
           ),
           const SizedBox(height: 4),
-          // 版本号
+          // Version
           const Center(
             child: Text(_appVersion,
                 style: TextStyle(
                     color: AppColors.slate500, fontSize: 12)),
           ),
           const SizedBox(height: 32),
-          // 功能列表
+          // featurelist
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -166,23 +166,23 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
             child: Column(
               children: [
                 _buildListItem(
-                  Icons.description, AppColors.violet600, '服务协议',
+                  Icons.description, AppColors.violet600, 'serviceagreement',
                   trailing: const Icon(Icons.chevron_right, size: 14,
                       color: AppColors.slate400),
                   onTap: () => _pushToWebView(
-                      title: '服务协议', url: _userAgreementUrl),
+                      title: 'serviceagreement', url: _userAgreementUrl),
                 ),
                 Divider(height: 1, color: AppColors.violet100),
                 _buildListItem(
-                  Icons.privacy_tip, AppColors.violet500, '隐私政策',
+                  Icons.privacy_tip, AppColors.violet500, 'Privacy Policy',
                   trailing: const Icon(Icons.chevron_right, size: 14,
                       color: AppColors.slate400),
                   onTap: () => _pushToWebView(
-                      title: '隐私政策', url: _privacyAgreementUrl),
+                      title: 'Privacy Policy', url: _privacyAgreementUrl),
                 ),
                 Divider(height: 1, color: AppColors.violet100),
                 _buildListItem(
-                  Icons.language, AppColors.violet400, '官网',
+                  Icons.language, AppColors.violet400, 'officialweb',
                   trailing: const Text(_officialWebsite,
                       style: TextStyle(
                           color: AppColors.slate500, fontSize: 10)),
@@ -197,13 +197,13 @@ class _HankAboutUsPageState extends State<HankAboutUsPage> {
   }
 }
 
-/// _HankSimpleWebViewPage: 简单WebView页面
-/// 用于加载协议、政策等外部网页
+/// _HankSimpleWebViewPage: simpleWebViewpage
+/// useloadagreement、policyetcoutersectionwebpage
 class _HankSimpleWebViewPage extends StatefulWidget {
-  /// 页面标题
+  /// pagetitle
   final String pageTitle;
 
-  /// 网页URL
+  /// webpageURL
   final String webUrl;
 
   const _HankSimpleWebViewPage({

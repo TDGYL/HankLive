@@ -3,16 +3,16 @@ import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
 import '../common/team_logo_widget.dart';
 
-/// StandardMatchCard: 普通比赛卡片
-/// 展示联赛、对阵双方、比分/时间、AI胜率（未开赛）或数据链接（已完赛）
+/// StandardMatchCard: standardpassmatchcard
+/// displayLeague、two sides、score/Time、AIWrate（not started）orDatalink（alreadyfinishedmatch）
 class StandardMatchCard extends StatelessWidget {
-  /// 比赛数据
+  /// matchData
   final MatchModel match;
 
-  /// 点击卡片回调
+  /// tapcardcallback
   final VoidCallback? onTap;
 
-  /// 点击数据查看回调
+  /// tapDataviewcallback
   final VoidCallback? onDataTap;
 
   StandardMatchCard({
@@ -120,7 +120,7 @@ class StandardMatchCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
           child: const Text(
-            '已完赛',
+            'alreadyfinishedmatch',
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
@@ -154,7 +154,7 @@ class StandardMatchCard extends StatelessWidget {
         );
       default:
         return const Text(
-          '未开赛',
+          'not started',
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w700,
@@ -248,7 +248,7 @@ class StandardMatchCard extends StatelessWidget {
     );
   }
 
-  /// AI胜率预测条
+  /// AIWratepredictionitem
   Widget _buildAiWinRateBar() {
     return Container(
       padding: const EdgeInsets.only(top: 10),
@@ -260,7 +260,7 @@ class StandardMatchCard extends StatelessWidget {
       child: Row(
         children: [
           const Text(
-            'AI预测胜率',
+            'AIpredictionWrate',
             style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
           ),
           const SizedBox(width: 12),
@@ -296,7 +296,7 @@ class StandardMatchCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            '主胜 ${match.homeWinRate}%',
+            'homeW ${match.homeWinRate}%',
             style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
@@ -313,13 +313,13 @@ class StandardMatchCard extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          '集锦 / 战术复盘已上线',
+          ' / tactical replayalreadyupline',
           style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
         ),
         GestureDetector(
           onTap: onDataTap,
           child: const Text(
-            '查看数据 >',
+            'viewData >',
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,

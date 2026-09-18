@@ -3,13 +3,13 @@ import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
 import '../common/team_logo_widget.dart';
 
-/// EmbeddedMatchCard: 社区帖子内嵌关联赛事卡片
-/// 实现讨论与实时比赛数据串联的核心机制
+/// EmbeddedMatchCard: CommunityPostembedded matchLeaguematchcard
+/// entitylink discussionswithentitywhenmatchDatalinklinkedcore mechanism
 class EmbeddedMatchCard extends StatelessWidget {
-  /// 关联赛事数据
+  /// matchLeaguematchData
   final MatchModel match;
 
-  /// 点击查看直播/详情回调
+  /// tapviewLive/Detailscallback
   final VoidCallback? onViewLiveTap;
 
   EmbeddedMatchCard({
@@ -68,7 +68,7 @@ class EmbeddedMatchCard extends StatelessWidget {
                     ],
                     Expanded(
                       child: Text(
-                        '关联赛事: ${match.leagueName}',
+                        '${match.leagueName}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -83,7 +83,7 @@ class EmbeddedMatchCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    // 主队（左对齐）
+                    // Home（left aligned）
                     Expanded(
                       child: Row(
                         children: [
@@ -104,7 +104,7 @@ class EmbeddedMatchCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // 比分居中
+                    // scorecenterin
                     if (match.status != MatchStatus.upcoming) ...[
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -143,7 +143,7 @@ class EmbeddedMatchCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    // 客队（右对齐）
+                    // Away（right aligned）
                     Expanded(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -176,14 +176,13 @@ class EmbeddedMatchCard extends StatelessWidget {
             GestureDetector(
               onTap: onViewLiveTap,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.violet600,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text(
-                  '看直播 >',
+                  'viewLive >',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,

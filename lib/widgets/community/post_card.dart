@@ -4,28 +4,28 @@ import '../../models/post_model.dart';
 import '../../utils/hank_auth_manager.dart';
 import '../match/embedded_match_card.dart';
 
-/// PostCard: 社区帖子卡片
-/// 含用户信息、话题标签、正文、内嵌比赛卡片、点赞/评论/分享交互条
+/// PostCard: CommunityPostcard
+/// containsuseaccountinfo、topictag、content、embeddedmatchcard、Like/Comment/Shareinteractionitem
 class PostCard extends StatefulWidget {
-  /// 帖子数据
+  /// PostData
   final PostModel post;
 
-  /// 点赞状态变更回调
+  /// Likestatuschangemorecallback
   final ValueChanged<bool>? onLikeChanged;
 
-  /// 点击评论回调
+  /// tapCommentcallback
   final VoidCallback? onCommentTap;
 
-  /// 点击分享回调
+  /// tapSharecallback
   final VoidCallback? onShareTap;
 
-  /// 点击用户/关注回调
+  /// tapuseaccount/Followcallback
   final VoidCallback? onFollowTap;
 
-  /// 点击拉黑回调
+  /// tapblockcallback
   final VoidCallback? onBlockTap;
 
-  /// 点击帖子正文回调
+  /// tapPostcontentcallback
   final VoidCallback? onTap;
 
   PostCard({
@@ -47,7 +47,7 @@ class _PostCardState extends State<PostCard> {
   late bool _isLiked;
   late int _likeCount;
 
-  /// 是否为自己的帖子 - bool类型，作者本人时隐藏拉黑按钮
+  /// whetherisownPost - booltype，authorhide for ownblockbutton
   bool get _isOwnPost {
     final currentUserId = HankAuthManager().currentUser?.id;
     return currentUserId != null && widget.post.userId == currentUserId.toString();
@@ -111,7 +111,7 @@ class _PostCardState extends State<PostCard> {
                 onViewLiveTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('切换至直播界面'),
+                      content: Text('toggletoLiveview'),
                       duration: Duration(seconds: 1),
                     ),
                   );
@@ -203,7 +203,7 @@ class _PostCardState extends State<PostCard> {
                 border: Border.all(color: AppColors.slate400),
               ),
               child: const Text(
-                '拉黑',
+                'block',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -238,7 +238,7 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  /// 话题标签Wrap布局（参考ZogoLive，独立标签容器展示在比赛上方）
+  /// topictagWraplayoutmatch（referenceZogoLive，standalonecreatetagcontainerdisplayinmatchupside）
   Widget _buildHashtagWrap() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -274,7 +274,7 @@ class _PostCardState extends State<PostCard> {
     );
   }
 
-  /// 正文内容（纯文本）
+  /// contentcontent（plaintext）
   Widget _buildContentText() {
     return Text(
       widget.post.content,

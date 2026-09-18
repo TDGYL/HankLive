@@ -3,11 +3,11 @@ import '../../theme/app_colors.dart';
 import '../../utils/hank_auth_manager.dart';
 import '../../utils/hank_network_manager.dart';
 
-/// HankSettingsPage: 设置页面
-/// 功能：展示当前登录邮箱，退出登录，注销账号
-/// 差异化：浅紫+白色主题，白色圆角卡片
-/// 参照 ZogoLive settings_page.dart + profile_page.dart 退出登录逻辑
-/// 接口：POST /api/livespeed/member/cancel
+/// HankSettingsPage: Settingspage
+/// feature：displaywhenbeforeLoginemail，ExitLogin，deleteaccount
+/// differentiated：light purple+whitecolorhometheme，whitecolorroundedcard
+/// reference ZogoLive settings_page.dart + profile_page.dart ExitLoginlogic
+/// API：POST /api/livespeed/member/cancel
 class HankSettingsPage extends StatefulWidget {
   const HankSettingsPage({Key? key}) : super(key: key);
 
@@ -16,10 +16,10 @@ class HankSettingsPage extends StatefulWidget {
 }
 
 class _HankSettingsPageState extends State<HankSettingsPage> {
-  /// 是否正在注销
+  /// whetheractiveindelete
   bool _isCancelling = false;
 
-  /// 显示退出登录二次确认弹窗
+  /// displayExitLoginsecondtimeConfirmpopup
   void _showLogoutDialog() {
     showDialog(
       context: context,
@@ -27,16 +27,16 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16)),
-          title: const Text('提示',
+          title: const Text('hint',
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.slate800)),
-          content: const Text('确定要退出登录吗？',
+          content: const Text('OKneedExitLogin?？',
               style: TextStyle(fontSize: 13, color: AppColors.slate600)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('取消',
+              child: const Text('Cancel',
                   style: TextStyle(color: AppColors.slate500)),
             ),
             TextButton(
@@ -44,7 +44,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
                 Navigator.of(dialogContext).pop();
                 _performLogout();
               },
-              child: const Text('确定',
+              child: const Text('OK',
                   style: TextStyle(color: AppColors.rose500)),
             ),
           ],
@@ -53,21 +53,21 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
     );
   }
 
-  /// 执行退出登录
-  /// 清除本地用户信息后返回个人中心
+  /// runrowExitLogin
+  /// clearlocaluseaccountinfoafterBackprofile
   Future<void> _performLogout() async {
     await HankAuthManager().logout();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('已退出登录'),
+            content: Text('alreadyExitLogin'),
             duration: Duration(seconds: 1)),
       );
       Navigator.of(context).pop();
     }
   }
 
-  /// 显示注销账号二次确认弹窗
+  /// displaydeleteaccountsecondtimeConfirmpopup
   void _showDeleteAccountDialog() {
     showDialog(
       context: context,
@@ -75,16 +75,16 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
         return AlertDialog(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16)),
-          title: const Text('提示',
+          title: const Text('hint',
               style: TextStyle(
                   fontSize: 16, fontWeight: FontWeight.w700,
                   color: AppColors.slate800)),
-          content: const Text('确定要注销此账号吗？此操作不可撤销',
+          content: const Text('OKneeddeletethisaccount?？thisactionnotcanundo',
               style: TextStyle(fontSize: 13, color: AppColors.slate600)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('取消',
+              child: const Text('Cancel',
                   style: TextStyle(color: AppColors.slate500)),
             ),
             TextButton(
@@ -92,7 +92,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
                 Navigator.of(dialogContext).pop();
                 _cancelAccount();
               },
-              child: const Text('注销',
+              child: const Text('delete',
                   style: TextStyle(color: AppColors.rose500)),
             ),
           ],
@@ -101,9 +101,9 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
     );
   }
 
-  /// 注销账号
-  /// 接口：POST /api/livespeed/member/cancel（无入参）
-  /// 成功后清除本地用户信息并返回个人中心
+  /// deleteaccount
+  /// API：POST /api/livespeed/member/cancel（noneinparam）
+  /// successafterclearlocaluseaccountinfoandBackprofile
   Future<void> _cancelAccount() async {
     if (_isCancelling) return;
     setState(() {
@@ -129,14 +129,14 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('账号已注销'),
+            content: Text('accountalreadydelete'),
             duration: Duration(seconds: 1)),
       );
       Navigator.of(context).pop();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('操作失败，请重试'),
+            content: Text('Failed，please retry'),
             duration: Duration(seconds: 1)),
       );
     }
@@ -152,7 +152,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Text('设置',
+        title: const Text('Settings',
             style: TextStyle(
                 fontSize: 16, fontWeight: FontWeight.w700,
                 color: AppColors.slate800)),
@@ -165,7 +165,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 邮箱信息卡片
+          // emailinfocard
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -194,7 +194,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
                             color: AppColors.violet600, size: 14),
                       ),
                       const SizedBox(width: 12),
-                      const Text('邮箱',
+                      const Text('email',
                           style: TextStyle(
                               color: AppColors.slate800, fontSize: 13)),
                       const Spacer(),
@@ -218,7 +218,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          // 退出登录
+          // ExitLogin
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -250,7 +250,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    Text('退出登录',
+                    Text('ExitLogin',
                         style: TextStyle(
                             color: AppColors.rose500, fontSize: 13)),
                   ],
@@ -259,7 +259,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
             ),
           ),
           const SizedBox(height: 16),
-          // 注销账号
+          // deleteaccount
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -289,7 +289,7 @@ class _HankSettingsPageState extends State<HankSettingsPage> {
                           color: AppColors.rose500, size: 14),
                     ),
                     const SizedBox(width: 12),
-                    const Text('注销账号',
+                    const Text('deleteaccount',
                         style: TextStyle(
                             color: AppColors.rose500, fontSize: 13)),
                     const Spacer(),

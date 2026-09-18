@@ -1,18 +1,18 @@
-/// HankMatchData: 比赛列表接口响应数据体
-/// 包含总数、时间戳、比赛项列表
+/// HankMatchData: matchlistAPIresponseDatabody
+/// containstotalcount、Timetimestamp、matchitem list
 class HankMatchData {
-  /// 数据总数
+  /// Datatotalcount
   final int? total;
 
-  /// 请求时间戳（秒）
+  /// requestTimetimestamp（seconds）
   final int? timestamp;
 
-  /// 比赛项列表
+  /// matchitem list
   final List<HankMatchItem> results;
 
   HankMatchData({this.total, this.timestamp, this.results = const []});
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankMatchData.fromJson(Map<String, dynamic> json) {
     final list = json['results'] as List?;
     List<HankMatchItem> items = [];
@@ -27,163 +27,163 @@ class HankMatchData {
   }
 }
 
-/// HankMatchItem: 单场比赛数据项
-/// 映射接口返回的 snake_case 字段为 camelCase 属性
+/// HankMatchItem: singlematchmatchDataitem
+/// mappingAPIBack snake_case field is camelCase property
 class HankMatchItem {
-  /// 比赛唯一ID
+  /// matchuniqueID
   final int? matchId;
 
-  /// 赛季ID
+  /// SeasonID
   final int? seasonId;
 
-  /// 赛事ID
+  /// matchID
   final int? competitionId;
 
-  /// 赛事Logo URL
+  /// matchLogo URL
   final String? competitionLogo;
 
-  /// 赛事名称
+  /// matchname
   final String? competitionName;
 
-  /// 赛事主色
+  /// matchhomecolor
   final String? competitionPrimaryColor;
 
-  /// 赛事辅色
+  /// matchsecondarycolor
   final String? competitionSecondaryColor;
 
-  /// 主队ID
+  /// HomeID
   final int? homeTeamId;
 
-  /// 主队名称
+  /// Homename
   final String? homeTeamName;
 
-  /// 主队Logo URL
+  /// HomeLogo URL
   final String? homeTeamLogo;
 
-  /// 客队ID
+  /// AwayID
   final int? awayTeamId;
 
-  /// 客队名称
+  /// Awayname
   final String? awayTeamName;
 
-  /// 客队Logo URL
+  /// AwayLogo URL
   final String? awayTeamLogo;
 
-  /// 状态ID（0/1=未开赛，2/3/4=进行中，8=完场）
+  /// statusID（0/1=not started，2/3/4=In Progress，8=FT）
   final int? statusId;
 
-  /// 状态名称（中文）
+  /// statusname（Chinese）
   final String? statusName;
 
-  /// 开赛时间戳（秒）
+  /// openmatchTimetimestamp（seconds）
   final int? matchTime;
 
-  /// 是否中立场
+  /// whetherincreatematch
   final int? neutral;
 
-  /// 主队常规比分
+  /// Homeregularscore
   final int? homeNormalScore;
 
-  /// 主队半场比分
+  /// HomeHTscore
   final int? homeHalfScore;
 
-  /// 主队红牌数
+  /// HomeRed Cardscount
   final int? homeRed;
 
-  /// 主队黄牌数
+  /// HomeYellow Cardscount
   final int? homeYellow;
 
-  /// 主队角球数
+  /// HomeCornerscount
   final int? homeCorn;
 
-  /// 主队加时比分
+  /// Homeovertime score
   final int? homeAddScore;
 
-  /// 主队点球比分
+  /// HomePENscore
   final int? homePointScore;
 
-  /// 客队常规比分
+  /// Awayregularscore
   final int? awayNormalScore;
 
-  /// 客队半场比分
+  /// AwayHTscore
   final int? awayHalfScore;
 
-  /// 客队红牌数
+  /// AwayRed Cardscount
   final int? awayRed;
 
-  /// 客队黄牌数
+  /// AwayYellow Cardscount
   final int? awayYellow;
 
-  /// 客队角球数
+  /// AwayCornerscount
   final int? awayCorn;
 
-  /// 客队加时比分
+  /// Awayovertime score
   final int? awayAddScore;
 
-  /// 客队点球比分
+  /// AwayPENscore
   final int? awayPointScore;
 
-  /// 是否有阵容数据
+  /// whetherhasLineupData
   final int? lineup;
 
-  /// 阶段ID
+  /// phaseID
   final int? stageId;
 
-  /// 是否已订阅关注
+  /// whetheralreadysubscribeFollow
   final bool? subscribed;
 
-  /// 主队排名
+  /// Homerank
   final String? homePosition;
 
-  /// 客队排名
+  /// Awayrank
   final String? awayPosition;
 
-  /// 是否有加时
+  /// whetherhasovertime
   final bool? hasOt;
 
-  /// 是否有点球大战
+  /// whetherhasPENderby
   final bool? hasPenalty;
 
-  /// 胜负结果（1=主胜，2=平，3=客胜）
+  /// WLresults（1=homeW，2=D，3=awayW）
   final int? win;
 
-  /// 备注（如：半场比分、总比分等）
+  /// remark（e.g.：HTscore、totalscoreetc）
   final String? note;
 
-  /// 进行中分钟数（如: "78'"）
+  /// In Progressmincount（e.g.: "78'"）
   final String? minutes;
 
-  /// 是否有动画直播
+  /// whetherhasanimationLive
   final int? mlive;
 
-  /// 动画直播URL
+  /// animationLiveURL
   final String? mliveUrl;
 
-  /// 是否有视频直播
+  /// whetherhasVideoLive
   final int? liveVideo;
 
-  /// 是否有相关文章
+  /// whetherhasphasematcharticle
   final int? hasArticle;
 
-  /// 阶段名称
+  /// phasename
   final String? stageName;
 
-  /// 分组号
+  /// groupingnumber
   final String? groupNum;
 
-  /// 轮次
+  /// Round
   final int? roundNum;
 
-  /// 方案数
+  /// plancount
   final int? schemeCount;
 
-  /// 倒计时（秒）
+  /// countdown（seconds）
   final int? countdown;
 
-  /// 是否世界杯
+  /// whetherWorld Cup
   final int? isWorldCup;
 
-  /// 运动分类（1=足球）
+  /// motioncategorytype（1=Football）
   final int? categoryId;
 
   HankMatchItem({
@@ -241,7 +241,7 @@ class HankMatchItem {
     this.categoryId,
   });
 
-  /// 从JSON解析（snake_case → camelCase）
+  /// fromJSONparse（snake_case → camelCase）
   factory HankMatchItem.fromJson(Map<String, dynamic> json) {
     return HankMatchItem(
       matchId: json['match_id'] as int?,

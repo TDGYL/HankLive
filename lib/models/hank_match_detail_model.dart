@@ -1,43 +1,43 @@
-/// HankMatchEventType: 赛况事件类型枚举
-/// goal: 进球 | penaltyGoal: 点球进球 | yellowCard: 黄牌 | redCard: 红牌 | substitution: 换人
+/// HankMatchEventType: match eventseventtypeenum
+/// goal: Goals | penaltyGoal: PENGoals | yellowCard: Yellow Cards | redCard: Red Cards | substitution: substitution
 enum HankMatchEventType {
-  /// 进球
+  /// Goals
   goal,
-  /// 点球进球
+  /// PENGoals
   penaltyGoal,
-  /// 黄牌
+  /// Yellow Cards
   yellowCard,
-  /// 红牌
+  /// Red Cards
   redCard,
-  /// 换人
+  /// substitution
   substitution,
 }
 
-/// HankMatchEvent: 赛况时间线事件模型
-/// 用于图文赛况Tab中的事件展示
+/// HankMatchEvent: match eventsTimelineeventmodel
+/// useArticlematch eventsTabevent display in
 class HankMatchEvent {
-  /// 事件唯一ID
+  /// eventuniqueID
   final String id;
 
-  /// 事件类型
+  /// eventtype
   final HankMatchEventType type;
 
-  /// 发生时间（分钟，如: 58）
+  /// occurredTime（min，e.g.: 58）
   final int minute;
 
-  /// 事件标题（如: "GOAL! 进球得分!"）
+  /// eventtitle（e.g.: "GOAL! Goalsgotcategory!"）
   final String title;
 
-  /// 事件描述
+  /// eventdescription
   final String description;
 
-  /// 所属球队名称
+  /// belongs toTeamname
   final String teamName;
 
-  /// 比分变化（如: "阿森纳 2 - 1 曼城"）
+  /// score change（e.g.: "Arsenal 2 - 1 Man City"）
   final String? scoreChange;
 
-  /// 附加信息（如: "助攻: 厄德高 · xG: 0.08"）
+  /// extrainfo（e.g.: "assists: Odegaard · xG: 0.08"）
   final String? extraInfo;
 
   HankMatchEvent({
@@ -52,27 +52,27 @@ class HankMatchEvent {
   });
 }
 
-/// HankMatchPlayer: 球员模型（首发阵容）
+/// HankMatchPlayer: Playermodel（starterLineup）
 class HankMatchPlayer {
-  /// 球员姓名
+  /// Playername
   final String name;
 
-  /// 球衣号码
+  /// jerseyNumber
   final String number;
 
-  /// 位置（如: 中锋、左边锋、门将）
+  /// Position（e.g.: striker、left winger、goalkeeper）
   final String position;
 
-  /// 评分
+  /// rating
   final String rating;
 
-  /// 是否为关键球员（星级标记）
+  /// whetherismatchkeyPlayer（starlevelmarkrecord）
   final bool isStar;
 
-  /// 进球标记
+  /// Goalsmarkrecord
   final bool hasGoal;
 
-  /// 黄牌标记
+  /// Yellow Cardsmarkrecord
   final bool hasYellowCard;
 
   HankMatchPlayer({
@@ -86,22 +86,22 @@ class HankMatchPlayer {
   });
 }
 
-/// HankMatchStatItem: 技术统计项模型
-/// 用于技术统计Tab中的对比数据条
+/// HankMatchStatItem: technicalstat itemmodel
+/// usetechnicalstatsTabinmatchmatchDataitem
 class HankMatchStatItem {
-  /// 统计项名称（如: 控球率、射门次数）
+  /// stat itemname（e.g.: Possession、Shotstimecount）
   final String label;
 
-  /// 主队数值
+  /// Homecountvalue
   final String homeValue;
 
-  /// 客队数值
+  /// Awaycountvalue
   final String awayValue;
 
-  /// 主队占比百分比（0-100，用于进度条）
+  /// Homeproportionpercentcategorymatch（0-100，useprogressitem）
   final int homePercent;
 
-  /// 客队占比百分比（0-100，用于进度条）
+  /// Awayproportionpercentcategorymatch（0-100，useprogressitem）
   final int awayPercent;
 
   HankMatchStatItem({
@@ -113,25 +113,25 @@ class HankMatchStatItem {
   });
 }
 
-/// HankMatchOddsRow: 指数行模型
-/// 用于指数分析Tab中的让球/欧赔表格
+/// HankMatchOddsRow: oddscountrowmodel
+/// useOddsTabhandicap in/1X2table
 class HankMatchOddsRow {
-  /// 盘口阶段（如: 即盘、初盘）
+  /// Handicapphase（e.g.: ishandicap、Opening）
   final String stage;
 
-  /// 主胜赔率
+  /// homeWOdds
   final String homeOdds;
 
-  /// 盘口/平局赔率
+  /// Handicap/DmatchOdds
   final String middleOdds;
 
-  /// 客胜赔率
+  /// awayWOdds
   final String awayOdds;
 
-  /// 主胜赔率趋势（up: 上升, down: 下降, null: 无变化）
+  /// homeWOddstrend（up: upup, down: downdown, null: nonechange）
   final String? homeTrend;
 
-  /// 客胜赔率趋势
+  /// awayWOddstrend
   final String? awayTrend;
 
   HankMatchOddsRow({
@@ -144,18 +144,18 @@ class HankMatchOddsRow {
   });
 }
 
-/// HankMatchLineupFormation: 球队阵型与首发球员
+/// HankMatchLineupFormation: Teamformation andstarterPlayer
 class HankMatchLineupFormation {
-  /// 球队名称
+  /// Teamname
   final String teamName;
 
-  /// 阵型（如: 4-3-3）
+  /// formation（e.g.: 4-3-3）
   final String formation;
 
-  /// 球队颜色（主队红色/客队蓝色）
+  /// Teamcolor（Homeredcolor/Awaybluecolor）
   final int teamColor;
 
-  /// 球员列表（按阵型行排列）
+  /// Playerlist（byformationrowarrange）
   final List<List<HankMatchPlayer>> playerRows;
 
   HankMatchLineupFormation({
@@ -166,18 +166,18 @@ class HankMatchLineupFormation {
   });
 }
 
-/// HankMatchBenchPlayer: 替补席球员
+/// HankMatchBenchPlayer: benchPlayer
 class HankMatchBenchPlayer {
-  /// 球员号码-姓名
+  /// PlayerNumber-name
   final String name;
 
-  /// 所属球队名称
+  /// belongs toTeamname
   final String teamName;
 
-  /// 是否已登场
+  /// whetheralreadyonmatch
   final bool isPlayed;
 
-  /// 登场时间（如: 65'）
+  /// onmatchTime（e.g.: 65'）
   final String? playedMinute;
 
   HankMatchBenchPlayer({

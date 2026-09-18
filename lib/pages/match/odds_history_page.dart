@@ -5,22 +5,22 @@ import '../../models/hank_odds_history_model.dart';
 import '../../services/hank_match_detail_api_service.dart';
 import '../../widgets/match/match_detail_odds_tab.dart';
 
-/// HankOddsHistoryPage: 指数历史页面
-/// 展示某场比赛某博彩公司的历史赔率变化
-/// 布局与ZogoLive不同：顶部盘口类型Tab + 水平公司芯片选择器 + 垂直时间轴卡片列表
-/// 主题：浅紫色 + 白色
-/// 接口：GET /api/livespeed/football/match/odd-histories
+/// HankOddsHistoryPage: oddscounthistorypage
+/// displaysomematchmatchsomebookmakerBookmakerhistoryOddschange
+/// layoutmatchwithZogoLivedifferent：topHandicaptypeTab + oddsDBookmakerchipselectindicator + verticalTimeaxis card list
+/// hometheme：lightpurple + whitecolor
+/// API：GET /api/livespeed/football/match/odd-histories
 class HankOddsHistoryPage extends StatefulWidget {
-  /// 比赛ID
+  /// matchID
   final int matchId;
 
-  /// 初始选中的博彩公司
+  /// initial selectedbookmakerBookmaker
   final HankOddsCompany initialCompany;
 
-  /// 所有博彩公司列表
+  /// thehasbookmakerBookmakerlist
   final List<HankOddsCompany> allCompanies;
 
-  /// 初始盘口类型
+  /// initialHandicaptype
   final HankOddsMenuType initialOddsType;
 
   HankOddsHistoryPage({
@@ -36,40 +36,40 @@ class HankOddsHistoryPage extends StatefulWidget {
 }
 
 class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
-  /// 详情接口服务
+  /// DetailsAPI service
   final HankMatchDetailApiService _apiService = HankMatchDetailApiService();
 
-  /// 当前选中的博彩公司ID
+  /// whenbeforeselectedbookmakerBookmakerID
   late String _selectedCompanyId;
 
-  /// 当前选中的盘口类型
+  /// whenbeforeselectedHandicaptype
   late HankOddsMenuType _currentOddsType;
 
-  /// 是否正在加载
+  /// whetherLoading
   bool _isLoading = true;
 
-  /// 历史赔率数据
+  /// historyOddsData
   HankOddsHistoryData? _historyData;
 
-  /// 盘口类型菜单配置（标题 + 枚举）
+  /// Handicaptypemenuconfig（title + enum）
   static const _menuConfigs = <HankOddsMenuType, String>{
-    HankOddsMenuType.asia: '胜负',
-    HankOddsMenuType.eu: '胜平负',
-    HankOddsMenuType.bs: '总进球',
-    HankOddsMenuType.cr: '角球',
+    HankOddsMenuType.asia: 'WL',
+    HankOddsMenuType.eu: 'WDL',
+    HankOddsMenuType.bs: 'totalGoals',
+    HankOddsMenuType.cr: 'Corners',
   };
 
-  /// 表头配置（根据盘口类型返回不同的列标题）
+  /// header config（rootbased onHandicaptypeBackdifferent columntitle）
   List<String> _getHeaders() {
     switch (_currentOddsType) {
       case HankOddsMenuType.asia:
-        return ['主胜', '盘口', '客胜'];
+        return ['homeW', 'Handicap', 'awayW'];
       case HankOddsMenuType.eu:
-        return ['主胜', '平局', '客胜'];
+        return ['homeW', 'Dmatch', 'awayW'];
       case HankOddsMenuType.bs:
-        return ['大球', '盘口', '小球'];
+        return ['over', 'Handicap', 'undergoal'];
       case HankOddsMenuType.cr:
-        return ['大角', '盘口', '小角'];
+        return ['over corner', 'Handicap', 'undercorner'];
     }
   }
 
@@ -81,9 +81,9 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     _fetchHistoryData();
   }
 
-  /// 请求指数历史数据
-  /// 接口：GET /api/livespeed/football/match/odd-histories
-  /// 参数：match_id, company_id
+  /// requestoddscounthistoryData
+  /// API：GET /api/livespeed/football/match/odd-histories
+  /// paramcount：match_id, company_id
   Future<void> _fetchHistoryData() async {
     setState(() => _isLoading = true);
 
@@ -100,7 +100,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     }
   }
 
-  /// 获取当前盘口类型对应的历史列表
+  /// getwhenbeforeHandicaptypemaps tohistorylist
   List<HankOddsHistoryItem>? _getCurrentList() {
     final data = _historyData;
     if (data == null) return null;
@@ -133,7 +133,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 顶部导航栏（返回按钮 + 标题）
+  /// topnavbar（Backbutton + title）
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -147,7 +147,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
         bottom: false,
         child: Row(
           children: [
-            // 返回按钮
+            // Backbutton
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
@@ -165,9 +165,9 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               ),
             ),
             const SizedBox(width: 12),
-            // 标题
+            // title
             const Text(
-              '指数历史',
+              'oddscounthistory',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -175,7 +175,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               ),
             ),
             const Spacer(),
-            // 刷新按钮
+            // refreshbutton
             GestureDetector(
               onTap: _fetchHistoryData,
               child: Container(
@@ -198,7 +198,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 盘口类型Tab（胜负 / 胜平负 / 总进球 / 角球）
+  /// HandicaptypeTab（WL / WDL / totalGoals / Corners）
   Widget _buildOddsTypeTabs() {
     return Container(
       color: Colors.white,
@@ -235,7 +235,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 博彩公司水平芯片选择器
+  /// bookmakerBookmakeroddsDchipselectindicator
   Widget _buildCompanyChips() {
     return Container(
       height: 47,
@@ -300,7 +300,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 表头行（时间/比分 + 三列赔率标题）
+  /// tableheaderrow（Time/score + three columnsOddstitle）
   Widget _buildTableHeader() {
     final headers = _getHeaders();
     return Container(
@@ -313,11 +313,11 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
       ),
       child: Row(
         children: [
-          // 时间/比分
+          // Time/score
           const SizedBox(
             width: 72,
             child: Text(
-              '时间/比分',
+              'Time/score',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -325,7 +325,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               ),
             ),
           ),
-          // 三列赔率标题
+          // three columnsOddstitle
           ...headers.map((h) => Expanded(
                 child: Text(
                   h,
@@ -342,7 +342,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 时间轴列表（垂直卡片式时间轴，左侧带连接线）
+  /// Timeaxislist（verticalcardstyleTimeaxis，leftwithconnectline）
   Widget _buildTimelineList() {
     if (_isLoading) {
       return const Center(
@@ -358,7 +358,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     if (list == null || list.isEmpty) {
       return const Center(
         child: Text(
-          '暂无历史数据',
+          'NohistoryData',
           style: TextStyle(fontSize: 14, color: AppColors.slate500),
         ),
       );
@@ -374,17 +374,17 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 单条时间轴卡片
-  /// [item] 历史赔率数据
-  /// [index] 列表索引
-  /// [list] 完整列表（用于计算涨跌）
+  /// singleTimeaxiscard
+  /// [item] historyOddsData
+  /// [index] listindex
+  /// [list] fulllist（usecalculaterisefall）
   Widget _buildTimelineCard(
       HankOddsHistoryItem item, int index, List<HankOddsHistoryItem> list) {
-    // 与上一条对比计算涨跌
+    // withupaitemmatchmatchcalculaterisefall
     final bool isLatest = index == 0;
     final bool hasNext = index < list.length - 1;
 
-    // 涨跌判断：与下一条（时间更早的）对比
+    // risefallcheck：withdownaitem（Timemoreearlier）matchmatch
     HankOddsHistoryItem? prevItem;
     if (hasNext) {
       prevItem = list[index + 1];
@@ -397,10 +397,10 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 左侧时间轴轨道
+          // leftTimeaxis track
           _buildTimelineTrack(item, isLatest, hasNext),
           const SizedBox(width: 8),
-          // 右侧赔率卡片
+          // rightOddscard
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(bottom: 10),
@@ -424,7 +424,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               ),
               child: Row(
                 children: [
-                  // 主胜/大球
+                  // homeW/over
                   Expanded(
                     child: _buildValueWithTrend(
                       item.home,
@@ -432,7 +432,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
                       true,
                     ),
                   ),
-                  // 盘口/平局
+                  // Handicap/Dmatch
                   Container(
                     width: 56,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -451,7 +451,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
                       ),
                     ),
                   ),
-                  // 客胜/小球
+                  // awayW/undergoal
                   Expanded(
                     child: _buildValueWithTrend(
                       item.away,
@@ -468,23 +468,23 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 左侧时间轴轨道（圆点 + 连接线 + 时间标签）
-  /// [item] 当前历史数据
-  /// [isLatest] 是否最新一条
-  /// [hasNext] 是否有更早的数据
+  /// leftTimeaxis track（dot + connectline + Timetag）
+  /// [item] whenbeforehistoryData
+  /// [isLatest] whetherLatestaitem
+  /// [hasNext] whetherhasmoreearlierData
   Widget _buildTimelineTrack(
       HankOddsHistoryItem item, bool isLatest, bool hasNext) {
     return SizedBox(
       width: 64,
       child: Column(
         children: [
-          // 上方连接线（指向更晚的数据）
+          // upside connectionline（oddsdirectionmorelaterData）
           Container(
             width: 2,
             height: 12,
             color: isLatest ? Colors.transparent : AppColors.violet200,
           ),
-          // 圆点
+          // dot
           Container(
             width: 10,
             height: 10,
@@ -498,9 +498,9 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
             ),
           ),
           const SizedBox(height: 4),
-          // 时间标签
+          // Timetag
           Text(
-            item.matchOffset ?? '开盘',
+            item.matchOffset ?? 'open',
             style: TextStyle(
               fontSize: 11,
               fontWeight: isLatest ? FontWeight.w700 : FontWeight.w500,
@@ -508,7 +508,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
             ),
           ),
           const SizedBox(height: 2),
-          // 比分
+          // score
           Text(
             item.score ?? '0-0',
             style: const TextStyle(
@@ -516,7 +516,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               color: AppColors.slate500,
             ),
           ),
-          // 下方连接线（指向更早的数据）
+          // downside connectionline（pointing to earlierData）
           if (hasNext)
             Expanded(
               child: Container(
@@ -529,10 +529,10 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 赔率值 + 涨跌趋势
-  /// [value] 赔率值
-  /// [change] 涨跌类型（1=涨, -1=跌, 0=不变）
-  /// [isHome] 是否主队方向
+  /// Oddsvalue + risefalltrend
+  /// [value] Oddsvalue
+  /// [change] risefalltype（1=rise, -1=fall, 0=unchanged）
+  /// [isHome] whetherHomedirection
   Widget _buildValueWithTrend(String? value, int change, bool isHome) {
     Color valueColor = AppColors.slate800;
     Widget? trendIcon;
@@ -569,10 +569,10 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
     );
   }
 
-  /// 比较两个赔率值的大小
-  /// [current] 当前值
-  /// [previous] 上一个值
-  /// 返回：1=涨, -1=跌, 0=不变或无法比较
+  /// matchcomparetwoeachOddsvalueO/U
+  /// [current] whenbeforevalue
+  /// [previous] upaeachvalue
+  /// Back：1=rise, -1=fall, 0=unchangedornonemethodmatchcompare
   int _compareValue(String? current, String? previous) {
     if (current == null || previous == null) return 0;
     final cur = double.tryParse(current);

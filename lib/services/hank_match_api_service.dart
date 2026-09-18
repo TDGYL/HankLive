@@ -4,52 +4,52 @@ import '../models/hank_match_api_model.dart';
 import '../models/match_model.dart';
 import '../models/team_model.dart';
 
-/// HankMatchTab: 比赛列表Tab类型枚举
-/// 对应接口 tab 参数：关注=4，全部=0，进行中=1，推荐=5，赛程=2，赛果=3
+/// HankMatchTab: matchlistTabtypeenum
+/// maps to API tab paramcount：Follow=4，All=0，In Progress=1，Featured=5，Fixtures=2，result=3
 enum HankMatchTab {
-  /// 关注
+  /// Follow
   follow(4),
-  /// 全部
+  /// All
   all(0),
-  /// 进行中
+  /// In Progress
   live(1),
-  /// 推荐
+  /// Featured
   recommend(5),
-  /// 赛程
+  /// Fixtures
   schedule(2),
-  /// 赛果
+  /// result
   results(3);
 
-  /// 接口对应的 tab 值
+  /// APImaps to tab value
   final int value;
   const HankMatchTab(this.value);
 }
 
-/// HankMatchApiService: 比赛列表接口服务
-/// 封装 /api/livespeed/football/matches POST 请求
-/// 返回数据通过 HankMatchItem → MatchModel 转换供 UI 使用
+/// HankMatchApiService: matchlistAPI service
+/// wrap /api/livespeed/football/matches POST request
+/// BackDatapasspass HankMatchItem → MatchModel convertfor UI useuse
 class HankMatchApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankMatchApiService _instance = HankMatchApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankMatchApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankMatchApiService._internal();
 
-  /// 接口路径
+  /// APIpath
   static const String _apiPath = '/api/livespeed/football/matches';
 
-  /// 请求比赛列表
-  /// [tab] - 菜单Tab类型
-  /// [page] - 分页页码（从1开始）
-  /// [size] - 每页条数
-  /// [timestamp] - 当天时间戳（秒）；赛程/赛果传入日历选中日期的时间戳
-  /// [competitionIds] - 赛事ID过滤，传空数组即可
-  /// 返回：HankMatchData 原始响应数据
+  /// requestmatchlist
+  /// [tab] - menuTabtype
+  /// [page] - categorypagepagecode（from1start）
+  /// [size] - eachpageitemcount
+  /// [timestamp] - whendayTimetimestamp（seconds）；Fixtures/resultpassed incalendarselectedDateTimetimestamp
+  /// [competitionIds] - matchIDfilter，uploademptycountgroupiscan
+  /// Back：HankMatchData rawresponseData
   Future<HankMatchData?> fetchMatchList({
     required HankMatchTab tab,
     int page = 1,
@@ -77,9 +77,9 @@ class HankMatchApiService {
     return null;
   }
 
-  /// 请求比赛列表并转换为 MatchModel 列表
-  /// 参数同 [fetchMatchList]
-  /// 返回：List<MatchModel>，供 UI 组件直接使用
+  /// requestmatchlistandconvert to MatchModel list
+  /// paramcountsame [fetchMatchList]
+  /// Back：List<MatchModel>，for UI componentdirectlyuseuse
   Future<List<MatchModel>> fetchMatchModels({
     required HankMatchTab tab,
     int page = 1,
@@ -102,11 +102,11 @@ class HankMatchApiService {
     return data.results.map((item) => HankMatchApiService.convertToMatchModel(item)).toList();
   }
 
-  /// 将接口模型 HankMatchItem 转换为 UI 模型 MatchModel
-  /// [item] - 接口返回的单场比赛数据
-  /// 返回：MatchModel
+  /// convert APImodel HankMatchItem convert to UI model MatchModel
+  /// [item] - APIBacksinglematchmatchData
+  /// Back：MatchModel
   static MatchModel convertToMatchModel(HankMatchItem item) {
-    // 判断比赛状态
+    // checkmatchstatus
     MatchStatus status;
     if (HankMatchStatusUtil.isLive(item.statusId)) {
       status = MatchStatus.live;
@@ -116,7 +116,7 @@ class HankMatchApiService {
       status = MatchStatus.upcoming;
     }
 
-    // 格式化比赛时间 (时间戳秒 → HH:mm)
+    // formatmatchTime (Timetimestampseconds → HH:mm)
     String matchTimeStr = '';
     if (item.matchTime != null && item.matchTime! > 0) {
       final dt = DateTime.fromMillisecondsSinceEpoch(item.matchTime! * 1000);
@@ -125,7 +125,7 @@ class HankMatchApiService {
       matchTimeStr = '$hour:$minute';
     }
 
-    // 构建主队模型
+    // buildHomemodel
     final homeTeam = TeamModel(
       teamId: item.homeTeamId?.toString() ?? '',
       teamName: item.homeTeamName ?? '',
@@ -133,7 +133,7 @@ class HankMatchApiService {
       logoUrl: item.homeTeamLogo,
     );
 
-    // 构建客队模型
+    // buildAwaymodel
     final awayTeam = TeamModel(
       teamId: item.awayTeamId?.toString() ?? '',
       teamName: item.awayTeamName ?? '',
@@ -141,22 +141,22 @@ class HankMatchApiService {
       logoUrl: item.awayTeamLogo,
     );
 
-    // 半场比分
+    // HTscore
     String? halfTimeScore;
     if (item.homeHalfScore != null || item.awayHalfScore != null) {
-      halfTimeScore = '半 ${item.homeHalfScore ?? 0}-${item.awayHalfScore ?? 0}';
+      halfTimeScore = 'half ${item.homeHalfScore ?? 0}-${item.awayHalfScore ?? 0}';
     }
 
-    // 直播分钟数
+    // Livemincount
     String? liveMinute;
     if (status == MatchStatus.live && item.minutes != null && item.minutes!.isNotEmpty) {
       liveMinute = item.minutes;
     }
 
-    // 是否精选（直播中的比赛默认精选展示为大卡片）
+    // whetherFeatured（LiveinmatchdefaultFeatureddisplayisbigcard）
     final isFeatured = status == MatchStatus.live;
 
-    // 是否关注
+    // whetherFollow
     final isFollowed = item.subscribed ?? false;
 
     return MatchModel(
@@ -181,9 +181,9 @@ class HankMatchApiService {
     );
   }
 
-  /// 从球队名称提取缩写（取前3个大写字母或前3个字符）
-  /// [name] - 球队名称
-  /// 返回：3字符缩写
+  /// fromTeamnameextractgetabbrevwrite（getbefore3eachbigwritecharcharorbefore3eachcharchar）
+  /// [name] - Teamname
+  /// Back：3charcharabbrevwrite
   static String extractShort(String? name) {
     if (name == null || name.isEmpty) return '';
     if (name.length <= 3) return name.toUpperCase();

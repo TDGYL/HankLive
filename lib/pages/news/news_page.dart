@@ -7,10 +7,10 @@ import '../../widgets/news/compact_news_card.dart';
 
 import 'news_detail_page.dart';
 
-/// NewsPage: 绿荫资讯页面
-/// 顶部Banner（第1条）+ 中间列表卡片 + 底部Banner（第4条）
-/// 数据通过 HankNewsApiService 请求接口获取
-/// 支持下拉刷新 + 上拉加载更多
+/// NewsPage: football pitchnewspage
+/// topBanner（1item）+ inbetweenlistcard + bottomBanner（4item）
+/// Datapasspass HankNewsApiService requestAPIget
+/// supportPull to refresh + uppullloadMore
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
 
@@ -19,28 +19,28 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  /// 资讯数据列表
+  /// newsDatalist
   List<NewsModel> _newsList = [];
 
-  /// 是否正在下拉刷新
+  /// whetheractiveinPull to refresh
   bool _isRefreshing = false;
 
-  /// 是否正在上拉加载
+  /// whetheractiveinuppullload
   bool _isLoading = false;
 
-  /// 是否没有更多数据
+  /// whethernohasMoreData
   bool _hasNoMore = false;
 
-  /// 分页页码
+  /// categorypagepagecode
   int _page = 1;
 
-  /// 每页条数
+  /// eachpageitemcount
   final int _size = 10;
 
-  /// API服务实例
+  /// APIservice instance
   final HankNewsApiService _apiService = HankNewsApiService();
 
-  /// 滚动控制器（用于上拉加载监听）
+  /// scrollcontroller（useuppullloadlisten）
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -57,7 +57,7 @@ class _NewsPageState extends State<NewsPage> {
     super.dispose();
   }
 
-  /// 滚动监听：到达底部触发加载更多
+  /// scroll listener：toreachedbottomtriggerloadMore
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 100) {
@@ -67,8 +67,8 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  /// 请求资讯列表数据
-  /// [isRefresh] - true=刷新（重置page=1），false=加载更多
+  /// requestnewslistData
+  /// [isRefresh] - true=refresh（resetpage=1），false=loadMore
   Future<void> _fetchNews({required bool isRefresh}) async {
     if (_isLoading || _isRefreshing) return;
 
@@ -109,14 +109,14 @@ class _NewsPageState extends State<NewsPage> {
     }
   }
 
-  /// 顶部Banner数据（前3条）
+  /// topBannerData（before3item）
   List<NewsModel> get _bannerList {
     if (_newsList.isEmpty) return [];
     final count = _newsList.length < 3 ? _newsList.length : 3;
     return _newsList.sublist(0, count);
   }
 
-  /// 中间列表数据（第4条以后）
+  /// inbetweenlistData（4itemwithafter）
   List<NewsModel> get _middleList {
     if (_newsList.length <= 3) return [];
     return _newsList.sublist(3);
@@ -146,7 +146,7 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// 头部：仅保留标题，去掉深度战术/快讯分类Tab
+  /// header：onlykeeptitle，removedarkdepthtactical/news categoryTab
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
@@ -161,7 +161,7 @@ class _NewsPageState extends State<NewsPage> {
         child: Row(
           children: const [
             Text(
-              '绿荫资讯',
+              'News',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -174,9 +174,9 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// 内容区域
+  /// contentarea
   Widget _buildContent() {
-    // 首次加载中
+    // firsttimeLoading
     if (_isRefreshing && _newsList.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(
@@ -186,7 +186,7 @@ class _NewsPageState extends State<NewsPage> {
       );
     }
 
-    // 空数据
+    // emptyData
     if (_newsList.isEmpty) {
       return Center(
         child: Column(
@@ -199,7 +199,7 @@ class _NewsPageState extends State<NewsPage> {
             ),
             SizedBox(height: 12),
             Text(
-              '暂无资讯数据',
+              'NonewsData',
               style: TextStyle(color: AppColors.slate500, fontSize: 12),
             ),
           ],
@@ -215,7 +215,7 @@ class _NewsPageState extends State<NewsPage> {
         padding: const EdgeInsets.fromLTRB(0, 16, 0, 88),
         itemCount: _buildItemCount(),
         itemBuilder: (ctx, index) {
-          // 顶部横向滑动Banner
+          // tophorizontalslideanimationBanner
           if (index == 0 && _bannerList.isNotEmpty) {
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -223,7 +223,7 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
 
-          // 中间列表卡片
+          // inbetweenlistcard
           final middleIndex = index - 1;
           if (middleIndex < _middleList.length) {
             final news = _middleList[middleIndex];
@@ -236,14 +236,14 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
 
-          // 底部加载指示器
+          // bottomloadindicator
           return _buildFooter();
         },
       ),
     );
   }
 
-  /// 横向滑动Banner（前3条数据）
+  /// horizontalslideanimationBanner（before3itemData）
   Widget _buildHorizontalBanner() {
     return SizedBox(
       height: 160,
@@ -266,16 +266,16 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
-  /// 计算列表总条数：横向Banner + 中间列表 + footer
+  /// calculatelisttotalitemcount：horizontalBanner + inbetweenlist + footer
   int _buildItemCount() {
     int count = 0;
-    if (_bannerList.isNotEmpty) count++; // 横向Banner
-    count += _middleList.length; // 中间列表
+    if (_bannerList.isNotEmpty) count++; // horizontalBanner
+    count += _middleList.length; // inbetweenlist
     if (!_hasNoMore || _isLoading) count++; // footer
     return count;
   }
 
-  /// 列表底部指示器（加载中 / 没有更多）
+  /// listbottomindicator（Loading / nohasMore）
   Widget _buildFooter() {
     if (_hasNoMore) {
       return Padding(
@@ -287,7 +287,7 @@ class _NewsPageState extends State<NewsPage> {
               Container(width: 24, height: 1, color: AppColors.violet200),
               const SizedBox(width: 8),
               const Text(
-                '没有更多了',
+                'nohasMore',
                 style: TextStyle(fontSize: 11, color: AppColors.slate500),
               ),
               const SizedBox(width: 8),
@@ -317,7 +317,7 @@ class _NewsPageState extends State<NewsPage> {
     return const SizedBox.shrink();
   }
 
-  /// 点击资讯回调：push到资讯详情页
+  /// tapnewscallback：pushtonewsDetailspage
   void _onNewsTap(NewsModel news) {
     final newsId = int.tryParse(news.newsId) ?? 0;
     if (newsId == 0) return;

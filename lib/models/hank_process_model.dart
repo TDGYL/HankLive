@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
-/// HankProcessData: 比赛进程数据（incidents + stats）
-/// 对应接口 GET /api/livespeed/football/match/process 返回的数据体
+/// HankProcessData: matchprogressData（incidents + stats）
+/// maps to API GET /api/livespeed/football/match/process BackDatabody
 class HankProcessData {
-  /// 技术统计列表
+  /// technicalstatslist
   final List<HankStatItem>? stats;
 
-  /// 赛况事件列表
+  /// match event list
   final List<HankIncidentItem>? incidents;
 
   HankProcessData({this.stats, this.incidents});
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankProcessData.fromJson(Map<String, dynamic> json) {
     return HankProcessData(
       stats: json['stats'] != null
@@ -25,21 +25,21 @@ class HankProcessData {
   }
 }
 
-/// HankStatItem: 技术统计项
-/// type字段对应不同统计类型，home/away为双方数值
+/// HankStatItem: technicalstat item
+/// typefieldmaps todifferent stattype，home/awayisd u a lsidecountvalue
 class HankStatItem {
-  /// 客队数值
+  /// Awaycountvalue
   final int? away;
 
-  /// 主队数值
+  /// Homecountvalue
   final int? home;
 
-  /// 统计类型ID
+  /// statstypeID
   final int? type;
 
   HankStatItem({this.away, this.home, this.type});
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankStatItem.fromJson(Map<String, dynamic> json) {
     return HankStatItem(
       away: json['away'] != null ? (json['away'] as num).toInt() : null,
@@ -48,56 +48,56 @@ class HankStatItem {
     );
   }
 
-  /// 统计项中文名称
+  /// stat itemChinesename
   String get typeName {
     switch (type) {
       case 25:
-        return '控球率';
+        return 'Possession';
       case 21:
-        return '射正';
+        return 'On Target';
       case 22:
-        return '射偏';
+        return 'shot off target';
       case 23:
-        return '进攻';
+        return 'Attacks';
       case 24:
-        return '危险进攻';
+        return 'DangerousAttacks';
       case 2:
-        return '角球';
+        return 'Corners';
       case 4:
-        return '红牌';
+        return 'Red Cards';
       case 3:
-        return '黄牌';
+        return 'Yellow Cards';
       case 1:
-        return '进球';
+        return 'Goals';
       default:
-        return '未知统计';
+        return 'unknownstats';
     }
   }
 
-  /// 主队占比（0.0-1.0）
+  /// Homeproportion（0.0-1.0）
   double get homeProgress {
     final int total = (home ?? 0) + (away ?? 0);
     if (total == 0 || home == 0) return 0.0;
     return (home!) / total;
   }
 
-  /// 客队占比（0.0-1.0）
+  /// Awayproportion（0.0-1.0）
   double get awayProgress {
     final int total = (home ?? 0) + (away ?? 0);
     if (total == 0 || away == 0) return 0.0;
     return (away!) / total;
   }
 
-  /// 主队百分比显示文字（如: "54%"）
+  /// Homepercentcategorymatchdisplaytext（e.g.: "54%"）
   String get homePercentText {
     if (type == 25) {
-      // 控球率直接显示百分比
+      // Possessiondirectlydisplaypercentcategorymatch
       return '${home ?? 0}%';
     }
     return '${home ?? 0}';
   }
 
-  /// 客队百分比显示文字
+  /// Awaypercentcategorymatchdisplaytext
   String get awayPercentText {
     if (type == 25) {
       return '${away ?? 0}%';
@@ -106,52 +106,52 @@ class HankStatItem {
   }
 }
 
-/// HankIncidentItem: 赛况事件项
-/// 对应接口incidents数组中的单条事件
+/// HankIncidentItem: match eventseventitem
+/// maps to APIincidentscountgroupinsingleevent
 class HankIncidentItem {
-  /// 事件类型ID
+  /// eventtypeID
   final int? type;
 
-  /// 事件位置（0=中立, 1=主队, 2=客队）
+  /// eventPosition（0=increate, 1=Home, 2=Away）
   final int? position;
 
-  /// 发生时间（分钟）
+  /// occurredTime（min）
   final int? time;
 
-  /// 主队比分（事件发生时）
+  /// Homescore（eventoccurredwhen）
   final int? homeScore;
 
-  /// 客队比分（事件发生时）
+  /// Awayscore（eventoccurredwhen）
   final int? awayScore;
 
-  /// 球员ID
+  /// PlayerID
   final int? playerId;
 
-  /// 球员姓名
+  /// Playername
   final String? playerName;
 
-  /// 助攻球员1 ID
+  /// assistsPlayer1 ID
   final int? assist1Id;
 
-  /// 助攻球员2 ID
+  /// assistsPlayer2 ID
   final int? assist2Id;
 
-  /// 进场球员ID（换人）
+  /// entermatchPlayerID（substitution）
   final int? inPlayerId;
 
-  /// 出场球员ID（换人）
+  /// appearancePlayerID（substitution）
   final int? outPlayerId;
 
-  /// 助攻球员1姓名
+  /// assistsPlayer1name
   final String? assist1Name;
 
-  /// 助攻球员2姓名
+  /// assistsPlayer2name
   final String? assist2Name;
 
-  /// 进场球员姓名（换人）
+  /// entermatchPlayername（substitution）
   final String? inPlayerName;
 
-  /// 出场球员姓名（换人）
+  /// appearancePlayername（substitution）
   final String? outPlayerName;
 
   HankIncidentItem({
@@ -172,7 +172,7 @@ class HankIncidentItem {
     this.outPlayerName,
   });
 
-  /// 从JSON解析（snake_case → camelCase）
+  /// fromJSONparse（snake_case → camelCase）
   factory HankIncidentItem.fromJson(Map<String, dynamic> json) {
     return HankIncidentItem(
       type: json['type'] != null ? (json['type'] as num).toInt() : null,
@@ -193,14 +193,14 @@ class HankIncidentItem {
     );
   }
 
-  /// 获取展示用球员姓名
-  /// 换人事件显示出场球员，助攻事件显示助攻球员，其他显示进球球员
+  /// get displayPlayername
+  /// substitution eventdisplayappearancePlayer，assist eventdisplayassistsPlayer，other displayGoalsPlayer
   String get custPlayerName {
-    // 换人事件 type=9
+    // substitution event type=9
     if (type == 9) {
       return outPlayerName ?? '';
     }
-    // 助攻事件 type=18
+    // assist event type=18
     if (type == 18) {
       return (assist1Name != null && assist1Name!.isNotEmpty)
           ? assist1Name!
@@ -209,58 +209,58 @@ class HankIncidentItem {
     return playerName ?? '';
   }
 
-  /// 获取事件类型中文名称
+  /// geteventtypeChinesename
   String get custTypeName {
     switch (type) {
       case 4:
-        return '红牌';
+        return 'Red Cards';
       case 3:
-        return '黄牌';
+        return 'Yellow Cards';
       case 15:
-        return '两黄变红';
+        return 'twoyellow tored';
       case 1:
-        return '进球';
+        return 'Goals';
       case 17:
-        return '乌龙球';
+        return 'own goalgoal';
       case 9:
-        return '换人';
+        return 'substitution';
       case 2:
-        return '角球';
+        return 'Corners';
       case 8:
-        return '点球进球';
+        return 'PENGoals';
       case 16:
-        return '点球未进';
+        return 'PENnot entered';
       case 18:
-        return '助攻';
+        return 'assists';
       case 24:
-        return '危险进攻';
+        return 'DangerousAttacks';
       default:
-        return '未知事件';
+        return 'unknownevent';
     }
   }
 
-  /// 获取事件图标
+  /// geteventicon
   IconData get iconData {
     switch (type) {
-      case 4: // 红牌
-      case 15: // 两黄变红
+      case 4: // Red Cards
+      case 15: // twoyellow tored
         return Icons.square;
-      case 3: // 黄牌
+      case 3: // Yellow Cards
         return Icons.square;
-      case 1: // 进球
-      case 8: // 点球进球
-      case 17: // 乌龙球
+      case 1: // Goals
+      case 8: // PENGoals
+      case 17: // own goalgoal
         return Icons.sports_soccer;
-      case 9: // 换人
+      case 9: // substitution
         return Icons.swap_horiz;
-      case 2: // 角球
+      case 2: // Corners
         return Icons.flag;
       default:
         return Icons.info_outline;
     }
   }
 
-  /// 获取事件图标颜色
+  /// geteventiconcolor
   Color get iconColor {
     switch (type) {
       case 4:

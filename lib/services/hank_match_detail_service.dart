@@ -1,193 +1,193 @@
 import 'dart:math';
 import '../models/hank_match_detail_model.dart';
 
-/// HankMatchDetailService: 比赛详情Mock数据服务
-/// 提供图文赛况、首发阵容、技术统计、指数分析的模拟数据
-/// 技术统计中的比赛主导率数据使用本地随机生成
+/// HankMatchDetailService: matchDetailsMockDataservice
+/// provideArticlematch events、starterLineup、technicalstats、OddsmodesimulateData
+/// technicalstatsinmatchhomenavrateDatauseuselocalrandomgeneratecomplete
 class HankMatchDetailService {
-  /// 单例实例
+  /// singleton instance
   static final HankMatchDetailService _instance = HankMatchDetailService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankMatchDetailService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankMatchDetailService._internal();
 
-  /// 随机数生成器（用于比赛主导率数据）
+  /// randomcountgeneratecompleteindicator（usematchhomenavrateData）
   final Random _random = Random();
 
-  /// 获取图文赛况事件列表
-  /// 返回按时间倒序排列的事件列表
+  /// getArticlematch event list
+  /// BackbyTimefallorderarrangeeventlist
   List<HankMatchEvent> getMatchEvents() {
     return [
       HankMatchEvent(
         id: 'evt_1',
         type: HankMatchEventType.substitution,
         minute: 65,
-        title: "65' - 换人调整",
-        description: '阿森纳做出人员调整：19-特罗萨德 替换 11-马丁内利 登场，加强左路进攻与防守跑动。',
-        teamName: '阿森纳',
+        title: "65' - substitutioncalloverall",
+        description: 'Arsenaldooutpersonplayercalloverall：19-Trossard replace 11-MartinelliinnerLi onmatch，strengthenleftroadAttackswithdefensedefendrunanimation。',
+        teamName: 'Arsenal',
       ),
       HankMatchEvent(
         id: 'evt_2',
         type: HankMatchEventType.goal,
         minute: 58,
-        title: "58' - GOAL! 进球得分!",
-        description: '精彩的世界波！马丁内利左路内切后在禁区前沿起脚劲射，皮球划出弧线直挂球门死角！守门员扑救不及！',
-        teamName: '阿森纳',
-        scoreChange: '阿森纳 2 - 1 曼城',
-        extraInfo: '助攻: 厄德高 · 期望进球值 xG: 0.08',
+        title: "58' - GOAL! Goalsgotcategory!",
+        description: 'brilliantworld！MartinelliinnerLileftroadinnertoggleafterinbannedareabeforealongstartfootpowerful shot，goaloutcurvelinedirecthanggoalgoaldeadcorner！defendgoalkeeper savesnotand！',
+        teamName: 'Arsenal',
+        scoreChange: 'Arsenal 2 - 1 Man City',
+        extraInfo: 'assists: Odegaard · expiryexpectGoalsvalue xG: 0.08',
       ),
       HankMatchEvent(
         id: 'evt_3',
         type: HankMatchEventType.penaltyGoal,
         minute: 51,
-        title: "51' - 点球破门",
-        description: '哈兰德操刀主罚点球，冷静骗过门将将球送入球门右下角，曼城扳平比分！',
-        teamName: '曼城',
-        scoreChange: '阿森纳 1 - 1 曼城',
+        title: "51' - PENgoal",
+        description: 'HaalanddefendtakeshomepenaltyPEN，calmpassgoalkeeperwillgoalpassingoalgoalrightdowncorner，Man CityDscore！',
+        teamName: 'Man City',
+        scoreChange: 'Arsenal 1 - 1 Man City',
       ),
       HankMatchEvent(
         id: 'evt_4',
         type: HankMatchEventType.yellowCard,
         minute: 42,
-        title: "42' - 黄牌警告",
-        description: '罗德里在中场拉拽萨卡阻止防守反击，主裁判向其出示黄牌。',
-        teamName: '曼城',
+        title: "42' - Yellow Cardswarning",
+        description: 'RodriinhalftimepullpullSakacardblockdefensedefendcounter，homeRefereedirectionitsshowYellow Cards。',
+        teamName: 'Man City',
       ),
       HankMatchEvent(
         id: 'evt_5',
         type: HankMatchEventType.goal,
         minute: 24,
-        title: "24' - 首开纪录",
-        description: '萨卡禁区右侧接队友直塞，扣过防守球员后左脚推射近角得手！阿森纳取得领先！',
-        teamName: '阿森纳',
-        scoreChange: '阿森纳 1 - 0 曼城',
+        title: "24' - firstopenminutein",
+        description: 'Sakacardbannedarearightreceiveteamfandirectpass，bucklepassdefensedefendPlayerafterleftfootshotnearcornergothand！Arsenal took the lead！',
+        teamName: 'Arsenal',
+        scoreChange: 'Arsenal 1 - 0 Man City',
       ),
     ];
   }
 
-  /// 获取主队首发阵型与球员
+  /// getHomestarterformation andPlayer
   HankMatchLineupFormation getHomeLineup() {
     return HankMatchLineupFormation(
-      teamName: '阿森纳',
+      teamName: 'Arsenal',
       formation: '4-3-3',
       teamColor: 0xFFEF4444,
       playerRows: [
-        // 门将
+        // goalkeeper
         [
-          HankMatchPlayer(name: '拉亚', number: '22', position: '门将', rating: '7.6'),
+          HankMatchPlayer(name: 'pullAsia', number: '22', position: 'goalkeeper', rating: '7.6'),
         ],
-        // 中场
+        // halftime
         [
-          HankMatchPlayer(name: '赖斯', number: '41', position: '中场', rating: '8.0'),
-          HankMatchPlayer(name: '厄德高', number: '8', position: '前腰', rating: '8.5', isStar: true),
-          HankMatchPlayer(name: '哈弗茨', number: '29', position: '中场', rating: '7.3'),
+          HankMatchPlayer(name: 'Rice', number: '41', position: 'halftime', rating: '8.0'),
+          HankMatchPlayer(name: 'Odegaard', number: '8', position: 'beforewaist', rating: '8.5', isStar: true),
+          HankMatchPlayer(name: 'Havertz', number: '29', position: 'halftime', rating: '7.3'),
         ],
-        // 前锋
+        // before
         [
-          HankMatchPlayer(name: '马丁内利', number: '11', position: '左锋', rating: '8.3', hasGoal: true),
-          HankMatchPlayer(name: '热苏斯', number: '9', position: '中锋', rating: '7.2'),
-          HankMatchPlayer(name: '萨卡', number: '7', position: '右锋', rating: '8.6', isStar: true, hasGoal: true),
+          HankMatchPlayer(name: 'MartinelliinnerLi', number: '11', position: 'left', rating: '8.3', hasGoal: true),
+          HankMatchPlayer(name: 'Jesus', number: '9', position: 'striker', rating: '7.2'),
+          HankMatchPlayer(name: 'Sakacard', number: '7', position: 'right', rating: '8.6', isStar: true, hasGoal: true),
         ],
       ],
     );
   }
 
-  /// 获取客队首发阵型与球员
+  /// getAwaystarterformation andPlayer
   HankMatchLineupFormation getAwayLineup() {
     return HankMatchLineupFormation(
-      teamName: '曼城',
+      teamName: 'Man City',
       formation: '4-2-3-1',
       teamColor: 0xFF3B82F6,
       playerRows: [
-        // 前锋
+        // before
         [
-          HankMatchPlayer(name: '哈兰德', number: '9', position: '中锋', rating: '8.2', isStar: true, hasGoal: true),
+          HankMatchPlayer(name: 'Haalanddefend', number: '9', position: 'striker', rating: '8.2', isStar: true, hasGoal: true),
         ],
-        // 攻击中场
+        // attackhalftime
         [
-          HankMatchPlayer(name: '格拉利什', number: '10', position: '左边锋', rating: '7.1'),
-          HankMatchPlayer(name: '德布劳内', number: '17', position: '前腰', rating: '7.8', isStar: true),
-          HankMatchPlayer(name: '福登', number: '47', position: '右边锋', rating: '7.4'),
+          HankMatchPlayer(name: 'GepullSmith', number: '10', position: 'left winger', rating: '7.1'),
+          HankMatchPlayer(name: 'defendlayoutMartinezinner', number: '17', position: 'beforewaist', rating: '7.8', isStar: true),
+          HankMatchPlayer(name: 'Foden', number: '47', position: 'rightborder', rating: '7.4'),
         ],
-        // 后腰
+        // afterwaist
         [
-          HankMatchPlayer(name: '罗德里', number: '16', position: '后腰', rating: '6.9', hasYellowCard: true),
-          HankMatchPlayer(name: '科瓦契奇', number: '8', position: '后腰', rating: '7.0'),
+          HankMatchPlayer(name: 'Rodri', number: '16', position: 'afterwaist', rating: '6.9', hasYellowCard: true),
+          HankMatchPlayer(name: 'Kovacic', number: '8', position: 'afterwaist', rating: '7.0'),
         ],
-        // 门将
+        // goalkeeper
         [
-          HankMatchPlayer(name: '埃德森', number: '31', position: '门将', rating: '6.8'),
+          HankMatchPlayer(name: 'Ederson', number: '31', position: 'goalkeeper', rating: '6.8'),
         ],
       ],
     );
   }
 
-  /// 获取替补席球员列表
+  /// getbenchPlayerlist
   List<HankMatchBenchPlayer> getBenchPlayers() {
     return [
-      HankMatchBenchPlayer(name: '19-特罗萨德', teamName: '阿森纳', isPlayed: true, playedMinute: "65'"),
-      HankMatchBenchPlayer(name: '19-阿尔瓦雷斯', teamName: '曼城'),
-      HankMatchBenchPlayer(name: '10-史密斯·罗', teamName: '阿森纳'),
-      HankMatchBenchPlayer(name: '25-阿坎吉', teamName: '曼城'),
+      HankMatchBenchPlayer(name: '19-Trossard', teamName: 'Arsenal', isPlayed: true, playedMinute: "65'"),
+      HankMatchBenchPlayer(name: '19-Alvarez', teamName: 'Man City'),
+      HankMatchBenchPlayer(name: '10-·Rodri', teamName: 'Arsenal'),
+      HankMatchBenchPlayer(name: '25-Akanji', teamName: 'Man City'),
     ];
   }
 
-  /// 获取技术统计数据
-  /// 比赛主导率的柱状图数据使用本地随机生成
+  /// gettechnicalstatsData
+  /// matchhomenavratebarstatusimageDatauseuselocalrandomgeneratecomplete
   List<int> getMomentumData() {
-    // 随机生成9个柱状图高度（20-100）
+    // randomgeneratecomplete9eachbarstatusimageheight（20-100）
     return List.generate(9, (_) => 20 + _random.nextInt(81));
   }
 
-  /// 获取技术统计对比项
+  /// gettechnicalstatsmatchmatchitem
   List<HankMatchStatItem> getMatchStats() {
     return [
-      HankMatchStatItem(label: '控球率', homeValue: '54%', awayValue: '46%', homePercent: 54, awayPercent: 46),
-      HankMatchStatItem(label: '射门次数', homeValue: '14', awayValue: '9', homePercent: 61, awayPercent: 39),
-      HankMatchStatItem(label: '射正次数', homeValue: '6', awayValue: '3', homePercent: 66, awayPercent: 34),
-      HankMatchStatItem(label: '危险进攻', homeValue: '48', awayValue: '35', homePercent: 58, awayPercent: 42),
-      HankMatchStatItem(label: '角球', homeValue: '7', awayValue: '4', homePercent: 63, awayPercent: 37),
-      HankMatchStatItem(label: '传球成功率', homeValue: '88%', awayValue: '85%', homePercent: 51, awayPercent: 49),
-      HankMatchStatItem(label: '黄牌', homeValue: '1', awayValue: '2', homePercent: 33, awayPercent: 67),
+      HankMatchStatItem(label: 'Possession', homeValue: '54%', awayValue: '46%', homePercent: 54, awayPercent: 46),
+      HankMatchStatItem(label: 'Shotstimecount', homeValue: '14', awayValue: '9', homePercent: 61, awayPercent: 39),
+      HankMatchStatItem(label: 'On Targettimecount', homeValue: '6', awayValue: '3', homePercent: 66, awayPercent: 34),
+      HankMatchStatItem(label: 'DangerousAttacks', homeValue: '48', awayValue: '35', homePercent: 58, awayPercent: 42),
+      HankMatchStatItem(label: 'Corners', homeValue: '7', awayValue: '4', homePercent: 63, awayPercent: 37),
+      HankMatchStatItem(label: 'Passessuccessrate', homeValue: '88%', awayValue: '85%', homePercent: 51, awayPercent: 49),
+      HankMatchStatItem(label: 'Yellow Cards', homeValue: '1', awayValue: '2', homePercent: 33, awayPercent: 67),
     ];
   }
 
-  /// 获取亚盘让球指数数据
+  /// getAHhandicapgoaloddscountData
   List<HankMatchOddsRow> getAsianHandicapOdds() {
     return [
       HankMatchOddsRow(
-        stage: '即盘',
+        stage: 'ishandicap',
         homeOdds: '1.85',
-        middleOdds: '主让 0.25',
+        middleOdds: 'homehandicap 0.25',
         awayOdds: '2.05',
         homeTrend: 'down',
         awayTrend: 'up',
       ),
       HankMatchOddsRow(
-        stage: '初盘',
+        stage: 'Opening',
         homeOdds: '2.10',
-        middleOdds: '平手盘',
+        middleOdds: 'Dhandhandicap',
         awayOdds: '1.80',
       ),
     ];
   }
 
-  /// 获取欧赔指数数据
+  /// get1X2oddscountData
   List<HankMatchOddsRow> getEuropeanOdds() {
     return [
       HankMatchOddsRow(
-        stage: '即时',
+        stage: 'Live',
         homeOdds: '1.45',
         middleOdds: '4.20',
         awayOdds: '6.50',
       ),
       HankMatchOddsRow(
-        stage: '初盘',
+        stage: 'Opening',
         homeOdds: '2.35',
         middleOdds: '3.40',
         awayOdds: '2.80',
@@ -195,7 +195,7 @@ class HankMatchDetailService {
     ];
   }
 
-  /// 获取大小球数据
+  /// getO/UgoalData
   Map<String, String> getOverUnderOdds() {
     return {
       'line': '3.5',

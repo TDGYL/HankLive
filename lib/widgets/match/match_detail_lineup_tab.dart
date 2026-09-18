@@ -3,29 +3,29 @@ import '../../theme/app_colors.dart';
 import '../../models/hank_lineup_model.dart';
 import '../../pages/league/hank_player_detail_page.dart';
 
-/// MatchDetailLineupTab: 首发阵容Tab组件
-/// 使用接口数据 /api/livespeed/football/match/lineup
-/// 球员坐标定位规则：
-///   主队: centerX = x/100 * totalWidth, centerY = y/100 * itemHeight
-///   客队: centerX = (100-x)/100 * totalWidth, centerY = (100-y)/100 * itemHeight + 55 + 220
-/// 浅紫色+白色主题风格
+/// MatchDetailLineupTab: starterLineupTabcomponent
+/// useAPIData /api/livespeed/football/match/lineup
+/// Playercoordinatespositionrulethen：
+///   Home: centerX = x/100 * totalWidth, centerY = y/100 * itemHeight
+///   Away: centerX = (100-x)/100 * totalWidth, centerY = (100-y)/100 * itemHeight + 55 + 220
+/// lightpurple+whitecolorhomethemestyle
 class MatchDetailLineupTab extends StatefulWidget {
-  /// 阵容数据
+  /// LineupData
   final HankLineupData? lineupData;
 
-  /// 是否正在加载
+  /// whetherLoading
   final bool isLoading;
 
-  /// 主队名称
+  /// Homename
   final String homeTeamName;
 
-  /// 客队名称
+  /// Awayname
   final String awayTeamName;
 
-  /// 主队Logo
+  /// HomeLogo
   final String? homeTeamLogo;
 
-  /// 客队Logo
+  /// AwayLogo
   final String? awayTeamLogo;
 
   MatchDetailLineupTab({
@@ -77,7 +77,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 阵型信息头（主队Logo+阵型 vs 客队Logo+阵型，不展示队名）
+  /// formationinfoheader（HomeLogo+formation vs AwayLogo+formation，notdisplayteamname）
   Widget _buildLineupHeader(HankLineupData data) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -89,7 +89,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 主队（Logo + 阵型）
+          // Home（Logo + formation）
           Row(
             children: [
               _buildTeamLogo(widget.homeTeamLogo),
@@ -113,7 +113,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               color: AppColors.slate500,
             ),
           ),
-          // 客队（阵型 + Logo）
+          // Away（formation + Logo）
           Row(
             children: [
               Text(
@@ -133,7 +133,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 球队小Logo
+  /// TeamunderLogo
   Widget _buildTeamLogo(String? logoUrl) {
     if (logoUrl == null || logoUrl.isEmpty) {
       return Container(
@@ -160,14 +160,14 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 2.5D 战术球场（使用坐标定位球员）
+  /// 2.5D tacticalStadium（useusecoordinatespositionPlayer）
   Widget _buildPitch(HankLineupData data) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 球场总宽度和总高度
+        // Stadiumtotalwidthdepthandtotalheight
         final totalWidth = constraints.maxWidth;
-        final itemHeight = 420.0; // 球场高度
-        // 球员节点尺寸
+        final itemHeight = 420.0; // Stadiumheight
+        // Playernodesize
         const itemWidth = 36.0;
 
         return Container(
@@ -191,18 +191,18 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              // 球场标线
+              // Stadiummarkline
               Positioned.fill(
                 child: CustomPaint(
                   painter: _PitchLinePainter(),
                 ),
               ),
-              // 客队球员（上半场，坐标翻转）
+              // AwayPlayer（upHT，coordinatesflip）
               ...data.awayFirst.map((player) {
                 final centerX = (100 - player.x) / 100.0 * totalWidth;
                 final centerY =
                     (100 - player.y) / 100.0 * itemHeight / 2 + itemHeight / 2;
-                // 限制在球场范围内
+                // limitinStadiumrangeinner
                 final clampedY = centerY.clamp(12.0, itemHeight - 50);
                 return Positioned(
                   left: centerX - itemWidth / 2,
@@ -210,11 +210,11 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
                   child: _buildPlayerNode(player, isHome: false),
                 );
               }).toList(),
-              // 主队球员（下半场）
+              // HomePlayer（downHT）
               ...data.homeFirst.map((player) {
                 final centerX = player.x / 100.0 * totalWidth;
                 final centerY = player.y / 100.0 * itemHeight / 2;
-                // 限制在球场范围内
+                // limitinStadiumrangeinner
                 final clampedY = centerY.clamp(12.0, itemHeight - 50);
                 return Positioned(
                   left: centerX - itemWidth / 2,
@@ -229,8 +229,8 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 球员节点（头像 + 号码 + 姓名 + 事件标记）
-  /// 点击球员跳转到球员详情页
+  /// Playernode（avatar + Number + name + eventmarkrecord）
+  /// tapPlayernavigate toPlayerDetailspage
   Widget _buildPlayerNode(HankLineupPlayer player, {required bool isHome}) {
     final teamColor = isHome ? const Color(0xFFE11D48) : const Color(0xFF3B82F6);
 
@@ -240,7 +240,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 球员头像 + 号码
+          // Playeravatar + Number
           Stack(
             alignment: Alignment.center,
             children: [
@@ -285,7 +285,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
                         ),
                 ),
               ),
-              // 事件标记（进球/黄牌/红牌）
+              // eventmarkrecord（Goals/Yellow Cards/Red Cards）
               if (player.incidents.isNotEmpty)
                 Positioned(
                   right: -2,
@@ -295,7 +295,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
             ],
           ),
           const SizedBox(height: 2),
-          // 球员姓名
+          // Playername
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
             decoration: BoxDecoration(
@@ -318,23 +318,23 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 事件标记图标
+  /// eventmarkrecordicon
   Widget _buildIncidentBadge(List<HankLineupIncident> incidents) {
-    // 取第一个事件类型来显示
+    // getaeacheventtypetodisplay
     final type = incidents.first.type;
     Color badgeColor;
     String label;
 
     switch (type) {
-      case 1: // 进球
+      case 1: // Goals
         badgeColor = const Color(0xFF10B981);
         label = '⚽';
         break;
-      case 2: // 黄牌
+      case 2: // Yellow Cards
         badgeColor = const Color(0xFFFBBF24);
         label = '🟨';
         break;
-      case 3: // 红牌
+      case 3: // Red Cards
         badgeColor = const Color(0xFFEF4444);
         label = '🟥';
         break;
@@ -360,7 +360,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 替补席区域（主队 + 客队）
+  /// bencharea（Home + Away）
   Widget _buildSubSection(HankLineupData data) {
     if (data.homeSub.isEmpty && data.awaySub.isEmpty) {
       return const SizedBox.shrink();
@@ -388,7 +388,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               Icon(Icons.chair, size: 14, color: AppColors.violet600),
               SizedBox(width: 8),
               Text(
-                '替补席',
+                'bench',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -398,14 +398,14 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
             ],
           ),
           const SizedBox(height: 8),
-          // 主队替补
+          // Homesubstitute
           if (data.homeSub.isNotEmpty) ...[
             _buildSubTeamTitle(widget.homeTeamName, isHome: true),
             const SizedBox(height: 4),
             ...data.homeSub.map((p) => _buildSubPlayerChip(p)).toList(),
             const SizedBox(height: 12),
           ],
-          // 客队替补
+          // Awaysubstitute
           if (data.awaySub.isNotEmpty) ...[
             _buildSubTeamTitle(widget.awayTeamName, isHome: false),
             const SizedBox(height: 4),
@@ -416,7 +416,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 替补球队标题
+  /// substituteTeamtitle
   Widget _buildSubTeamTitle(String name, {required bool isHome}) {
     final color = isHome ? const Color(0xFFE11D48) : const Color(0xFF3B82F6);
     return Row(
@@ -439,8 +439,8 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 替补球员行（球衣号码 + Logo + 姓名，单行排列）
-  /// 点击球员跳转到球员详情页
+  /// substitutePlayerrow（jerseyNumber + Logo + name，single rowarrange）
+  /// tapPlayernavigate toPlayerDetailspage
   Widget _buildSubPlayerChip(HankLineupPlayer player) {
     return GestureDetector(
       onTap: () => _navigateToPlayerDetail(player),
@@ -455,7 +455,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
         ),
         child: Row(
           children: [
-            // 球衣号码
+            // jerseyNumber
             Text(
               '${player.shirtNumber}',
               style: const TextStyle(
@@ -465,7 +465,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               ),
             ),
             const SizedBox(width: 6),
-            // 球员Logo
+            // PlayerLogo
             Container(
               width: 20,
               height: 20,
@@ -492,7 +492,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
                     ),
             ),
             const SizedBox(width: 6),
-            // 球员姓名
+            // Playername
             Expanded(
               child: Text(
                 player.playerName,
@@ -510,8 +510,8 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 跳转到球员详情页
-  /// [player] 阵容球员数据
+  /// navigate toPlayerDetailspage
+  /// [player] LineupPlayerData
   void _navigateToPlayerDetail(HankLineupPlayer player) {
     if (player.playerId == 0) return;
     Navigator.push(
@@ -526,7 +526,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 伤停区域（主队 + 客队）
+  /// injuredarea（Home + Away）
   Widget _buildInjurySection(HankLineupData data) {
     if (data.homeInjury.isEmpty && data.awayInjury.isEmpty) {
       return const SizedBox.shrink();
@@ -554,7 +554,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
               Icon(Icons.local_hospital, size: 14, color: AppColors.rose500),
               SizedBox(width: 8),
               Text(
-                '伤停名单',
+                'injurednamesingle',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -564,14 +564,14 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
             ],
           ),
           const SizedBox(height: 8),
-          // 主队伤停
+          // Homeinjured
           if (data.homeInjury.isNotEmpty) ...[
             _buildInjuryTeamTitle(widget.homeTeamName),
             const SizedBox(height: 4),
             ...data.homeInjury.map((p) => _buildInjuryPlayerChip(p)).toList(),
             const SizedBox(height: 12),
           ],
-          // 客队伤停
+          // Awayinjured
           if (data.awayInjury.isNotEmpty) ...[
             _buildInjuryTeamTitle(widget.awayTeamName),
             const SizedBox(height: 4),
@@ -582,7 +582,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 伤停球队标题
+  /// injuredTeamtitle
   Widget _buildInjuryTeamTitle(String name) {
     return Row(
       children: [
@@ -605,7 +605,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 伤停球员条目
+  /// injuredPlayeritemitem
   Widget _buildInjuryPlayerChip(HankLineupInjuryPlayer player) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
@@ -673,7 +673,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
     );
   }
 
-  /// 空数据视图
+  /// emptyDatavisualimage
   Widget _buildEmptyView() {
     return Center(
       child: Column(
@@ -682,7 +682,7 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
           Icon(Icons.inbox_outlined, size: 48, color: AppColors.violet300),
           SizedBox(height: 12),
           Text(
-            '暂无阵容数据',
+            'NoLineupData',
             style: TextStyle(fontSize: 14, color: AppColors.slate500),
           ),
         ],
@@ -691,8 +691,8 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
   }
 }
 
-/// _PitchLinePainter: 球场标线画笔
-/// 绘制中线、中圈、禁区线
+/// _PitchLinePainter: Stadiummarklinepaint
+/// drawinline、incircle、penalty area line
 class _PitchLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -701,21 +701,21 @@ class _PitchLinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    // 中线
+    // inline
     canvas.drawLine(
       Offset(16, size.height / 2),
       Offset(size.width - 16, size.height / 2),
       paint,
     );
 
-    // 中圈
+    // incircle
     canvas.drawCircle(
       Offset(size.width / 2, size.height / 2),
       40,
       paint,
     );
 
-    // 上方禁区
+    // upsidebannedarea
     canvas.drawRRect(
       RRect.fromRectAndCorners(
         Rect.fromCenter(
@@ -729,7 +729,7 @@ class _PitchLinePainter extends CustomPainter {
       paint,
     );
 
-    // 下方禁区
+    // downsidebannedarea
     canvas.drawRRect(
       RRect.fromRectAndCorners(
         Rect.fromCenter(

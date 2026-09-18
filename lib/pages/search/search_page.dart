@@ -8,22 +8,25 @@ import '../match/match_detail_page.dart';
 import '../../models/match_model.dart';
 import '../../models/team_model.dart';
 
-/// HankSearchTab: 搜索结果分类枚举
-/// all: 全部 | match: 比赛 | user: 用户 | league: 联赛
+/// HankSearchTab: Searchresultscategorytypeenum
+/// all: All | match: match | user: useaccount | league: League
 enum HankSearchTab {
-  /// 全部
+  /// All
   all,
-  /// 比赛
+
+  /// match
   match,
-  /// 用户
+
+  /// useaccount
   user,
-  /// 联赛
+
+  /// League
   league,
 }
 
-/// HankSearchPage: 搜索页面
-/// 与ZogoLive差异化布局：浅紫色+白色主题
-/// 顶部搜索框 + 焦点时展示搜索历史/热门比赛 + 搜索后展示分类结果
+/// HankSearchPage: Searchpage
+/// withZogoLivedifferentiatedlayoutmatch：lightpurple+whitecolorhometheme
+/// topSearchfield + focuswhendisplaySearchhistory/Trendingmatch + Searchafterdisplaycategorytyperesults
 class HankSearchPage extends StatefulWidget {
   const HankSearchPage({Key? key}) : super(key: key);
 
@@ -32,40 +35,40 @@ class HankSearchPage extends StatefulWidget {
 }
 
 class _HankSearchPageState extends State<HankSearchPage> {
-  /// 搜索输入控制器
+  /// Searchinputcontroller
   final TextEditingController _searchController = TextEditingController();
 
-  /// 搜索框焦点节点
+  /// Searchfieldfocusnode
   final FocusNode _searchFocusNode = FocusNode();
 
-  /// 当前选中的分类
+  /// whenbeforeselectedcategorytype
   HankSearchTab _currentTab = HankSearchTab.all;
 
-  /// 当前搜索关键词
+  /// whenbeforeSearchkeyword
   String _keyword = '';
 
-  /// 搜索历史列表
+  /// Searchhistorylist
   List<String> _historyList = [];
 
-  /// 是否展示历史界面（true=历史+热门，false=搜索结果）
+  /// whetherdisplayhistoryview（true=history+Trending，false=Searchresults）
   bool _showHistory = true;
 
-  /// 热门比赛列表
+  /// Trendingmatchlist
   List<HankSearchMatch> _hotMatches = [];
 
-  /// 热门比赛是否加载中
+  /// TrendingmatchwhetherLoading
   bool _isHotLoading = true;
 
-  /// 搜索结果
+  /// Searchresults
   HankSearchResult? _searchResult;
 
-  /// 搜索结果是否加载中
+  /// SearchresultswhetherLoading
   bool _isSearchLoading = false;
 
-  /// 搜索接口服务
+  /// SearchAPI service
   final HankSearchApiService _apiService = HankSearchApiService();
 
-  /// SharedPreferences存储历史的key
+  /// SharedPreferencesstorehistorykey
   static const String _historyKey = 'hank_search_history';
 
   @override
@@ -83,8 +86,8 @@ class _HankSearchPageState extends State<HankSearchPage> {
     super.dispose();
   }
 
-  /// 焦点变化回调
-  /// 获得焦点展示历史界面，失去焦点且有关键词时展示结果
+  /// focuschangecallback
+  /// getgotfocusdisplayhistoryview，lostfocusandhaskeywordwhendisplayresults
   void _onFocusChanged() {
     if (!mounted) return;
     if (_searchFocusNode.hasFocus) {
@@ -98,7 +101,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 加载本地搜索历史
+  /// loadlocalSearchhistory
   Future<void> _loadHistory() async {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(_historyKey) ?? [];
@@ -107,7 +110,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 添加搜索历史（最多8条，最新在最前）
+  /// addSearchhistory（max8item，Latestinmostbefore）
   Future<void> _addHistory(String keyword) async {
     final prefs = await SharedPreferences.getInstance();
     var list = prefs.getStringList(_historyKey) ?? [];
@@ -122,7 +125,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 删除单条搜索历史
+  /// DeletesingleSearchhistory
   Future<void> _removeHistoryItem(String keyword) async {
     final prefs = await SharedPreferences.getInstance();
     var list = prefs.getStringList(_historyKey) ?? [];
@@ -133,7 +136,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 清空搜索历史
+  /// ClearSearchhistory
   Future<void> _clearHistory() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_historyKey);
@@ -142,7 +145,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 执行搜索
+  /// runrowSearch
   void _doSearch(String keyword) {
     final trimmed = keyword.trim();
     if (trimmed.isEmpty) return;
@@ -156,8 +159,8 @@ class _HankSearchPageState extends State<HankSearchPage> {
     _fetchSearchResults();
   }
 
-  /// 请求搜索结果
-  /// 接口：GET /api/livespeed/index/search
+  /// requestSearchresults
+  /// API：GET /api/livespeed/index/search
   Future<void> _fetchSearchResults() async {
     if (_keyword.isEmpty) return;
 
@@ -173,8 +176,8 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 请求热门比赛列表
-  /// 接口：GET /api/livespeed/index/search/match/hot
+  /// requestTrendingmatchlist
+  /// API：GET /api/livespeed/index/search/match/hot
   Future<void> _fetchHotMatches() async {
     setState(() => _isHotLoading = true);
 
@@ -188,7 +191,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     }
   }
 
-  /// 取消搜索，清空输入回到历史界面
+  /// CancelSearch，Clearinputbacktohistoryview
   void _cancelSearch() {
     setState(() {
       _searchController.clear();
@@ -198,16 +201,16 @@ class _HankSearchPageState extends State<HankSearchPage> {
     });
   }
 
-  /// 切换分类
+  /// togglecategorytype
   void _switchTab(HankSearchTab tab) {
     if (_currentTab == tab) return;
     setState(() => _currentTab = tab);
   }
 
-  /// 跳转到比赛详情
+  /// navigate tomatchDetails
   void _pushToMatchDetail(HankSearchMatch match) {
     FocusScope.of(context).unfocus();
-    // 构建MatchModel用于跳转
+    // buildMatchModelusenav
     final matchModel = MatchModel(
       matchId: match.matchId?.toString() ?? '',
       leagueName: match.competitionName ?? '',
@@ -227,15 +230,18 @@ class _HankSearchPageState extends State<HankSearchPage> {
       homeScore: match.homeTeamScore,
       awayScore: match.awayTeamScore,
       matchTime: _formatMatchTime(match.matchTime),
-      status: match.homeTeamScore != null ? MatchStatus.finished : MatchStatus.upcoming,
+      status: match.homeTeamScore != null
+          ? MatchStatus.finished
+          : MatchStatus.upcoming,
     );
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MatchDetailPage(match: matchModel)),
+      MaterialPageRoute(
+          builder: (context) => MatchDetailPage(match: matchModel)),
     );
   }
 
-  /// 格式化比赛时间为展示文案
+  /// formatmatchTimeisdisplaytext
   String _formatMatchTime(int? timestamp) {
     if (timestamp == null) return '';
     final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
@@ -263,7 +269,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 顶部搜索框区域
+  /// topSearchfieldarea
   Widget _buildSearchHeader() {
     return Container(
       padding: EdgeInsets.only(
@@ -280,7 +286,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       ),
       child: Row(
         children: [
-          // 返回按钮
+          // Backbutton
           GestureDetector(
             onTap: () {
               if (!_showHistory) {
@@ -304,7 +310,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
             ),
           ),
           const SizedBox(width: 8),
-          // 搜索框
+          // Searchfield
           Expanded(
             child: Container(
               height: 38,
@@ -316,7 +322,8 @@ class _HankSearchPageState extends State<HankSearchPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.search, color: AppColors.violet400, size: 16),
+                  const Icon(Icons.search,
+                      color: AppColors.violet400, size: 16),
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextField(
@@ -331,7 +338,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
-                        hintText: '搜索球队、比赛、用户',
+                        hintText: 'SearchTeam、match、useaccount',
                         hintStyle: TextStyle(
                           color: AppColors.slate400,
                           fontSize: 13,
@@ -364,13 +371,13 @@ class _HankSearchPageState extends State<HankSearchPage> {
             ),
           ),
           const SizedBox(width: 8),
-          // 取消按钮
+          // Cancelbutton
           GestureDetector(
             onTap: _cancelSearch,
             child: const Padding(
               padding: EdgeInsets.symmetric(vertical: 6, horizontal: 2),
               child: Text(
-                '取消',
+                'Cancel',
                 style: TextStyle(
                   color: AppColors.violet600,
                   fontSize: 14,
@@ -384,9 +391,9 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  // ==================== 历史搜索界面（默认视图） ====================
+  // ==================== historySearchview（defaultvisualimage） ====================
 
-  /// 历史搜索 + 热门比赛
+  /// historySearch + Trendingmatch
   Widget _buildHistoryView() {
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -398,7 +405,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 搜索历史区块
+  /// Searchhistoryareablock
   Widget _buildHistorySection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -411,7 +418,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
                 Icon(Icons.access_time, color: AppColors.violet600, size: 14),
                 SizedBox(width: 6),
                 Text(
-                  '搜索历史',
+                  'Searchhistory',
                   style: TextStyle(
                     color: AppColors.slate700,
                     fontSize: 12,
@@ -425,10 +432,11 @@ class _HankSearchPageState extends State<HankSearchPage> {
                 onTap: _clearHistory,
                 child: Row(
                   children: const [
-                    Icon(Icons.delete_outline, color: AppColors.slate500, size: 13),
+                    Icon(Icons.delete_outline,
+                        color: AppColors.slate500, size: 13),
                     SizedBox(width: 2),
                     Text(
-                      '清空',
+                      'Clear',
                       style: TextStyle(color: AppColors.slate500, fontSize: 11),
                     ),
                   ],
@@ -441,7 +449,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 4),
             child: Text(
-              '暂无搜索历史',
+              'NoSearchhistory',
               style: TextStyle(color: AppColors.slate400, fontSize: 12),
             ),
           )
@@ -449,13 +457,15 @@ class _HankSearchPageState extends State<HankSearchPage> {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _historyList.map((keyword) => _buildHistoryChip(keyword)).toList(),
+            children: _historyList
+                .map((keyword) => _buildHistoryChip(keyword))
+                .toList(),
           ),
       ],
     );
   }
 
-  /// 单个历史搜索标签
+  /// singleeachhistorySearchtag
   Widget _buildHistoryChip(String keyword) {
     return GestureDetector(
       onTap: () {
@@ -490,17 +500,18 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 热门比赛区块
+  /// Trendingmatchareablock
   Widget _buildHotSearchSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: const [
-            Icon(Icons.local_fire_department, color: AppColors.amber500, size: 14),
+            Icon(Icons.local_fire_department,
+                color: AppColors.amber500, size: 14),
             SizedBox(width: 6),
             Text(
-              '热门比赛',
+              'Trendingmatch',
               style: TextStyle(
                 color: AppColors.slate700,
                 fontSize: 12,
@@ -525,7 +536,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Center(
               child: Text(
-                '暂无热门数据',
+                'NoTrendingData',
                 style: TextStyle(color: AppColors.slate400, fontSize: 12),
               ),
             ),
@@ -536,7 +547,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 单个热门比赛卡片（独立卡片，无序号）
+  /// singleeachTrendingmatchcard（standalonecreatecard，noneordernumber）
   Widget _buildHotMatchCard(HankSearchMatch match) {
     return GestureDetector(
       onTap: () => _pushToMatchDetail(match),
@@ -557,7 +568,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
         ),
         child: Row(
           children: [
-            // 主队（右对齐）
+            // Home（right aligned）
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -579,35 +590,37 @@ class _HankSearchPageState extends State<HankSearchPage> {
                 ],
               ),
             ),
-            // 比分居中
+            // scorecenterin
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 10),
-              child: (match.homeTeamScore != null && match.awayTeamScore != null)
-                  ? Text(
-                      '${match.homeTeamScore} - ${match.awayTeamScore}',
-                      style: const TextStyle(
-                        color: AppColors.violet700,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
-                  : Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.violet100,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'VS',
-                        style: TextStyle(
-                          color: AppColors.violet600,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
+              child:
+                  (match.homeTeamScore != null && match.awayTeamScore != null)
+                      ? Text(
+                          '${match.homeTeamScore} - ${match.awayTeamScore}',
+                          style: const TextStyle(
+                            color: AppColors.violet700,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.violet100,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'VS',
+                            style: TextStyle(
+                              color: AppColors.violet600,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
             ),
-            // 客队（左对齐）
+            // Away（left aligned）
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -635,7 +648,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 球队Logo
+  /// TeamLogo
   Widget _buildTeamLogo(String? logoUrl, double size) {
     if (logoUrl == null || logoUrl.isEmpty) {
       return Container(
@@ -662,9 +675,9 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  // ==================== 搜索结果界面 ====================
+  // ==================== Searchresultsview ====================
 
-  /// 搜索结果视图：分类Tab + 结果列表
+  /// Searchresultsvisualimage：categorytypeTab + result list
   Widget _buildSearchResultsView() {
     return Column(
       children: [
@@ -674,13 +687,13 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 分类菜单（全部/比赛/用户）
+  /// categorytypemenu（All/match/useaccount）
   Widget _buildTabMenu() {
     final tabMap = const {
-      HankSearchTab.all: '全部',
-      HankSearchTab.match: '比赛',
-      HankSearchTab.user: '用户',
-      HankSearchTab.league: '联赛',
+      HankSearchTab.all: 'All',
+      HankSearchTab.match: 'match',
+      HankSearchTab.user: 'useaccount',
+      HankSearchTab.league: 'League',
     };
 
     return Container(
@@ -703,7 +716,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 单个分类Tab项
+  /// singleeachcategorytypeTabitem
   Widget _buildTabItem(HankSearchTab tab, String label) {
     final isSelected = _currentTab == tab;
     return GestureDetector(
@@ -730,7 +743,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 结果列表主体
+  /// result listhomebody
   Widget _buildResultBody() {
     if (_isSearchLoading) {
       return const Center(
@@ -745,9 +758,15 @@ class _HankSearchPageState extends State<HankSearchPage> {
     final users = _searchResult?.users ?? [];
     final competitions = _searchResult?.competitions ?? [];
 
-    final showMatchSection = matches.isNotEmpty && _currentTab != HankSearchTab.user && _currentTab != HankSearchTab.league;
-    final showUserSection = users.isNotEmpty && _currentTab != HankSearchTab.match && _currentTab != HankSearchTab.league;
-    final showLeagueSection = competitions.isNotEmpty && _currentTab != HankSearchTab.match && _currentTab != HankSearchTab.user;
+    final showMatchSection = matches.isNotEmpty &&
+        _currentTab != HankSearchTab.user &&
+        _currentTab != HankSearchTab.league;
+    final showUserSection = users.isNotEmpty &&
+        _currentTab != HankSearchTab.match &&
+        _currentTab != HankSearchTab.league;
+    final showLeagueSection = competitions.isNotEmpty &&
+        _currentTab != HankSearchTab.match &&
+        _currentTab != HankSearchTab.user;
 
     if (!showMatchSection && !showUserSection && !showLeagueSection) {
       return Center(
@@ -761,11 +780,12 @@ class _HankSearchPageState extends State<HankSearchPage> {
                 shape: BoxShape.circle,
                 color: AppColors.violet100,
               ),
-              child: const Icon(Icons.search, color: AppColors.violet400, size: 24),
+              child: const Icon(Icons.search,
+                  color: AppColors.violet400, size: 24),
             ),
             const SizedBox(height: 12),
             const Text(
-              '未找到相关结果',
+              'notfindtophasematchresults',
               style: TextStyle(
                 color: AppColors.slate500,
                 fontSize: 13,
@@ -774,7 +794,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
             ),
             const SizedBox(height: 4),
             const Text(
-              '试试搜索"英超"、"皇马"或"NBA"',
+              'trySearch"Premier League"、"Real Madrid"or"NBA"',
               style: TextStyle(color: AppColors.slate400, fontSize: 11),
             ),
           ],
@@ -786,19 +806,19 @@ class _HankSearchPageState extends State<HankSearchPage> {
       padding: const EdgeInsets.all(16),
       children: [
         if (showMatchSection) ...[
-          _buildSectionTitle('比赛', matches.length),
+          _buildSectionTitle('match', matches.length),
           const SizedBox(height: 10),
           ...matches.map((match) => _buildMatchCard(match)),
         ],
         if (showUserSection) ...[
           if (showMatchSection) const SizedBox(height: 20),
-          _buildSectionTitle('用户', users.length),
+          _buildSectionTitle('useaccount', users.length),
           const SizedBox(height: 10),
           ...users.map((user) => _buildUserCard(user)),
         ],
         if (showLeagueSection) ...[
           if (showMatchSection || showUserSection) const SizedBox(height: 20),
-          _buildSectionTitle('联赛', competitions.length),
+          _buildSectionTitle('League', competitions.length),
           const SizedBox(height: 10),
           ...competitions.map((comp) => _buildCompetitionCard(comp)),
         ],
@@ -806,7 +826,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 段落标题 + 数量
+  /// paragraphtitle + countcount
   Widget _buildSectionTitle(String title, int count) {
     return Row(
       children: [
@@ -838,7 +858,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 比赛结果卡片（差异化：白色圆角卡片+浅紫色装饰）
+  /// matchresultscard（differentiated：whitecolorroundedcard+lightpurpledecoration）
   Widget _buildMatchCard(HankSearchMatch match) {
     return GestureDetector(
       onTap: () => _pushToMatchDetail(match),
@@ -859,7 +879,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
         ),
         child: Column(
           children: [
-            // 联赛名 + 时间
+            // Leaguename + Time
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -886,7 +906,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
               ],
             ),
             const SizedBox(height: 10),
-            // 主客队 + 比分
+            // homeAway + score
             Row(
               children: [
                 Expanded(
@@ -911,13 +931,15 @@ class _HankSearchPageState extends State<HankSearchPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                   decoration: BoxDecoration(
                     color: AppColors.violet50,
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: (match.homeTeamScore != null && match.awayTeamScore != null)
+                  child: (match.homeTeamScore != null &&
+                          match.awayTeamScore != null)
                       ? Text(
                           '${match.homeTeamScore} - ${match.awayTeamScore}',
                           style: const TextStyle(
@@ -964,7 +986,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 用户结果卡片（差异化：浅紫色卡片+认证标+关注按钮）
+  /// useaccountresultscard（differentiated：lightpurplecard+verified badge+Followbutton）
   Widget _buildUserCard(HankSearchUser user) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -983,7 +1005,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       ),
       child: Row(
         children: [
-          // 头像
+          // avatar
           Stack(
             clipBehavior: Clip.none,
             children: [
@@ -998,30 +1020,33 @@ class _HankSearchPageState extends State<HankSearchPage> {
                           width: 44,
                           height: 44,
                           color: AppColors.violet100,
-                          child: const Icon(Icons.person, color: AppColors.violet400, size: 22),
+                          child: const Icon(Icons.person,
+                              color: AppColors.violet400, size: 22),
                         ),
                       )
                     : Container(
                         width: 44,
                         height: 44,
                         color: AppColors.violet100,
-                        child: const Icon(Icons.person, color: AppColors.violet400, size: 22),
+                        child: const Icon(Icons.person,
+                            color: AppColors.violet400, size: 22),
                       ),
               ),
-              // 直播中角标
+              // Liveincornermark
               if (user.isLiving == 1)
                 Positioned(
                   bottom: -2,
                   right: -2,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
                     decoration: BoxDecoration(
                       color: AppColors.rose500,
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(color: Colors.white, width: 1.5),
                     ),
                     child: const Text(
-                      '直播',
+                      'Live',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 8,
@@ -1033,7 +1058,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
             ],
           ),
           const SizedBox(width: 12),
-          // 昵称 + 认证标
+          // nickname + verified badge
           Expanded(
             child: Row(
               children: [
@@ -1051,27 +1076,29 @@ class _HankSearchPageState extends State<HankSearchPage> {
                 ),
                 if (user.isExpert == 1) ...[
                   const SizedBox(width: 4),
-                  const Icon(Icons.verified, color: AppColors.violet600, size: 14),
+                  const Icon(Icons.verified,
+                      color: AppColors.violet600, size: 14),
                 ],
               ],
             ),
           ),
-          // 关注按钮
+          // Followbutton
           GestureDetector(
             onTap: () => _toggleFollow(user),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: user.isFollowed
-                    ? AppColors.violet100
-                    : AppColors.violet600,
+                color:
+                    user.isFollowed ? AppColors.violet100 : AppColors.violet600,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: user.isFollowed ? AppColors.violet200 : AppColors.violet600,
+                  color: user.isFollowed
+                      ? AppColors.violet200
+                      : AppColors.violet600,
                 ),
               ),
               child: Text(
-                user.isFollowed ? '已关注' : '+ 关注',
+                user.isFollowed ? 'Followed' : '+ Follow',
                 style: TextStyle(
                   color: user.isFollowed ? AppColors.violet700 : Colors.white,
                   fontSize: 12,
@@ -1085,8 +1112,8 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 联赛结果卡片
-  /// [competition] - 联赛模型
+  /// Leagueresultscard
+  /// [competition] - Leaguemodel
   Widget _buildCompetitionCard(HankSearchCompetition competition) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -1105,7 +1132,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       ),
       child: Row(
         children: [
-          // 联赛logo
+          // Leaguelogo
           ClipRRect(
             borderRadius: BorderRadius.circular(6),
             child: (competition.logo != null && competition.logo!.isNotEmpty)
@@ -1114,12 +1141,13 @@ class _HankSearchPageState extends State<HankSearchPage> {
                     width: 36,
                     height: 36,
                     fit: BoxFit.cover,
-                    errorBuilder: (c, e, s) => _buildCompetitionLogoPlaceholder(),
+                    errorBuilder: (c, e, s) =>
+                        _buildCompetitionLogoPlaceholder(),
                   )
                 : _buildCompetitionLogoPlaceholder(),
           ),
           const SizedBox(width: 12),
-          // 联赛名称
+          // Leaguename
           Expanded(
             child: Text(
               competition.name ?? '',
@@ -1132,7 +1160,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          // 比赛场次
+          // matchmatchtime
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
@@ -1140,7 +1168,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
-              '${competition.matches ?? 0} 场',
+              '${competition.matches ?? 0} match',
               style: const TextStyle(
                 color: AppColors.violet700,
                 fontSize: 11,
@@ -1153,7 +1181,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
     );
   }
 
-  /// 联赛Logo占位图
+  /// LeagueLogoplaceholderimage
   Widget _buildCompetitionLogoPlaceholder() {
     return Container(
       width: 36,
@@ -1162,14 +1190,15 @@ class _HankSearchPageState extends State<HankSearchPage> {
         color: AppColors.violet100,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: const Icon(Icons.sports_soccer, size: 18, color: AppColors.violet400),
+      child:
+          const Icon(Icons.sports_soccer, size: 18, color: AppColors.violet400),
     );
   }
 
-  /// 切换用户关注状态
-  /// 接口：POST /api/livespeed/imchat/subscribe
-  /// 参数：target_id=用户ID（int），type=1关注/2取消关注
-  /// [user] - 目标用户模型
+  /// toggleuseaccountFollowstatus
+  /// API：POST /api/livespeed/imchat/subscribe
+  /// paramcount：target_id=useaccountID（int），type=1Follow/2CancelFollow
+  /// [user] - itemmarkuseaccountmodel
   Future<void> _toggleFollow(HankSearchUser user) async {
     final int type = user.isFollowed ? 2 : 1;
     final userId = user.id ?? 0;
@@ -1189,7 +1218,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       if (response.isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(type == 1 ? '已关注' : '已取消关注'),
+            content: Text(type == 1 ? 'alreadyFollow' : 'alreadyCancelFollow'),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -1200,7 +1229,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(response.message ?? '操作失败，请重试'),
+            content: Text(response.message ?? 'Failed，please retry'),
             duration: const Duration(seconds: 1),
           ),
         );
@@ -1209,7 +1238,7 @@ class _HankSearchPageState extends State<HankSearchPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('网络错误，请重试'),
+            content: Text('Network error，please retry'),
             duration: Duration(seconds: 1),
           ),
         );

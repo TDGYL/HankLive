@@ -13,38 +13,38 @@ import '../search/search_page.dart';
 import '../../services/hank_match_api_service.dart';
 import '../../models/hank_match_api_model.dart';
 
-/// HankLeagueTab: 赛事页面内容Tab枚举
-/// standings: 球队积分 | players: 球员排行 | fixtures: 赛程结果
+/// HankLeagueTab: matchpagecontentTabenum
+/// standings: Teampoints | players: Player Stats | fixtures: Fixturesresults
 enum HankLeagueTab {
-  /// 球队积分
+  /// Teampoints
   standings,
 
-  /// 球员排行
+  /// Player Stats
   players,
 
-  /// 赛程结果
+  /// Fixturesresults
   fixtures,
 }
 
-/// HankLeagueFixtureFilter: 赛程筛选枚举
-/// all: 全部 | live: 进行中 | finished: 已完赛
+/// HankLeagueFixtureFilter: Fixturesfilterenum
+/// all: All | live: In Progress | finished: alreadyfinishedmatch
 enum HankLeagueFixtureFilter {
-  /// 全部
+  /// All
   all,
 
-  /// 进行中
+  /// In Progress
   live,
 
-  /// 已完赛
+  /// alreadyfinishedmatch
   finished,
 }
 
-/// HankLeaguePage: 赛事页面
-/// 严格按照 hankLeague.html 布局生成
-/// 功能：联赛选择 + 赛季选择 + 三个Tab（球队积分/球员排行/赛程结果）
-/// 主题：浅紫色 + 白色
+/// HankLeaguePage: matchpage
+/// strictbyreference hankLeague.html layoutmatchgeneratecomplete
+/// feature：Leagueselect + Seasonselect + threeeachTab（Teampoints/Player Stats/Fixturesresults）
+/// hometheme：lightpurple + whitecolor
 class HankLeaguePage extends StatefulWidget {
-  /// 构造函数
+  /// constructorfunctioncount
   const HankLeaguePage({Key? key}) : super(key: key);
 
   @override
@@ -52,55 +52,55 @@ class HankLeaguePage extends StatefulWidget {
 }
 
 class _HankLeaguePageState extends State<HankLeaguePage> {
-  /// 联赛列表（来自接口）
+  /// Leaguelist（fromAPI）
   List<HankLeagueInfo> _leagues = [];
 
-  /// 当前选中的联赛索引
+  /// whenbeforeselectedLeagueindex
   int _currentLeagueIndex = 0;
 
-  /// 赛季列表（来自接口）
+  /// Seasonlist（fromAPI）
   List<HankSeasonInfo> _seasons = [];
 
-  /// 当前选中的赛季索引
+  /// whenbeforeselectedSeasonindex
   int _currentSeasonIndex = 0;
 
-  /// 积分榜数据（来自接口，按分组存储）
+  /// StandingsData（fromAPI，bygroupingstore）
   List<HankTeamRankGroup> _standingGroups = [];
 
-  /// 是否正在加载联赛列表
+  /// whetherLoadingLeaguelist
   bool _isLoadingLeagues = true;
 
-  /// 是否正在加载赛季
+  /// whetherLoadingSeason
   bool _isLoadingSeasons = false;
 
-  /// 是否正在加载积分
+  /// whetherLoadingpoints
   bool _isLoadingStandings = false;
 
-  /// 赛程结果数据（来自接口，按轮次分组）
+  /// FixturesresultsData（fromAPI，byRoundgrouping）
   List<List<HankMatchItem>> _fixturesData = [];
 
-  /// 是否正在加载赛程
+  /// whetherLoadingFixtures
   bool _isLoadingFixtures = false;
 
-  /// 当前Tab
+  /// whenbeforeTab
   HankLeagueTab _currentTab = HankLeagueTab.standings;
 
-  /// 球员排行菜单Key列表（来自接口）
+  /// Player StatsmenuKeylist（fromAPI）
   List<HankPlayerRankKey> _rankKeys = [];
 
-  /// 当前选中的球员排行菜单Key索引
+  /// whenbeforeselectedPlayer StatsmenuKeyindex
   int _currentRankKeyIndex = 0;
 
-  /// 球员排行数据（来自接口）
+  /// Player StatsData（fromAPI）
   List<HankPlayerRank> _playerRanks = [];
 
-  /// 是否正在加载球员排行菜单Key
+  /// whetherLoadingPlayer StatsmenuKey
   bool _isLoadingRankKeys = false;
 
-  /// 是否正在加载球员排行数据
+  /// whetherLoadingPlayer StatsData
   bool _isLoadingPlayers = false;
 
-  /// 赛程筛选
+  /// Fixturesfilter
   HankLeagueFixtureFilter _fixtureFilter = HankLeagueFixtureFilter.all;
 
   @override
@@ -110,8 +110,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     _fetchRankKeys();
   }
 
-  /// 第一步：请求联赛列表
-  /// 接口：GET /api/livespeed/football/competition/list
+  /// astep：requestLeaguelist
+  /// API：GET /api/livespeed/football/competition/list
   Future<void> _fetchLeagues() async {
     final response = await HankNetworkManager()
         .getRequest('/api/livespeed/football/competition/list');
@@ -124,7 +124,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
             .toList();
         _isLoadingLeagues = false;
       });
-      // 默认选择第一个，并触发赛季请求
+      // defaultselectaeach，andtriggerSeasonrequest
       if (_leagues.isNotEmpty) {
         _fetchSeasons();
       }
@@ -135,9 +135,9 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 第二步：请求赛季列表
-  /// 接口：GET /api/livespeed/football/competition/season-list
-  /// 参数：competition_id
+  /// step 2：requestSeasonlist
+  /// API：GET /api/livespeed/football/competition/season-list
+  /// paramcount：competition_id
   Future<void> _fetchSeasons() async {
     if (_leagues.isEmpty) return;
     setState(() {
@@ -156,7 +156,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
           .map((e) => HankSeasonInfo.fromJson(e as Map<String, dynamic>))
           .toList();
 
-      // 选择当前赛季：is_current=1 优先，否则选第一个
+      // selectwhenbeforeSeason：is_current=1 prefer，nothenselectaeach
       int selectedIndex = 0;
       for (int i = 0; i < seasons.length; i++) {
         if (seasons[i].isCurrent == 1) {
@@ -170,11 +170,11 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
         _currentSeasonIndex = selectedIndex;
         _isLoadingSeasons = false;
       });
-      // 触发积分请求
+      // triggerpointsrequest
       _fetchStandings();
-      // 触发赛程请求
+      // triggerFixturesrequest
       _fetchFixtures();
-      // 触发球员排行请求
+      // triggerPlayer Statsrequest
       _fetchPlayerRanks();
     } else {
       setState(() {
@@ -183,9 +183,9 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 第三步：请求球队积分
-  /// 接口：GET /api/livespeed/football/competition/table-list
-  /// 参数：competition_id, season_id
+  /// step 3：requestTeampoints
+  /// API：GET /api/livespeed/football/competition/table-list
+  /// paramcount：competition_id, season_id
   Future<void> _fetchStandings() async {
     if (_leagues.isEmpty || _seasons.isEmpty) return;
     setState(() {
@@ -208,7 +208,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
       final promotionName = dataMap['promotion_name'] as String? ?? '';
 
       if (isGroup) {
-        // is_group=true：分段显示 groups 下的数据
+        // is_group=true：categorysegmentdisplay groups downData
         final groupsArray = dataMap['groups'] as List? ?? [];
         final List<HankTeamRankGroup> groups = [];
         for (final groupItem in groupsArray) {
@@ -226,7 +226,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
           _isLoadingStandings = false;
         });
       } else {
-        // is_group=false：取 tables.all 数组
+        // is_group=false：get tables.all countgroup
         final tables = dataMap['tables'] as Map<String, dynamic>? ?? {};
         final allList = tables['all'] as List? ?? [];
         setState(() {
@@ -249,9 +249,9 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 第四步：请求赛程结果
-  /// 接口：GET /api/livespeed/football/competition/fixtures
-  /// 参数：competition_id, season_id
+  /// 4step：requestFixturesresults
+  /// API：GET /api/livespeed/football/competition/fixtures
+  /// paramcount：competition_id, season_id
   Future<void> _fetchFixtures() async {
     if (_leagues.isEmpty || _seasons.isEmpty) return;
     setState(() {
@@ -287,8 +287,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 切换联赛
-  /// [index] - 目标联赛索引
+  /// toggleLeague
+  /// [index] - itemmarkLeagueindex
   void _switchLeague(int index) {
     if (index == _currentLeagueIndex) return;
     setState(() {
@@ -297,8 +297,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     _fetchSeasons();
   }
 
-  /// 切换赛季
-  /// [index] - 目标赛季索引
+  /// toggleSeason
+  /// [index] - itemmarkSeasonindex
   void _switchSeason(int index) {
     if (index == _currentSeasonIndex) return;
     setState(() {
@@ -309,8 +309,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     _fetchPlayerRanks();
   }
 
-  /// 请求球员排行菜单Key列表
-  /// 接口：GET /api/livespeed/football/competition/player-rank-keys
+  /// requestPlayer StatsmenuKeylist
+  /// API：GET /api/livespeed/football/competition/player-rank-keys
   Future<void> _fetchRankKeys() async {
     setState(() {
       _isLoadingRankKeys = true;
@@ -335,9 +335,9 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 请求球员排行数据
-  /// 接口：GET /api/livespeed/football/competition/player-rank
-  /// 参数：competition_id, season_id, key
+  /// requestPlayer StatsData
+  /// API：GET /api/livespeed/football/competition/player-rank
+  /// paramcount：competition_id, season_id, key
   Future<void> _fetchPlayerRanks() async {
     if (_leagues.isEmpty || _seasons.isEmpty || _rankKeys.isEmpty) return;
     setState(() {
@@ -372,8 +372,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  /// 切换球员排行菜单Key
-  /// [index] - 目标Key索引
+  /// togglePlayer StatsmenuKey
+  /// [index] - itemmarkKeyindex
   void _switchRankKey(int index) {
     if (index == _currentRankKeyIndex) return;
     setState(() {
@@ -399,7 +399,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建顶部Header（品牌+搜索+通知+联赛横滑选择器）
+  /// buildtopHeader（brand+Search+notifications+Leaguescrollselectindicator）
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -409,7 +409,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
       ),
       child: Column(
         children: [
-          // 品牌行
+          // brandrow
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -441,7 +441,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: AppColors.slate800)),
-                      Text('体育赛事数据',
+                      Text('SportsmatchData',
                           style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w600,
@@ -469,10 +469,10 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
             ],
           ),
           const SizedBox(height: 8),
-          // 联赛横滑选择器 + 下拉箭头
+          // Leaguescrollselectindicator + downpullarrow
           Row(
             children: [
-              // 联赛横滑选择器
+              // Leaguescrollselectindicator
               Expanded(
                 child: SizedBox(
                   height: 32,
@@ -537,7 +537,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                 ),
               ),
               const SizedBox(width: 8),
-              // 下拉箭头按钮：点击弹出半屏联赛列表
+              // downpullarrowbutton：tappopuphalf-screenLeaguelist
               GestureDetector(
                 onTap: () => _showLeaguePickerSheet(),
                 child: Container(
@@ -559,7 +559,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建Header图标按钮
+  /// buildHeadericonbutton
   Widget _buildHeaderIcon(IconData icon, {bool hasDot = false}) {
     return Container(
       width: 32,
@@ -586,7 +586,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 弹出半屏联赛列表，方便用户查看更多联赛
+  /// popuphalf-screenLeaguelist，sideconvenientuseaccountviewMoreLeague
   void _showLeaguePickerSheet() {
     showModalBottomSheet(
       context: context,
@@ -603,7 +603,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
           heightFactor: 0.5,
           child: Column(
             children: [
-              // 顶部标题栏
+              // toptitlebar
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: const BoxDecoration(
@@ -613,7 +613,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('全部联赛',
+                    Text('AllLeague',
                         style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -626,7 +626,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                   ],
                 ),
               ),
-              // 联赛网格列表
+              // Leaguegridlist
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.all(12),
@@ -705,7 +705,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建子Header（赛季选择）
+  /// buildchildHeader（Seasonselect）
   Widget _buildSubHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -716,10 +716,10 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 赛季选择
+          // Seasonselect
           Row(
             children: [
-              Text('赛季:',
+              Text('Season:',
                   style: TextStyle(fontSize: 11, color: AppColors.slate400)),
               const SizedBox(width: 8),
               Container(
@@ -741,7 +741,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                   items: List.generate(_seasons.length, (i) {
                     return DropdownMenuItem(
                       value: i,
-                      child: Text('${_seasons[i].year} 赛季'),
+                      child: Text('${_seasons[i].year} Season'),
                     );
                   }),
                   onChanged: (v) {
@@ -756,14 +756,14 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建Tab导航栏
+  /// buildTabnavbar
   Widget _buildTabBar() {
     final tabs = [
       HankLeagueTab.standings,
       HankLeagueTab.players,
       HankLeagueTab.fixtures,
     ];
-    final labels = ['球队积分', '球员排行', '赛程结果'];
+    final labels = ['Teampoints', 'Player Stats', 'Fixturesresults'];
     final icons = [Icons.list_alt, Icons.person, Icons.calendar_today_outlined];
 
     return Container(
@@ -815,7 +815,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建内容区域
+  /// buildcontentarea
   Widget _buildContent() {
     switch (_currentTab) {
       case HankLeagueTab.standings:
@@ -827,28 +827,28 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     }
   }
 
-  // ==================== TAB 1: 球队积分榜 ====================
+  // ==================== TAB 1: TeamStandings ====================
 
-  /// 构建积分榜
+  /// buildStandings
   Widget _buildStandings() {
     if (_isLoadingStandings) {
       return const Center(
           child: CircularProgressIndicator(color: AppColors.violet600));
     }
     if (_standingGroups.isEmpty) {
-      return _buildEmptyView('暂无积分数据');
+      return _buildEmptyView('NopointsData');
     }
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        // 遍历分组渲染积分表
+        // iterategroupingrenderpointstable
         ..._standingGroups.map((group) => _buildStandingGroup(group)),
       ],
     );
   }
 
-  /// 构建单个分组的积分表
-  /// [group] - 分组数据
+  /// buildsingleeachgroupingpointstable
+  /// [group] - groupingData
   Widget _buildStandingGroup(HankTeamRankGroup group) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -866,7 +866,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建图例圆点
+  /// buildimageexampledot
   Widget _buildLegendDot(Color color, String label) {
     return Row(
       children: [
@@ -880,8 +880,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建空状态视图
-  /// [message] - 提示文字
+  /// buildemptystatusvisualimage
+  /// [message] - hinttext
   Widget _buildEmptyView(String message) {
     return Center(
       child: Column(
@@ -896,7 +896,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建积分表头
+  /// buildpointstableheader
   Widget _buildStandingsHeader() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -909,30 +909,30 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
         children: [
           SizedBox(
               width: 32,
-              child: Text('排名',
+              child: Text('rank',
                   style: TextStyle(fontSize: 10, color: AppColors.slate400),
                   textAlign: TextAlign.center)),
           const Expanded(
-              child: Text('球队',
+              child: Text('Team',
                   style: TextStyle(fontSize: 10, color: AppColors.slate400))),
           SizedBox(
               width: 24,
-              child: Text('赛',
+              child: Text('match',
                   style: TextStyle(fontSize: 10, color: AppColors.slate400),
                   textAlign: TextAlign.center)),
           SizedBox(
               width: 48,
-              child: Text('胜/平/负',
+              child: Text('W/D/L',
                   style: TextStyle(fontSize: 10, color: AppColors.slate400),
                   textAlign: TextAlign.center)),
           SizedBox(
               width: 28,
-              child: Text('净',
+              child: Text('net',
                   style: TextStyle(fontSize: 10, color: AppColors.slate400),
                   textAlign: TextAlign.center)),
           SizedBox(
               width: 36,
-              child: Text('积分',
+              child: Text('points',
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
@@ -943,11 +943,11 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建积分行
+  /// buildpointsrow
   Widget _buildStandingRow(HankTeamRank s) {
     Color? zoneColor;
     if (s.promotionId > 0) {
-      // 根据 promotionId 区分颜色，简单用三种
+      // rootbased on promotionId areacategorycolor，simpleusethree types
       if (s.promotionName.toLowerCase().contains('qualif') ||
           s.promotionName.toLowerCase().contains('ucl') ||
           s.promotionName.toLowerCase().contains('champion')) {
@@ -1059,16 +1059,16 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  // ==================== TAB 2: 球员排行 ====================
+  // ==================== TAB 2: Player Stats ====================
 
-  /// 构建球员排行
+  /// buildPlayer Stats
   Widget _buildPlayers() {
     if (_isLoadingPlayers) {
       return const Center(
           child: CircularProgressIndicator(color: AppColors.violet600));
     }
     if (_playerRanks.isEmpty) {
-      return _buildEmptyView('暂无球员排行数据');
+      return _buildEmptyView('NoPlayer StatsData');
     }
 
     final players = _playerRanks;
@@ -1079,7 +1079,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        // 分类筛选（动态来自接口）
+        // categorytypefilter（dynamicfromAPI）
         SizedBox(
           height: 30,
           child: ListView.builder(
@@ -1115,10 +1115,10 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
           ),
         ),
         const SizedBox(height: 10),
-        // Top3 领奖台
+        // Top3 podiumplatform
         if (players.length >= 3) _buildTop3Podium(players.sublist(0, 3)),
         const SizedBox(height: 10),
-        // 完整排行列表（第4名起）
+        // fullrankrowlist（4namestart）
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -1139,7 +1139,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('球员 / 球队',
+                    Text('Player / Team',
                         style:
                             TextStyle(fontSize: 11, color: AppColors.slate400)),
                     Text(currentKeyName,
@@ -1156,10 +1156,10 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建Top3领奖台
-  /// [top3] - 前三名球员数据
+  /// buildTop3podiumplatform
+  /// [top3] - beforethreenamePlayerData
   Widget _buildTop3Podium(List<HankPlayerRank> top3) {
-    // 排列顺序：第2名、第1名、第3名
+    // arrangeorderorder：2name、1name、3name
     final order = [top3[1], top3[0], top3[2]];
     return Row(
       children: order.map((p) {
@@ -1241,8 +1241,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建球员列表行
-  /// [p] - 球员排行数据
+  /// buildPlayerlistrow
+  /// [p] - Player StatsData
   Widget _buildPlayerListRow(HankPlayerRank p) {
     return GestureDetector(
       onTap: () => _navigateToPlayerDetail(p),
@@ -1309,8 +1309,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 跳转到球员详情页
-  /// [p] - 球员排行数据
+  /// navigate toPlayerDetailspage
+  /// [p] - Player StatsData
   void _navigateToPlayerDetail(HankPlayerRank p) {
     Navigator.push(
       context,
@@ -1324,7 +1324,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建头像占位图
+  /// buildavatarplaceholderimage
   Widget _buildAvatarPlaceholder() {
     return Container(
       color: AppColors.violet100,
@@ -1332,21 +1332,21 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  // ==================== TAB 3: 赛程结果 ====================
+  // ==================== TAB 3: Fixturesresults ====================
 
-  /// 构建赛程结果
+  /// buildFixturesresults
   Widget _buildFixtures() {
     if (_isLoadingFixtures) {
       return const Center(child: CircularProgressIndicator(color: AppColors.violet600));
     }
     if (_fixturesData.isEmpty) {
-      return _buildEmptyView('暂无赛程数据');
+      return _buildEmptyView('NoFixturesData');
     }
 
     final filters = HankLeagueFixtureFilter.values;
-    final filterLabels = ['全部比赛', '进行中', '已完赛'];
+    final filterLabels = ['Allmatch', 'In Progress', 'alreadyfinishedmatch'];
 
-    // 展平所有轮次的比赛，并根据筛选条件过滤
+    // displayDthehasRoundmatch，androotbased onfilteritemitemfilter
     final allMatches = _fixturesData.expand((round) => round).toList();
     List<HankMatchItem> filteredMatches;
     switch (_fixtureFilter) {
@@ -1367,7 +1367,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     return ListView(
       padding: const EdgeInsets.all(12),
       children: [
-        // 筛选栏
+        // filterbar
         Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
@@ -1405,7 +1405,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
         ),
         const SizedBox(height: 10),
         if (filteredMatches.isEmpty)
-          _buildEmptyView('该筛选条件下无赛程安排')
+          _buildEmptyView('thisfilteritemitemdownnoneFixturessaferank')
         else
           ...filteredMatches.map((m) => GestureDetector(
                 onTap: () {
@@ -1424,31 +1424,31 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
     );
   }
 
-  /// 构建赛程卡片
-  /// [m] - 比赛数据项
+  /// buildFixturescard
+  /// [m] - matchDataitem
   Widget _buildFixtureCard(HankMatchItem m) {
     final statusId = m.statusId ?? 0;
     final isLive = statusId >= 2 && statusId <= 7;
     final isFinished = statusId == 8;
 
-    // 比分文本
+    // scoretext
     final homeScore = m.homeNormalScore ?? 0;
     final awayScore = m.awayNormalScore ?? 0;
     final scoreText = isFinished || isLive ? '$homeScore - $awayScore' : 'VS';
 
-    // 状态文本
+    // statustext
     String statusText;
     if (isLive) {
-      statusText = m.minutes?.isNotEmpty == true ? m.minutes! : '进行中';
+      statusText = m.minutes?.isNotEmpty == true ? m.minutes! : 'In Progress';
     } else if (isFinished) {
-      statusText = '完赛';
+      statusText = 'finishedmatch';
     } else {
-      // 未开赛，显示开赛时间
+      // not started，displayopenmatchTime
       if (m.matchTime != null && m.matchTime! > 0) {
         final dt = DateTime.fromMillisecondsSinceEpoch(m.matchTime! * 1000);
         statusText = '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
       } else {
-        statusText = '未开赛';
+        statusText = 'not started';
       }
     }
 
@@ -1476,7 +1476,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                       topLeft: Radius.circular(12),
                       bottomRight: Radius.circular(12)),
                 ),
-                child: Text('LIVE 实时',
+                child: Text('LIVE entitywhen',
                     style: TextStyle(fontSize: 8, fontWeight: FontWeight.w800,
                         color: Colors.white)),
               ),
@@ -1485,7 +1485,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
             padding: const EdgeInsets.only(top: 4),
             child: Row(
               children: [
-                // 主队
+                // Home
                 Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -1511,7 +1511,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                     ],
                   ),
                 ),
-                // 比分/时间
+                // score/Time
                 Container(
                   width: 90,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -1536,7 +1536,7 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                     ],
                   ),
                 ),
-                // 客队
+                // Away
                 Expanded(
                   child: Row(
                     children: [

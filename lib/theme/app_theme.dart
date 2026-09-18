@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
-/// AppTheme: 全局主题配置
-/// 定义 Material 3 主题、颜色方案、文字样式等
+/// AppTheme: allmatchhomethemeconfig
+/// defines Material 3 hometheme、colorplan、textstyleetc
 class AppTheme {
-  /// 获取全局浅色主题
+  /// getallmatchlightcolorhometheme
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

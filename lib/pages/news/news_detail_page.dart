@@ -4,15 +4,15 @@ import '../../theme/app_colors.dart';
 import '../../models/hank_news_api_model.dart';
 import '../../services/hank_news_api_service.dart';
 
-/// HankNewsDetailPage: 资讯详情页面
-/// 使用 WebView 加载资讯内容（HTML富文本）
-/// 接口：GET /api/livespeed/info/detail
-/// 主题：浅紫色 + 白色
+/// HankNewsDetailPage: newsDetailspage
+/// useuse WebView loadnewscontent（HTMLrichtext）
+/// API：GET /api/livespeed/info/detail
+/// hometheme：lightpurple + whitecolor
 class HankNewsDetailPage extends StatefulWidget {
-  /// 资讯ID
+  /// newsID
   final int newsId;
 
-  /// 资讯标题（传入用于导航栏展示，接口返回前使用）
+  /// newstitle（passed inusenavbardisplay，APIBackbeforeuseuse）
   final String? newsTitle;
 
   const HankNewsDetailPage({
@@ -26,16 +26,16 @@ class HankNewsDetailPage extends StatefulWidget {
 }
 
 class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
-  /// WebView控制器
+  /// WebViewcontroller
   late final WebViewController _controller;
 
-  /// 是否正在加载
+  /// whetherLoading
   bool _isLoading = true;
 
-  /// 资讯详情数据
+  /// newsDetailsData
   HankNewsItem? _newsDetail;
 
-  /// 资讯接口服务
+  /// newsAPI service
   final HankNewsApiService _apiService = HankNewsApiService();
 
   @override
@@ -49,8 +49,8 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
     _fetchNewsDetail();
   }
 
-  /// 请求资讯详情数据
-  /// 接口：GET /api/livespeed/info/detail
+  /// requestnewsDetailsData
+  /// API：GET /api/livespeed/info/detail
   Future<void> _fetchNewsDetail() async {
     final data = await _apiService.fetchNewsDetail(id: widget.newsId);
 
@@ -63,12 +63,12 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
     }
   }
 
-  /// 加载HTML内容到WebView
+  /// loadHTMLcontenttoWebView
   void _loadHtmlContent() {
     if (_newsDetail == null) return;
 
     final title = _newsDetail!.title ?? '';
-    final author = _newsDetail!.author ?? '官方';
+    final author = _newsDetail!.author ?? 'officialside';
     final time = _formatTime(_newsDetail!.createdAt);
     final content = _newsDetail!.content ?? '';
 
@@ -138,8 +138,8 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
     _controller.loadHtmlString(htmlString);
   }
 
-  /// 格式化时间为 yyyy-MM-dd HH:mm
-  /// [timestamp] - 时间戳（秒）
+  /// formatTimeis yyyy-MM-dd HH:mm
+  /// [timestamp] - Timetimestamp（seconds）
   String _formatTime(int? timestamp) {
     if (timestamp == null) return '';
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
@@ -159,7 +159,7 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
     );
   }
 
-  /// 顶部导航栏
+  /// topnavbar
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -173,7 +173,7 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
         bottom: false,
         child: Row(
           children: [
-            // 返回按钮
+            // Backbutton
             GestureDetector(
               onTap: () => Navigator.pop(context),
               child: Container(
@@ -209,7 +209,7 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
     );
   }
 
-  /// 页面主体
+  /// pagehomebody
   Widget _buildBody() {
     if (_isLoading) {
       return const Center(
@@ -232,7 +232,7 @@ class _HankNewsDetailPageState extends State<HankNewsDetailPage> {
             ),
             SizedBox(height: 12),
             Text(
-              '暂无资讯内容',
+              'Nonewscontent',
               style: TextStyle(fontSize: 14, color: AppColors.slate500),
             ),
           ],

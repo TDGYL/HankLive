@@ -10,9 +10,9 @@ import 'hank_about_us_page.dart';
 import 'hank_customer_service_page.dart';
 import 'hank_settings_page.dart';
 
-/// ProfilePage: 个人中心页面
-/// 包含渐变头部（头像、签名、统计数据）和功能列表（编辑信息、关于我们、客服、设置）
-/// 未登录时点击头像push到登录界面，登录后展示用户信息
+/// ProfilePage: profilepage
+/// containsgradientheader（avatar、bio、statsData）andfeaturelist（Editinfo、About Us、Support、Settings）
+/// notLoginwhentapavatarpushtoLoginview，Loginafterdisplayuseaccountinfo
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
@@ -21,13 +21,13 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  /// 本地Mock用户信息（未登录时展示）
+  /// localMockuseaccountinfo（notLoginwhendisplay）
   late UserProfileModel _user;
 
-  /// 是否已登录
+  /// whetheralreadyLogin
   bool _isLoggedIn = false;
 
-  /// 当前登录用户信息
+  /// whenbeforeLoginuseaccountinfo
   HankUserModel? _currentUser;
 
   @override
@@ -37,7 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
     _refreshLoginState();
   }
 
-  /// 刷新登录状态
+  /// refreshLoginstatus
   void _refreshLoginState() {
     setState(() {
       _isLoggedIn = HankAuthManager().isLoggedIn;
@@ -45,25 +45,25 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  /// 点击头像：未登录则push到登录界面，登录成功后刷新
+  /// tapavatar：notLoginthenpushtoLoginview，Loginsuccessrefresh after
   void _onAvatarTap() {
     if (_isLoggedIn) {
       return;
     }
 
-    // 未登录，push到登录界面
+    // notLogin，pushtoLoginview
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const HankLoginPage()),
     ).then((result) {
-      // 登录成功返回后刷新状态
+      // LoginsuccessBackrefresh afterstatus
       if (result == true) {
         _refreshLoginState();
       }
     });
   }
 
-  /// 未登录时跳转到登录界面
+  /// notLoginwhennavigate toLoginview
   void _navigateToLogin() {
     Navigator.push(
       context,
@@ -101,7 +101,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// 头部渐变Banner：头像、昵称、签名、统计
+  /// headergradientBanner：avatar、nickname、bio、stats
   Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 56, 20, 24),
@@ -151,14 +151,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildUserRow() {
-    // 显示昵称：已登录用接口数据，未登录显示"登录/注册"
+    // displaynickname：alreadyLoginAPIData，notLogindisplay"Login/Register"
     final displayName = _isLoggedIn
-        ? (_currentUser?.nickname ?? '未知用户')
-        : '登录/注册';
-    // 显示签名：已登录用接口数据，未登录用Mock
+        ? (_currentUser?.nickname ?? 'Unknown user')
+        : 'Login/Register';
+    // show bio：alreadyLoginAPIData，notLoginuseMock
     final displaySignature = _isLoggedIn
-        ? (_currentUser?.signature ?? '这家伙很懒，什么都没留下')
-        : '登录后解锁更多功能';
+        ? (_currentUser?.signature ?? 'this user is lazy，whatallnothingdown')
+        : 'Loginunlock afterMorefeature';
 
     return Row(
       children: [
@@ -168,9 +168,8 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 32,
-                backgroundColor: _isLoggedIn
-                    ? AppColors.violet300
-                    : AppColors.slate400,
+                backgroundColor:
+                    _isLoggedIn ? AppColors.violet300 : AppColors.slate400,
                 child: ClipOval(
                   child: _isLoggedIn && _currentUser?.avatar != null
                       ? Image.network(
@@ -292,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// 未登录时的灰色头像占位
+  /// notLoginwhengreycoloravatarplaceholder
   Widget _buildGuestAvatar() {
     return Container(
       width: 64,
@@ -308,13 +307,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildStatsBar() {
-    // 已登录时使用接口数据，未登录使用Mock
-    final following = _isLoggedIn
-        ? '${_currentUser?.followers ?? 0}'
-        : '-';
-    final fans = _isLoggedIn
-        ? '${_currentUser?.fansCount ?? 0}'
-        : '-';
+    // alreadyLoginwhenuseAPIData，notLoginuseuseMock
+    final following = _isLoggedIn ? '${_currentUser?.followers ?? 0}' : '-';
+    final fans = _isLoggedIn ? '${_currentUser?.fansCount ?? 0}' : '-';
 
     return Container(
       padding: const EdgeInsets.only(top: 12),
@@ -327,11 +322,11 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           _buildStatItem(
             value: following,
-            label: '关注',
+            label: 'Follow',
           ),
           _buildStatItem(
             value: fans,
-            label: '粉丝',
+            label: 'followers',
           ),
         ],
       ),
@@ -367,7 +362,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// 功能列表卡片
+  /// featurelistcard
   Widget _buildFunctionList() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -391,7 +386,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.edit,
               iconBgColor: AppColors.violet100,
               iconColor: AppColors.violet700,
-              title: '编辑个人信息',
+              title: 'Edit Profile',
               trailing: _isLoggedIn
                   ? Container(
                       padding: const EdgeInsets.symmetric(
@@ -401,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        '完善度${_user.profileCompletion}%',
+                        'finished ${_user.profileCompletion}%',
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w500,
@@ -427,12 +422,11 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.info_outline,
               iconBgColor: const Color(0xFFF3E8FF),
               iconColor: const Color(0xFF9333EA),
-              title: '关于我们',
+              title: 'About Us',
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => const HankAboutUsPage()),
+                  MaterialPageRoute(builder: (_) => const HankAboutUsPage()),
                 );
               },
             ),
@@ -441,16 +435,15 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.headset_mic_outlined,
               iconBgColor: const Color(0xFFD1FAE5),
               iconColor: const Color(0xFF059669),
-              title: '在线客服',
+              title: 'onlineSupport',
               trailing: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: const Color(0xFFD1FAE5),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const Text(
-                  '24h 在线',
+                  '24h online',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
@@ -471,7 +464,7 @@ class _ProfilePageState extends State<ProfilePage> {
               icon: Icons.settings_outlined,
               iconBgColor: const Color(0xFFF1F5F9),
               iconColor: const Color(0xFF334155),
-              title: '设置',
+              title: 'Settings',
               onTap: () {
                 if (!_isLoggedIn) {
                   _navigateToLogin();
@@ -479,8 +472,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (_) => const HankSettingsPage()),
+                  MaterialPageRoute(builder: (_) => const HankSettingsPage()),
                 ).then((_) => _refreshLoginState());
               },
             ),

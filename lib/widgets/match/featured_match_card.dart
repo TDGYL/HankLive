@@ -3,13 +3,13 @@ import '../../theme/app_colors.dart';
 import '../../models/match_model.dart';
 import '../common/team_logo_widget.dart';
 
-/// FeaturedMatchCard: 精选头部深色大卡片（Banner样式）
-/// 用于首页推荐顶部的LIVE或焦点比赛
+/// FeaturedMatchCard: Featureddark header card（Bannerstyle）
+/// usefirstpageFeaturedtopLIVEorfocusmatch
 class FeaturedMatchCard extends StatelessWidget {
-  /// 比赛数据
+  /// matchData
   final MatchModel match;
 
-  /// 点击事件
+  /// tapevent
   final VoidCallback? onTap;
 
   FeaturedMatchCard({
@@ -75,11 +75,11 @@ class FeaturedMatchCard extends StatelessWidget {
     );
   }
 
-  /// 头部：联赛名 + LIVE标识
+  /// header：Leaguename + LIVEbadge
   Widget _buildHeader() {
     return Row(
       children: [
-        // 联赛名背景宽度自适应文字长度
+        // Leaguename background width auto-fits text length
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
@@ -120,7 +120,7 @@ class FeaturedMatchCard extends StatelessWidget {
     );
   }
 
-  /// 比赛状态标识（位于时间左侧）
+  /// matchstatusbadge（located atTimeleft）
   Widget _buildStatusBadge() {
     if (match.status == MatchStatus.live) {
       return Row(
@@ -169,7 +169,7 @@ class FeaturedMatchCard extends StatelessWidget {
     );
   }
 
-  /// 对阵双方行
+  /// versus row
   Widget _buildTeamsRow() {
     return Row(
       children: [
@@ -250,7 +250,7 @@ class FeaturedMatchCard extends StatelessWidget {
     );
   }
 
-  /// 进球事件行
+  /// Goalsevent row
   Widget _buildGoalEvents() {
     return Container(
       padding: const EdgeInsets.only(top: 8),

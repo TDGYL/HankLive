@@ -1,24 +1,24 @@
 import '../utils/hank_network_manager.dart';
 import '../models/hank_search_model.dart';
 
-/// HankSearchApiService: 搜索接口服务
-/// 封装 /api/livespeed/index/search 和 /api/livespeed/index/search/match/hot 接口
+/// HankSearchApiService: SearchAPI service
+/// wrap /api/livespeed/index/search and /api/livespeed/index/search/match/hot API
 class HankSearchApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankSearchApiService _instance = HankSearchApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankSearchApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankSearchApiService._internal();
 
-  /// 请求搜索结果
-  /// 接口：GET /api/livespeed/index/search
-  /// 参数：text - 搜索关键词
-  /// 返回：HankSearchResult 包含比赛和用户搜索结果
+  /// requestSearchresults
+  /// API：GET /api/livespeed/index/search
+  /// paramcount：text - Searchkeyword
+  /// Back：HankSearchResult containsmatchanduseaccountSearchresults
   Future<HankSearchResult?> fetchSearchResults({
     required String text,
   }) async {
@@ -34,9 +34,9 @@ class HankSearchApiService {
     return null;
   }
 
-  /// 请求热门比赛列表
-  /// 接口：GET /api/livespeed/index/search/match/hot
-  /// 返回：List<HankSearchMatch> 热门比赛列表
+  /// requestTrendingmatchlist
+  /// API：GET /api/livespeed/index/search/match/hot
+  /// Back：List<HankSearchMatch> Trendingmatchlist
   Future<List<HankSearchMatch>> fetchHotMatches() async {
     final response = await HankNetworkManager().getRequest(
       '/api/livespeed/index/search/match/hot',

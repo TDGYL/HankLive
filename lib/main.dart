@@ -12,27 +12,27 @@ import 'utils/hank_auth_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 设置状态栏样式
+  // Settingsstatus bar style
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ),
   );
-  // 初始化用户登录状态（恢复本地缓存的Token和用户信息）
+  // inituseaccountLoginstatus（restore cachedTokenanduseaccountinfo）
   await HankAuthManager().init();
   runApp(const HankLiveApp());
 }
 
-/// HankLiveApp: 紫极足球 App 根组件
-/// 包含全局主题配置和底部Tab导航容器
+/// HankLiveApp: violetFootball App rootcomponent
+/// containsallmatchhomethemeconfigandbottomTabnav container
 class HankLiveApp extends StatelessWidget {
   const HankLiveApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '紫极足球',
+      title: 'violetFootball',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: const MainScaffold(),
@@ -40,8 +40,8 @@ class HankLiveApp extends StatelessWidget {
   }
 }
 
-/// MainScaffold: 主框架
-/// 管理底部5个Tab页面切换（比赛/赛事/资讯/社区/我的）
+/// MainScaffold: homefieldframework
+/// manage bottom5eachTabpagetoggle（match/match/news/Community/Profile）
 class MainScaffold extends StatefulWidget {
   const MainScaffold({Key? key}) : super(key: key);
 
@@ -50,39 +50,39 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
-  /// 当前选中的Tab索引
+  /// whenbeforeselectedTabindex
   int _currentIndex = 0;
 
-  /// 底部Tab项配置
+  /// bottomTabitemconfig
   final List<AppTabItem> _tabItems = [
     AppTabItem(
       icon: Icons.emoji_events,
       activeColor: AppColors.violet700,
-      label: '比赛',
+      label: 'match',
     ),
     AppTabItem(
       icon: Icons.sports_soccer,
       activeColor: AppColors.violet700,
-      label: '赛事',
+      label: 'data',
     ),
     AppTabItem(
       icon: Icons.newspaper,
       activeColor: AppColors.violet700,
-      label: '资讯',
+      label: 'news',
     ),
     AppTabItem(
       icon: Icons.chat_bubble_outline,
       activeColor: AppColors.violet700,
-      label: '社区',
+      label: 'Community',
     ),
     AppTabItem(
       icon: Icons.person_outline,
       activeColor: AppColors.violet700,
-      label: '我的',
+      label: 'Profile',
     ),
   ];
 
-  /// 页面列表（懒加载：仅初始化引用，build时按需创建）
+  /// pagelist（lazy load：onlyinitinituse，buildon demandcreated）
   late final List<Widget> _pages;
 
   @override

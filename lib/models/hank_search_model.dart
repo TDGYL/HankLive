@@ -1,40 +1,40 @@
-/// HankSearchMatch: 搜索比赛结果模型
-/// 对应 /api/livespeed/index/search 返回的 matches 数组元素
+/// HankSearchMatch: Searchmatchresultsmodel
+/// maps to /api/livespeed/index/search Back matches countgroupelement
 class HankSearchMatch {
-  /// 比赛ID
+  /// matchID
   final int? matchId;
 
-  /// 比赛时间戳（秒）
+  /// matchTimetimestamp（seconds）
   final int? matchTime;
 
-  /// 联赛名称
+  /// Leaguename
   final String? competitionName;
 
-  /// 主队ID
+  /// HomeID
   final int? homeTeamId;
 
-  /// 主队名称
+  /// Homename
   final String? homeTeamName;
 
-  /// 主队Logo URL
+  /// HomeLogo URL
   final String? homeTeamLogo;
 
-  /// 主队比分
+  /// Homescore
   final int? homeTeamScore;
 
-  /// 客队ID
+  /// AwayID
   final int? awayTeamId;
 
-  /// 客队名称
+  /// Awayname
   final String? awayTeamName;
 
-  /// 客队Logo URL
+  /// AwayLogo URL
   final String? awayTeamLogo;
 
-  /// 客队比分
+  /// Awayscore
   final int? awayTeamScore;
 
-  /// 比赛分类ID（1=足球，用于过滤）
+  /// matchcategorytypeID（1=Football，usefilter）
   final int? categoryId;
 
   HankSearchMatch({
@@ -52,44 +52,56 @@ class HankSearchMatch {
     this.categoryId,
   });
 
-  /// 从JSON映射（snake_case → camelCase）
+  /// fromJSONmapping（snake_case → camelCase）
   factory HankSearchMatch.fromJson(Map<String, dynamic> json) {
     return HankSearchMatch(
-      matchId: json['match_id'] != null ? (json['match_id'] as num).toInt() : null,
-      matchTime: json['match_time'] != null ? (json['match_time'] as num).toInt() : null,
+      matchId:
+          json['match_id'] != null ? (json['match_id'] as num).toInt() : null,
+      matchTime: json['match_time'] != null
+          ? (json['match_time'] as num).toInt()
+          : null,
       competitionName: json['competition_name'] as String?,
-      homeTeamId: json['home_team_id'] != null ? (json['home_team_id'] as num).toInt() : null,
+      homeTeamId: json['home_team_id'] != null
+          ? (json['home_team_id'] as num).toInt()
+          : null,
       homeTeamName: json['home_team_name'] as String?,
       homeTeamLogo: json['home_team_logo'] as String?,
-      homeTeamScore: json['home_team_score'] != null ? (json['home_team_score'] as num).toInt() : null,
-      awayTeamId: json['away_team_id'] != null ? (json['away_team_id'] as num).toInt() : null,
+      homeTeamScore: json['home_team_score'] != null
+          ? (json['home_team_score'] as num).toInt()
+          : null,
+      awayTeamId: json['away_team_id'] != null
+          ? (json['away_team_id'] as num).toInt()
+          : null,
       awayTeamName: json['away_team_name'] as String?,
       awayTeamLogo: json['away_team_logo'] as String?,
-      awayTeamScore: json['away_team_score'] != null ? (json['away_team_score'] as num).toInt() : null,
-      categoryId: json['category'] != null ? (json['category'] as num).toInt() : null,
+      awayTeamScore: json['away_team_score'] != null
+          ? (json['away_team_score'] as num).toInt()
+          : null,
+      categoryId:
+          json['category'] != null ? (json['category'] as num).toInt() : null,
     );
   }
 }
 
-/// HankSearchUser: 搜索用户结果模型
-/// 对应 /api/livespeed/index/search 返回的 users 数组元素
+/// HankSearchUser: Searchuseaccountresultsmodel
+/// maps to /api/livespeed/index/search Back users countgroupelement
 class HankSearchUser {
-  /// 用户ID
+  /// useaccountID
   int? id;
 
-  /// 用户头像URL
+  /// useaccountavatarURL
   String? avatar;
 
-  /// 用户昵称
+  /// useaccountnickname
   String? nickname;
 
-  /// 是否直播中（1=直播中）
+  /// whetherLivein（1=Livein）
   int? isLiving;
 
-  /// 是否专家（1=专家）
+  /// whetherexpert（1=expert）
   int? isExpert;
 
-  /// 关注状态（0或2=未关注，1或3=已关注）
+  /// Followstatus（0or2=notFollow，1or3=alreadyFollow）
   int? followType;
 
   HankSearchUser({
@@ -101,35 +113,39 @@ class HankSearchUser {
     this.followType,
   });
 
-  /// 是否已关注
+  /// whetheralreadyFollow
   bool get isFollowed => followType == 1 || followType == 3;
 
-  /// 从JSON映射（snake_case → camelCase）
+  /// fromJSONmapping（snake_case → camelCase）
   factory HankSearchUser.fromJson(Map<String, dynamic> json) {
     return HankSearchUser(
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       avatar: json['avatar'] as String?,
       nickname: json['nickname'] as String?,
-      isLiving: json['is_living'] != null ? (json['is_living'] as num).toInt() : null,
-      isExpert: json['is_expert'] != null ? (json['is_expert'] as num).toInt() : null,
-      followType: json['follow_type'] != null ? (json['follow_type'] as num).toInt() : null,
+      isLiving:
+          json['is_living'] != null ? (json['is_living'] as num).toInt() : null,
+      isExpert:
+          json['is_expert'] != null ? (json['is_expert'] as num).toInt() : null,
+      followType: json['follow_type'] != null
+          ? (json['follow_type'] as num).toInt()
+          : null,
     );
   }
 }
 
-/// HankSearchCompetition: 搜索联赛结果模型
-/// 对应 /api/livespeed/index/search 返回的 competitions 数组元素
+/// HankSearchCompetition: SearchLeagueresultsmodel
+/// maps to /api/livespeed/index/search Back competitions countgroupelement
 class HankSearchCompetition {
-  /// 联赛ID
+  /// LeagueID
   final int? id;
 
-  /// 联赛名称
+  /// Leaguename
   final String? name;
 
-  /// 联赛Logo URL
+  /// LeagueLogo URL
   final String? logo;
 
-  /// 比赛场次
+  /// matchmatchtime
   final int? matches;
 
   HankSearchCompetition({
@@ -139,27 +155,28 @@ class HankSearchCompetition {
     this.matches,
   });
 
-  /// 从JSON映射（snake_case → camelCase）
+  /// fromJSONmapping（snake_case → camelCase）
   factory HankSearchCompetition.fromJson(Map<String, dynamic> json) {
     return HankSearchCompetition(
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       name: json['name'] as String?,
       logo: json['logo'] as String?,
-      matches: json['matches'] != null ? (json['matches'] as num).toInt() : null,
+      matches:
+          json['matches'] != null ? (json['matches'] as num).toInt() : null,
     );
   }
 }
 
-/// HankSearchResult: 搜索结果模型
-/// 对应 /api/livespeed/index/search 返回的 data 对象
+/// HankSearchResult: Searchresultsmodel
+/// maps to /api/livespeed/index/search Back data object
 class HankSearchResult {
-  /// 比赛搜索结果列表
+  /// matchSearchresult list
   final List<HankSearchMatch> matches;
 
-  /// 用户搜索结果列表
+  /// useaccountSearchresult list
   final List<HankSearchUser> users;
 
-  /// 联赛搜索结果列表
+  /// LeagueSearchresult list
   final List<HankSearchCompetition> competitions;
 
   HankSearchResult({
@@ -168,7 +185,7 @@ class HankSearchResult {
     this.competitions = const [],
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankSearchResult.fromJson(Map<String, dynamic> json) {
     return HankSearchResult(
       matches: (json['matches'] as List<dynamic>? ?? [])

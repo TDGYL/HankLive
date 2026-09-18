@@ -8,12 +8,12 @@ import '../../utils/hank_auth_manager.dart';
 import '../../models/hank_user_model.dart';
 import '../common/hank_local_web_page.dart';
 
-/// HankLoginPage: 登录/注册界面
-/// 与ZogoLive差异化布局：浅紫色+白色主题、卡片式表单、圆角输入框
-/// 流程：邮箱+验证码登录 → 保存Token → 获取用户信息 → 返回
-/// 接口：POST /api/livespeed/auth/send-verify（发送验证码）
-///       POST /api/livespeed/auth/login（登录）
-///       GET /api/livespeed/member（获取用户信息）
+/// HankLoginPage: Login/Registerview
+/// withZogoLivedifferentiatedlayoutmatch：lightpurple+whitecolorhometheme、cardstyletablesingle、roundedinputfield
+/// flow：email+verificationcodeLogin → SaveToken → getuseaccountinfo → Back
+/// API：POST /api/livespeed/auth/send-verify（sendverificationcode）
+///       POST /api/livespeed/auth/login（Login）
+///       GET /api/livespeed/member（getuseaccountinfo）
 class HankLoginPage extends StatefulWidget {
   const HankLoginPage({Key? key}) : super(key: key);
 
@@ -22,31 +22,31 @@ class HankLoginPage extends StatefulWidget {
 }
 
 class _HankLoginPageState extends State<HankLoginPage> {
-  /// 邮箱输入控制器 - TextEditingController类型，监听邮箱输入框内容
+  /// emailinputcontroller - TextEditingControllertype，listenemailinputfieldcontent
   final TextEditingController _emailController = TextEditingController();
 
-  /// 验证码输入控制器 - TextEditingController类型，监听验证码输入框内容
+  /// verificationcodeinputcontroller - TextEditingControllertype，listenverificationcodeinputfieldcontent
   final TextEditingController _codeController = TextEditingController();
 
-  /// 是否同意协议 - bool类型，true表示已勾选服务条款与隐私政策
+  /// whethersameagreeagreement - booltype，truemeansalreadycheckselectTerms of ServicewithPrivacy Policy
   bool _isAgree = false;
 
-  /// 是否正在登录 - bool类型，true表示登录请求进行中，防止重复提交
+  /// whetheractiveinLogin - booltype，truemeansLoginrequestIn Progress，preventduplicateSubmit
   bool _isLoading = false;
 
-  /// 是否正在发送验证码 - bool类型，true表示发送验证码请求进行中
+  /// whetheractiveinsendverificationcode - booltype，truemeanssendverificationcoderequestIn Progress
   bool _isSendingCode = false;
 
-  /// 倒计时剩余秒数 - int类型，0表示未在倒计时，>0时按钮不可点击
+  /// countdownremainingsecondscount - inttype，0meansnotincountdown，>0whenbuttonnotcantap
   int _countdown = 0;
 
-  /// 倒计时定时器 - Timer?类型，用于周期性刷新倒计时秒数，页面销毁时需cancel
+  /// countdownsetwhenindicator - Timer?type，useexpirypropertyrefreshcountdownsecondscount，pagedestroywhenneedcancel
   Timer? _countdownTimer;
 
-  /// 网易易盾人机验证插件实例 - CaptchaPluginFlutter类型，用于调起滑块/点选验证
+  /// webcaptchacaptchapersonbotverificationinsertiteminstance - CaptchaPluginFluttertype，usecallstartslideblock/click verification
   final CaptchaPluginFlutter _captchaPlugin = CaptchaPluginFlutter();
 
-  /// 网易易盾Code业务ID - String类型，易盾后台分配的VerifyCode
+  /// webcaptchacaptchaCodebusinessID - Stringtype，captchaafterplatformcategorydispatchVerifyCode
   static const String _captchaVerifyCode = '69d5b2ee3fec46658e01c0b45fc381af';
 
   @override
@@ -58,29 +58,29 @@ class _HankLoginPageState extends State<HankLoginPage> {
     super.dispose();
   }
 
-  /// 点击获取验证码
-  /// 校验邮箱非空后，调起网易易盾人机验证，验证成功后请求发送验证码接口
+  /// tapgetverificationcode
+  /// verifyemailnonemptyafter，initiate captcha verification，verificationsuccessafterrequestsendverificationcodeAPI
   void _handleGetVerifyCode() {
     if (_countdown > 0 || _isSendingCode) return;
 
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      _showSnackBar('请输入邮箱');
+      _showSnackBar('Please enteremail');
       return;
     }
 
-    // 调起网易易盾人机验证
+    // initiate captcha verification
     _captchaPlugin.init({
       'captcha_id': _captchaVerifyCode,
-      // Load failed时启用降级方案，支持点击重试
+      // Load failedwhen enabledusedownlevelplan，supporttapretry
       'use_default_fallback': true,
-      // 自动降级重试次数
+      // autodownlevelretrytimecount
       'failed_max_retry_count': 3,
-      // 超时时间（毫秒）
+      // timeoutTime（msseconds）
       'timeout': 10000,
-      // 点击弹窗外部不消失
+      // tappopupoutersectionnotdisappear
       'is_touch_outside_disappear': false,
-      // 关闭按钮在底部
+      // matchclosebuttoninbottom
       'is_close_button_bottom': true,
     });
     _captchaPlugin.showCaptcha(
@@ -88,7 +88,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
         debugPrint('captcha onLoaded');
       },
       onSuccess: (dynamic data) {
-        // 验证成功，拿到validate后请求发送验证码接口
+        // verificationsuccess，gettovalidateafterrequestsendverificationcodeAPI
         debugPrint('captcha onSuccess: $data');
         final String validate = data['validate'] ?? '';
         if (validate.isNotEmpty) {
@@ -96,21 +96,21 @@ class _HankLoginPageState extends State<HankLoginPage> {
         }
       },
       onError: (dynamic data) {
-        // 验证失败
+        // verificationfailed
         debugPrint('captcha onError: $data');
-        _showSnackBar('验证失败，请重试');
+        _showSnackBar('verificationfailed，please retry');
       },
       onClose: (dynamic data) {
-        // 用户关闭验证弹窗
+        // useaccountmatchclose verificationpopup
         debugPrint('captcha onClose: $data');
       },
     );
   }
 
-  /// 请求发送邮箱验证码
-  /// 接口：POST /api/livespeed/auth/send-verify
-  /// 参数：validate - 人机验证返回的validate；account - 邮箱；channel - "email"；scene - "sms-login"
-  /// 成功后开启60秒倒计时
+  /// requestsendemailverificationcode
+  /// API：POST /api/livespeed/auth/send-verify
+  /// paramcount：validate - personbotverificationBackvalidate；account - email；channel - "email"；scene - "sms-login"
+  /// successafterenable60secondscountdown
   Future<void> _sendVerifyCode(String validate) async {
     setState(() => _isSendingCode = true);
 
@@ -126,20 +126,20 @@ class _HankLoginPageState extends State<HankLoginPage> {
       );
 
       if (response.isSuccess) {
-        _showSnackBar('验证码已发送，请查收邮箱');
+        _showSnackBar('verificationcodealreadysend，pleasesearchreceiveemail');
         _startCountdown();
       } else {
-        _showSnackBar(response.message ?? '验证码发送失败');
+        _showSnackBar(response.message ?? 'verificationcodesendfailed');
       }
     } catch (e) {
-      _showSnackBar('网络错误，请重试');
+      _showSnackBar('Network error，please retry');
     } finally {
       if (mounted) setState(() => _isSendingCode = false);
     }
   }
 
-  /// 开启60秒倒计时
-  /// 每秒刷新剩余秒数，倒计时期间按钮置灰不可点击，结束后恢复
+  /// enable60secondscountdown
+  /// eachsecondsrefreshremainingsecondscount，countdownexpirybetweenbuttonsetgreynotcantap，endedafterrestore
   void _startCountdown() {
     setState(() => _countdown = 60);
     _countdownTimer?.cancel();
@@ -158,27 +158,27 @@ class _HankLoginPageState extends State<HankLoginPage> {
     });
   }
 
-  /// 处理登录
-  /// 校验邮箱、验证码、协议勾选后，依次请求登录接口和用户信息接口
-  /// 登录成功后保存Token和用户信息，返回上一页
+  /// handleLogin
+  /// verifyemail、verificationcode、agreementcheckselectafter，basedtimerequestLoginAPIanduseaccountinfoAPI
+  /// LoginsuccessafterSaveTokenanduseaccountinfo，Backupapage
   Future<void> _handleLogin() async {
     if (_emailController.text.isEmpty) {
-      _showSnackBar('请输入邮箱');
+      _showSnackBar('Please enteremail');
       return;
     }
     if (_codeController.text.isEmpty) {
-      _showSnackBar('请输入验证码');
+      _showSnackBar('Please enterverificationcode');
       return;
     }
     if (!_isAgree) {
-      _showSnackBar('请同意服务条款与隐私政策');
+      _showSnackBar('pleasesameagreeTerms of ServicewithPrivacy Policy');
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      // 第一步：调用登录接口
+      // astep：calluseLoginAPI
       final loginResponse = await HankNetworkManager().postRequest(
         '/api/livespeed/auth/login',
         data: {
@@ -191,43 +191,43 @@ class _HankLoginPageState extends State<HankLoginPage> {
       if (loginResponse.isSuccess && loginResponse.data != null) {
         final refreshToken = loginResponse.data['refresh_token'] as String?;
         if (refreshToken != null && refreshToken.isNotEmpty) {
-          // 保存Token并设置请求头
+          // SaveTokenandSettingsrequestheader
           await HankAuthManager().saveToken(refreshToken);
 
-          // 第二步：请求用户信息
+          // step 2：requestuseaccountinfo
           final userResponse = await HankNetworkManager().getRequest(
             '/api/livespeed/member',
           );
 
           if (userResponse.isSuccess && userResponse.data != null) {
-            // 解析并保存用户信息
+            // parseandSaveuseaccountinfo
             final userModel = HankUserModel.fromJson(
               userResponse.data as Map<String, dynamic>,
             );
             await HankAuthManager().saveUserInfo(userModel);
 
             if (mounted) {
-              _showSnackBar('登录成功');
+              _showSnackBar('Loginsuccess');
               Navigator.of(context).pop(true);
             }
           } else {
-            _showSnackBar(userResponse.message ?? '获取用户信息失败');
+            _showSnackBar(userResponse.message ?? 'getuseaccountinfofailed');
           }
         } else {
-          _showSnackBar('登录失败：Token异常');
+          _showSnackBar('Loginfailed：Tokenerror');
         }
       } else {
-        _showSnackBar(loginResponse.message ?? '登录失败');
+        _showSnackBar(loginResponse.message ?? 'Loginfailed');
       }
     } catch (e) {
-      _showSnackBar('网络错误，请重试');
+      _showSnackBar('Network error，please retry');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
-  /// 显示SnackBar提示
-  /// [message] - String类型，提示文案
+  /// displaySnackBarhint
+  /// [message] - Stringtype，hinttext
   void _showSnackBar(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +247,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
         backgroundColor: AppColors.violet50,
         body: Stack(
           children: [
-            // 背景装饰圆
+            // backgrounddecorationcircle
             Positioned(
               top: -120,
               right: -80,
@@ -282,7 +282,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
                 ),
               ),
             ),
-            // 主内容
+            // homecontent
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -313,12 +313,12 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 顶部导航栏（返回按钮 + Logo）
+  /// topnavbar（Backbutton + Logo）
   Widget _buildTopBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // 返回按钮
+        // Backbutton
         GestureDetector(
           onTap: () => Navigator.of(context).pop(),
           child: Container(
@@ -342,7 +342,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
             ),
           ),
         ),
-        // Logo标识
+        // Logobadge
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -384,7 +384,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 标题区域（登录/注册标题 + 副标题）
+  /// titlearea（Login/Registertitle + subtitle）
   Widget _buildTitleSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,7 +397,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
             ),
           ),
           child: const Text(
-            '登录 / 注册',
+            'Login / Register',
             style: TextStyle(
               color: AppColors.slate800,
               fontSize: 24,
@@ -407,7 +407,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
         ),
         const SizedBox(height: 8),
         const Text(
-          '输入邮箱即可登录或注册，畅享绿茵赛事',
+          'inputemailiscanLoginorRegister，enjoypitchmatch',
           style: TextStyle(
             color: AppColors.slate500,
             fontSize: 13,
@@ -417,7 +417,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 邮箱输入框（差异化：白色卡片+紫色图标+左侧标签条）
+  /// emailinputfield（differentiated：whitecolorcard+purpleicon+lefttagitem）
   Widget _buildEmailField() {
     return Container(
       height: 52,
@@ -435,7 +435,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
       ),
       child: Row(
         children: [
-          // 左侧紫色标签条
+          // leftpurpletagitem
           Container(
             width: 4,
             height: 24,
@@ -458,7 +458,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
               ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
-                hintText: '请输入邮箱地址',
+                hintText: 'Please enteremailaddress',
                 hintStyle: TextStyle(
                   color: AppColors.slate400,
                   fontSize: 13,
@@ -471,11 +471,11 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 验证码输入框 + 获取验证码按钮
+  /// verificationcodeinputfield + getverificationcodebutton
   Widget _buildCodeField() {
     return Row(
       children: [
-        // 验证码输入框
+        // verificationcodeinputfield
         Expanded(
           child: Container(
             height: 52,
@@ -518,7 +518,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       counterText: '',
-                      hintText: '验证码',
+                      hintText: 'verificationcode',
                       hintStyle: TextStyle(
                         color: AppColors.slate400,
                         fontSize: 13,
@@ -532,7 +532,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
           ),
         ),
         const SizedBox(width: 10),
-        // 获取验证码按钮
+        // getverificationcodebutton
         GestureDetector(
           onTap: (_countdown > 0 || _isSendingCode) ? null : _handleGetVerifyCode,
           child: Container(
@@ -564,7 +564,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
                     ),
                   )
                 : Text(
-                    _countdown > 0 ? '${_countdown}s' : '获取验证码',
+                    _countdown > 0 ? '${_countdown}s' : 'Get Code',
                     style: TextStyle(
                       color: _countdown > 0
                           ? AppColors.slate500
@@ -579,12 +579,12 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 协议勾选行
+  /// agreementcheckselectrow
   Widget _buildAgreementRow() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 勾选框
+        // checkselectfield
         GestureDetector(
           onTap: () => setState(() => _isAgree = !_isAgree),
           child: Container(
@@ -604,17 +604,17 @@ class _HankLoginPageState extends State<HankLoginPage> {
           ),
         ),
         const SizedBox(width: 8),
-        // 协议文案
+        // agreement text
         Expanded(
           child: GestureDetector(
             onTap: () => setState(() => _isAgree = !_isAgree),
             child: Text.rich(
               TextSpan(
-                text: '我已阅读并同意 ',
+                text: 'Ialreadyreadingandsameagree ',
                 style: const TextStyle(color: AppColors.slate500, fontSize: 11),
                 children: [
                   TextSpan(
-                    text: '服务条款',
+                    text: 'Terms of Service',
                     style: const TextStyle(color: AppColors.violet600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
@@ -624,15 +624,15 @@ class _HankLoginPageState extends State<HankLoginPage> {
                             builder: (_) => const HankLocalWebPage(
                               assetPath:
                                   'assets/htmlSource/user-agreement.html',
-                              title: '服务条款',
+                              title: 'Terms of Service',
                             ),
                           ),
                         );
                       },
                   ),
-                  const TextSpan(text: ' 和 '),
+                  const TextSpan(text: ' and '),
                   TextSpan(
-                    text: '隐私政策',
+                    text: 'Privacy Policy',
                     style: const TextStyle(color: AppColors.violet600),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
@@ -642,7 +642,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
                             builder: (_) => const HankLocalWebPage(
                               assetPath:
                                   'assets/htmlSource/privacy-agreement.html',
-                              title: '隐私政策',
+                              title: 'Privacy Policy',
                             ),
                           ),
                         );
@@ -657,7 +657,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 登录按钮
+  /// Loginbutton
   Widget _buildLoginButton() {
     return GestureDetector(
       onTap: _isLoading ? null : _handleLogin,
@@ -693,7 +693,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
                   ),
                 )
               : const Text(
-                  '登 录',
+                  'Login',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -706,7 +706,7 @@ class _HankLoginPageState extends State<HankLoginPage> {
     );
   }
 
-  /// 底部版权信息
+  /// bottomcopyrightinfo
   Widget _buildFooter() {
     return Center(
       child: Text(

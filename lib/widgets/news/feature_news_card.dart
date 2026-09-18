@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../models/news_model.dart';
 
-/// FeatureNewsCard: 大图深度战术文章卡片
-/// 全铺式渐变背景图+覆盖文字的样式
+/// FeatureNewsCard: featured tactical article card
+/// full gradient background image+overlaytextstyle
 class FeatureNewsCard extends StatelessWidget {
-  /// 资讯数据
+  /// newsData
   final NewsModel news;
 
-  /// 点击回调
+  /// tapcallback
   final VoidCallback? onTap;
 
   FeatureNewsCard({
@@ -117,7 +117,7 @@ class FeatureNewsCard extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          '${news.timeDesc}${news.readCountDesc.isNotEmpty ? ' · ${news.readCountDesc}' : ''}',
+                          news.readCountDesc,
                           style: const TextStyle(
                             fontSize: 10,
                             color: Color(0xFFC4B5FD),

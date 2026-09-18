@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
 
-/// HankDottedBorderContainer: 虚线边框容器组件
-/// 使用 CustomPaint 绘制虚线边框，支持圆角
-/// [child] - 子组件
-/// [color] - 虚线颜色
-/// [radius] - 圆角半径
-/// [dashWidth] - 虚线段宽度
-/// [dashGap] - 虚线间隔宽度
-/// [strokeWidth] - 虚线粗细
+/// HankDottedBorderContainer: dashlineborderfieldcontainercomponent
+/// useuse CustomPaint drawdashlineborderfield，supports rounded corners
+/// [child] - childcomponent
+/// [color] - dashlinecolor
+/// [radius] - corner radius
+/// [dashWidth] - dashlinesegment width
+/// [dashGap] - dashlinegap width
+/// [strokeWidth] - dashlinethickness
 class HankDottedBorderContainer extends StatelessWidget {
-  /// 子组件
+  /// childcomponent
   final Widget child;
 
-  /// 虚线颜色
+  /// dashlinecolor
   final Color color;
 
-  /// 圆角半径
+  /// corner radius
   final double radius;
 
-  /// 虚线段宽度
+  /// dashlinesegment width
   final double dashWidth;
 
-  /// 虚线间隔宽度
+  /// dashlinegap width
   final double dashGap;
 
-  /// 虚线粗细
+  /// dashlinethickness
   final double strokeWidth;
 
   HankDottedBorderContainer({
@@ -55,22 +55,22 @@ class HankDottedBorderContainer extends StatelessWidget {
   }
 }
 
-/// _DottedBorderPainter: 虚线边框画笔
-/// 在矩形四周绘制虚线，支持圆角
+/// _DottedBorderPainter: dashlineborderfieldpaint
+/// in4drawdashline，supports rounded corners
 class _DottedBorderPainter extends CustomPainter {
-  /// 虚线颜色
+  /// dashlinecolor
   final Color color;
 
-  /// 圆角半径
+  /// corner radius
   final double radius;
 
-  /// 虚线段宽度
+  /// dashlinesegment width
   final double dashWidth;
 
-  /// 虚线间隔宽度
+  /// dashlinegap width
   final double dashGap;
 
-  /// 虚线粗细
+  /// dashlinethickness
   final double strokeWidth;
 
   _DottedBorderPainter({
@@ -93,10 +93,10 @@ class _DottedBorderPainter extends CustomPainter {
       Radius.circular(radius),
     );
 
-    // 使用 Path 绘制圆角矩形路径
+    // useuse Path draw rounded rectanglepath
     final path = Path()..addRRect(rrect);
 
-    // 沿路径绘制虚线
+    // alongpathdrawdashline
     final pathMetrics = path.computeMetrics();
     for (final metric in pathMetrics) {
       double distance = 0;

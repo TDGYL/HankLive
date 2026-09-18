@@ -5,38 +5,38 @@ import '../../models/match_model.dart';
 import '../../models/team_model.dart';
 import '../../pages/match/match_detail_page.dart';
 
-/// MatchDetailH2HTab: 历史交锋Tab内容组件
-/// 严格参照h2h.html布局（不含导航部分）
-/// 1. WDL统计条：胜平负比例条 + 进球数据
-/// 2. 筛选菜单：近10场/近6场/同主客/仅联赛
-/// 3. 交锋战绩列表：每场比赛为一张卡片，点击跳转到比赛详情
-/// 主题：浅紫色 + 白色
+/// MatchDetailH2HTab: H2HTabcontentcomponent
+/// strictreferenceh2h.htmllayoutmatch（without navigation section）
+/// 1. WDLstatsitem：WDLratio bar + GoalsData
+/// 2. filtermenu：Last 10/Last 6/Home/Away/League Only
+/// 3. H2HStatslist：eachmatchmatchisacardcard，tapnavigate tomatchDetails
+/// hometheme：lightpurple + whitecolor
 class MatchDetailH2HTab extends StatefulWidget {
-  /// 全部历史交锋数据列表
+  /// AllH2HDatalist
   final List<HankH2HMatch> matches;
 
-  /// 当前页面主队ID
+  /// whenbeforepageHomeID
   final int homeTeamId;
 
-  /// 当前页面主队名称
+  /// whenbeforepageHomename
   final String homeTeamName;
 
-  /// 当前页面主队Logo
+  /// whenbeforepageHomeLogo
   final String homeTeamLogo;
 
-  /// 当前页面客队ID
+  /// whenbeforepageAwayID
   final int awayTeamId;
 
-  /// 当前页面客队名称
+  /// whenbeforepageAwayname
   final String awayTeamName;
 
-  /// 当前页面客队Logo
+  /// whenbeforepageAwayLogo
   final String awayTeamLogo;
 
-  /// 是否正在加载
+  /// whetherLoading
   final bool isLoading;
 
-  /// 构造函数
+  /// constructorfunctioncount
   const MatchDetailH2HTab({
     required this.matches,
     required this.homeTeamId,
@@ -54,16 +54,16 @@ class MatchDetailH2HTab extends StatefulWidget {
 }
 
 class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
-  /// 选中的场次数（10或6）
+  /// selectedmatchtimecount（10or6）
   int _matchCountLimit = 10;
 
-  /// 是否仅同主客
+  /// whetheronlyHome/Away
   bool _sameHomeAway = false;
 
-  /// 是否仅联赛
+  /// whetherLeague Only
   bool _leagueOnly = false;
 
-  /// 过滤后的比赛列表
+  /// filteraftermatchlist
   List<HankH2HMatch> get _filteredMatches {
     var result = widget.matches.toList();
 
@@ -72,8 +72,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     }
 
     if (_leagueOnly) {
-      // 排除杯赛（名称含"杯"的赛事），仅保留联赛
-      result = result.where((m) => !m.competitionName.contains('杯')).toList();
+      // rankremoveCup（namecontains"cup"match），onlykeepLeague
+      result = result.where((m) => !m.competitionName.contains('cup')).toList();
     }
 
     return result.take(_matchCountLimit).toList();
@@ -97,7 +97,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
             const Icon(Icons.history, size: 40, color: AppColors.slate400),
             const SizedBox(height: 8),
             Text(
-              '暂无符合条件的历史交锋记录',
+              'NomatchingitemitemH2Hrecordin',
               style: TextStyle(fontSize: 13, color: AppColors.slate400),
             ),
           ],
@@ -119,8 +119,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建WDL统计条
-  /// [displayMatches] 过滤后的比赛列表
+  /// buildWDLstatsitem
+  /// [displayMatches] filteraftermatchlist
   Widget _buildWDLSummary(List<HankH2HMatch> displayMatches) {
     int homeWin = 0;
     int draw = 0;
@@ -175,7 +175,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '$homeWin 胜',
+                '$homeWin W',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
@@ -183,7 +183,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
                 ),
               ),
               Text(
-                '$draw 平',
+                '$draw D',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
@@ -191,7 +191,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
                 ),
               ),
               Text(
-                '$awayWin 负',
+                '$awayWin L',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
@@ -236,15 +236,15 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '进球: $homeGoals',
+                  'Goals: $homeGoals',
                   style: const TextStyle(fontSize: 10, color: AppColors.slate500),
                 ),
                 Text(
-                  '场均进球: $avgGoals',
+                  'avg per matchGoals: $avgGoals',
                   style: const TextStyle(fontSize: 10, color: AppColors.slate500),
                 ),
                 Text(
-                  '进球: $awayGoals',
+                  'Goals: $awayGoals',
                   style: const TextStyle(fontSize: 10, color: AppColors.slate500),
                 ),
               ],
@@ -255,23 +255,23 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建筛选芯片菜单
+  /// buildfilterchipmenu
   Widget _buildFilterChips() {
     return SizedBox(
       height: 36,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildChip('近10场', _matchCountLimit == 10, () {
+          _buildChip('Last 10', _matchCountLimit == 10, () {
             setState(() => _matchCountLimit = 10);
           }),
-          _buildChip('近6场', _matchCountLimit == 6, () {
+          _buildChip('Last 6', _matchCountLimit == 6, () {
             setState(() => _matchCountLimit = 6);
           }),
-          _buildChip('同主客', _sameHomeAway, () {
+          _buildChip('Home/Away', _sameHomeAway, () {
             setState(() => _sameHomeAway = !_sameHomeAway);
           }),
-          _buildChip('仅联赛', _leagueOnly, () {
+          _buildChip('League Only', _leagueOnly, () {
             setState(() => _leagueOnly = !_leagueOnly);
           }),
         ],
@@ -279,10 +279,10 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建单个筛选芯片
-  /// [label] 标签文本
-  /// [isSelected] 是否选中
-  /// [onTap] 点击回调
+  /// buildsingleeachfilterchip
+  /// [label] tagtext
+  /// [isSelected] whetherselected
+  /// [onTap] tapcallback
   Widget _buildChip(String label, bool isSelected, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
@@ -310,8 +310,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建单场历史交锋卡片
-  /// [m] 历史交锋数据
+  /// buildsinglematchH2Hcard
+  /// [m] H2HData
   Widget _buildMatchCard(HankH2HMatch m) {
     final homeIsCurrentHome = m.homeTeamId == widget.homeTeamId;
     final awayIsCurrentHome = m.awayTeamId == widget.homeTeamId;
@@ -342,18 +342,18 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
         clipBehavior: Clip.antiAlias,
         child: Row(
           children: [
-            // 左侧颜色条
+            // leftcoloritem
             Container(width: 4, color: indicatorColor),
-            // 右侧内容
+            // right content
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(14),
                 child: Column(
                   children: [
-                    // 第一行：联赛 + 日期 + 半场比分
+                    // arow：League + Date + HTscore
                     _buildMatchTopRow(m),
                     const SizedBox(height: 10),
-                    // 第二行：主队 + 比分 + 客队
+                    // secondrow：Home + score + Away
                     _buildMatchScoreRow(
                         m, homeIsCurrentHome, awayIsCurrentHome),
                   ],
@@ -366,8 +366,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建比赛卡片顶部行（联赛 + 日期 + 半场比分）
-  /// [m] 历史交锋数据
+  /// buildmatchcardtoprow（League + Date + HTscore）
+  /// [m] H2HData
   Widget _buildMatchTopRow(HankH2HMatch m) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -406,7 +406,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
           ],
         ),
         Text(
-          '半场 ${m.halfScoreText}',
+          'HT ${m.halfScoreText}',
           style: const TextStyle(
             fontSize: 11,
             color: AppColors.slate400,
@@ -416,15 +416,15 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建比赛卡片比分行（主队 + 比分 + 客队）
-  /// [m] 历史交锋数据
-  /// [homeIsCurrentHome] 主队是否为当前页主队
-  /// [awayIsCurrentHome] 客队是否为当前页主队
+  /// buildmatchcardscorerow（Home + score + Away）
+  /// [m] H2HData
+  /// [homeIsCurrentHome] Homeis currentpageHome
+  /// [awayIsCurrentHome] Awayis currentpageHome
   Widget _buildMatchScoreRow(
       HankH2HMatch m, bool homeIsCurrentHome, bool awayIsCurrentHome) {
     return Row(
       children: [
-        // 主队
+        // Home
         Expanded(
           child: Row(
             children: [
@@ -449,9 +449,9 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
             ],
           ),
         ),
-        // 比分
+        // score
         _buildScoreBadge(m),
-        // 客队
+        // Away
         Expanded(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -482,7 +482,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建球队Logo（24x24，空Logo时用占位容器）
+  /// buildTeamLogo（24x24，emptyLogowhenuseplaceholdercontainer）
   /// [logoUrl Logo URL
   Widget _buildTeamLogo(String logoUrl) {
     if (logoUrl.isNotEmpty) {
@@ -498,7 +498,7 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     return _buildLogoPlaceholder();
   }
 
-  /// 构建Logo占位容器
+  /// buildLogoplaceholdercontainer
   Widget _buildLogoPlaceholder() {
     return Container(
       width: 24,
@@ -510,8 +510,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 构建比分标签
-  /// [m] 历史交锋数据
+  /// buildscoretag
+  /// [m] H2HData
   Widget _buildScoreBadge(HankH2HMatch m) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -554,8 +554,8 @@ class _MatchDetailH2HTabState extends State<MatchDetailH2HTab> {
     );
   }
 
-  /// 跳转到比赛详情页
-  /// [m] 历史交锋比赛数据，转换为MatchModel后push
+  /// navigate tomatchDetailspage
+  /// [m] H2HmatchData，convert toMatchModelafterpush
   void _navigateToMatchDetail(HankH2HMatch m) {
     final match = MatchModel(
       matchId: '${m.matchId}',

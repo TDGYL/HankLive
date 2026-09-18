@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../services/mock_data_service.dart';
 
-/// SearchModal: 全局搜索弹窗
-/// 展示搜索框、热门搜索关键词
+/// SearchModal: allmatchSearchpopup
+/// displaySearchfield、TrendingSearchkeyword
 class SearchModal extends StatefulWidget {
-  /// 搜索关键词选中回调
+  /// Searchkeywordselectedcallback
   final ValueChanged<String>? onKeywordSelected;
 
   SearchModal({
@@ -18,10 +18,10 @@ class SearchModal extends StatefulWidget {
 }
 
 class _SearchModalState extends State<SearchModal> {
-  /// 文本输入控制器
+  /// textinputcontroller
   late final TextEditingController _controller;
 
-  /// 热门搜索关键词
+  /// TrendingSearchkeyword
   late final List<String> _hotSearches;
 
   @override
@@ -41,7 +41,7 @@ class _SearchModalState extends State<SearchModal> {
     widget.onKeywordSelected?.call(keyword);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('筛选: $keyword'),
+        content: Text('filter: $keyword'),
         duration: const Duration(seconds: 1),
       ),
     );
@@ -93,7 +93,7 @@ class _SearchModalState extends State<SearchModal> {
                                 isDense: true,
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.zero,
-                                hintText: '搜索球队/联赛 (如: 阿森纳, 皇马...)',
+                                hintText: 'SearchTeam/League (e.g.: Arsenal, Real Madrid...)',
                                 hintStyle: TextStyle(
                                   fontSize: 12,
                                   color: Color(0x99C4B5FD),
@@ -116,7 +116,7 @@ class _SearchModalState extends State<SearchModal> {
                     child: const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 4),
                       child: Text(
-                        '取消',
+                        'Cancel',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -129,7 +129,7 @@ class _SearchModalState extends State<SearchModal> {
               ),
               const SizedBox(height: 20),
               const Text(
-                '热门搜索',
+                'TrendingSearch',
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,

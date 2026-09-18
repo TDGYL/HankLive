@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
-/// GlassCard: 毛玻璃卡片容器
-/// 实现半透明白色+紫色细边框效果，背景模糊模拟（Flutter 无backdrop则使用实色近似）
+/// GlassCard: frosted glasscardcontainer
+/// semi-transparent white+purpleborderfieldeffectif，backgroundmodeblurmodesimulate（Flutter nonebackdropthenuseuseentitycolorapproximation）
 class GlassCard extends StatelessWidget {
-  /// 子组件
+  /// childcomponent
   final Widget child;
 
-  /// 内边距
+  /// innerborderdistance
   final EdgeInsetsGeometry padding;
 
-  /// 圆角
+  /// rounded
   final double borderRadius;
 
-  /// 背景颜色
+  /// backgroundcolor
   final Color? bgColor;
 
-  /// 边框颜色
+  /// borderfieldcolor
   final Color? borderColor;
 
-  /// 外边距
+  /// outer margin
   final EdgeInsetsGeometry? margin;
 
-  /// 点击回调（可空，null则不可点击）
+  /// tapcallback（canempty，nullthennotcantap）
   final VoidCallback? onTap;
 
   GlassCard({

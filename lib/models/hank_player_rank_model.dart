@@ -1,25 +1,25 @@
-/// HankPlayerRank: 球员排行数据模型
-/// 用于展示球员在某个分类下的排名信息（如进球榜、助攻榜）
+/// HankPlayerRank: Player StatsDatamodel
+/// for displayPlayerinsomeeachcategorytypedownrankinfo（e.g.Goalsboard、assistsboard）
 class HankPlayerRank {
-  /// 球员唯一ID
+  /// PlayeruniqueID
   final int playerId;
 
-  /// 排行分类名称（如 进球）
+  /// rankrowcategorytypename（e.g. Goals）
   final String rankName;
 
-  /// 排名位置
+  /// rankPosition
   final int position;
 
-  /// 球员名称
+  /// Playername
   final String playerName;
 
-  /// 球员头像URL
+  /// PlayeravatarURL
   final String playerLogo;
 
-  /// 所属球队名称
+  /// belongs toTeamname
   final String teamName;
 
-  /// 数据总数（如进球数、助攻数）
+  /// Datatotalcount（e.g.Goalscount、assistscount）
   final int total;
 
   HankPlayerRank({
@@ -32,7 +32,7 @@ class HankPlayerRank {
     required this.total,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankPlayerRank.fromJson(Map<String, dynamic> json) {
     return HankPlayerRank(
       playerId: json['player_id'] as int? ?? 0,

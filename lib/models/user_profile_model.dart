@@ -1,34 +1,34 @@
-/// UserProfileModel: 个人中心用户信息模型
-/// 包含头像、昵称、签名、关注/粉丝/帖子/预测胜率等数据
+/// UserProfileModel: profileuseaccountinfomodel
+/// containsavatar、nickname、bio、Follow/followers/Post/predictionWrateetcData
 class UserProfileModel {
-  /// 用户唯一ID
+  /// useaccountuniqueID
   final String userId;
 
-  /// 昵称
+  /// nickname
   final String nickname;
 
-  /// 头像URL
+  /// avatarURL
   final String? avatarUrl;
 
-  /// 是否是PRO会员
+  /// isPROmember
   final bool isPro;
 
-  /// 个人签名
+  /// eachpersonbio
   final String signature;
 
-  /// 关注数
+  /// Followcount
   final int followingCount;
 
-  /// 粉丝数
+  /// followerscount
   final int followerCount;
 
-  /// 帖子数
+  /// Postcount
   final int postCount;
 
-  /// 预测胜率 0-100
+  /// predictionWrate 0-100
   final int predictWinRate;
 
-  /// 个人资料完善度 0-100
+  /// profile completeness 0-100
   final int profileCompletion;
 
   UserProfileModel({
@@ -44,7 +44,7 @@ class UserProfileModel {
     required this.profileCompletion,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
       userId: json['userId'] ?? '',
@@ -75,7 +75,7 @@ class UserProfileModel {
     };
   }
 
-  /// 粉丝数格式化显示（如 2.4k）
+  /// followerscountformatdisplay（e.g. 2.4k）
   String get followerDisplay {
     if (followerCount >= 10000) {
       return '${(followerCount / 10000).toStringAsFixed(1)}w';

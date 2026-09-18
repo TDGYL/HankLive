@@ -4,10 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/hank_auth_manager.dart';
 
-/// HankEditProfilePage: 编辑个人信息页面
-/// 功能：修改头像、昵称、性别
-/// 差异化：浅紫+白色主题，圆角卡片表单，渐变保存按钮
-/// 参照 ZogoLive edit_profile_page.dart 的功能和数据
+/// HankEditProfilePage: Edit Profilepage
+/// feature：modifyavatar、nickname、gender
+/// differentiated：light purple+whitecolorhometheme，roundedcardtablesingle，gradientSavebutton
+/// reference ZogoLive edit_profile_page.dart featureandData
 class HankEditProfilePage extends StatefulWidget {
   const HankEditProfilePage({Key? key}) : super(key: key);
 
@@ -16,16 +16,16 @@ class HankEditProfilePage extends StatefulWidget {
 }
 
 class _HankEditProfilePageState extends State<HankEditProfilePage> {
-  /// 昵称输入控制器
+  /// nicknameinputcontroller
   final TextEditingController _nicknameController = TextEditingController();
 
-  /// 用户头像URL（网络地址或本地文件路径）
+  /// useaccountavatarURL（networkaddressorlocalfilepath）
   String? _avatar;
 
-  /// 是否为本地选中的图片文件
+  /// whetherislocalselectedimagefile
   bool _isLocalAvatar = false;
 
-  /// 性别（1=男 2=女，null=未设置）
+  /// gender（1=male 2=female，null=notSettings）
   int? _sex;
 
   @override
@@ -43,20 +43,20 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
     super.dispose();
   }
 
-  /// 保存个人资料
-  /// 提交后Toast提示"已提交，等待后台审核"，不请求接口
+  /// Saveeachpersondata
+  /// SubmitafterToasthint"Submitted, pending review"，notrequestAPI
   void _saveProfile() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('已提交，等待后台审核'),
+        content: Text('Submitted, pending review'),
         duration: Duration(seconds: 2),
       ),
     );
     Navigator.pop(context);
   }
 
-  /// 点击更换头像，从相册选择图片
-  /// 使用image_picker插件，选择后本地展示，提交时不请求上传接口
+  /// tapmorechangeavatar，fromphaseregisterselectimage
+  /// useuseimage_pickerinsertitem，selectafterlocaldisplay，SubmitwhennotrequestupuploadAPI
   Future<void> _pickAvatar() async {
     try {
       final picker = ImagePicker();
@@ -75,14 +75,14 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('选择图片失败，请重试'),
+          content: Text('Failed to pick image, please retry'),
           duration: Duration(seconds: 1),
         ),
       );
     }
   }
 
-  /// 显示性别选择弹窗
+  /// displaygenderselectpopup
   void _showSexPicker() {
     showModalBottomSheet(
       context: context,
@@ -96,9 +96,9 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 8),
-              _buildSexOption(sheetContext, 1, '男', Icons.male),
+              _buildSexOption(sheetContext, 1, 'male', Icons.male),
               Divider(height: 1, color: AppColors.violet100),
-              _buildSexOption(sheetContext, 2, '女', Icons.female),
+              _buildSexOption(sheetContext, 2, 'female', Icons.female),
               const SizedBox(height: 8),
             ],
           ),
@@ -107,8 +107,8 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
     );
   }
 
-  /// 构建性别选项行
-  /// [value] 性别值，[label] 显示文案，[icon] 图标
+  /// buildgenderselectitemrow
+  /// [value] gendervalue，[label] displaytext，[icon] icon
   Widget _buildSexOption(
       BuildContext sheetContext, int value, String label, IconData icon) {
     final selected = _sex == value;
@@ -142,15 +142,15 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
     );
   }
 
-  /// 性别文案
+  /// gendertext
   String get _sexText {
     switch (_sex) {
       case 1:
-        return '男';
+        return 'male';
       case 2:
-        return '女';
+        return 'female';
       default:
-        return '未设置';
+        return 'notSettings';
     }
   }
 
@@ -163,7 +163,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          '编辑个人信息',
+          'Edit Profile',
           style: TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700,
               color: AppColors.slate800),
@@ -178,7 +178,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 头像区域
+            // avatararea
             Center(
               child: Column(
                 children: [
@@ -213,7 +213,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '点击更换头像',
+                    'tapmorechangeavatar',
                     style: TextStyle(
                         color: AppColors.slate500, fontSize: 11),
                   ),
@@ -221,7 +221,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
               ),
             ),
             const SizedBox(height: 24),
-            // 表单卡片
+            // tablesinglecard
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -236,7 +236,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
               ),
               child: Column(
                 children: [
-                  // 昵称
+                  // nickname
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 4),
@@ -244,7 +244,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                       children: [
                         const SizedBox(
                           width: 64,
-                          child: Text('昵称',
+                          child: Text('nickname',
                               style: TextStyle(
                                   color: AppColors.slate500, fontSize: 13)),
                         ),
@@ -255,7 +255,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                                 color: AppColors.slate800, fontSize: 14),
                             maxLength: 20,
                             decoration: const InputDecoration(
-                              hintText: '请输入昵称',
+                              hintText: 'Please enternickname',
                               hintStyle: TextStyle(
                                   color: AppColors.slate400, fontSize: 13),
                               border: InputBorder.none,
@@ -267,7 +267,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                     ),
                   ),
                   Divider(height: 1, color: AppColors.violet100),
-                  // 性别
+                  // gender
                   InkWell(
                     onTap: _showSexPicker,
                     child: Padding(
@@ -276,7 +276,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                         children: [
                           const SizedBox(
                             width: 64,
-                            child: Text('性别',
+                            child: Text('gender',
                                 style: TextStyle(
                                     color: AppColors.slate500,
                                     fontSize: 13)),
@@ -297,7 +297,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
               ),
             ),
             const SizedBox(height: 32),
-            // 保存按钮
+            // Savebutton
             SizedBox(
               width: double.infinity,
               height: 44,
@@ -310,7 +310,7 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('保存',
+                child: const Text('Save',
                     style: TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w700)),
               ),

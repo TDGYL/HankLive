@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
-/// AppTabItem: 底部Tab项数据模型
+/// AppTabItem: bottomTabitemDatamodel
 class AppTabItem {
-  /// 图标
+  /// icon
   final IconData icon;
 
-  /// 选中时图标颜色
+  /// selectedwheniconcolor
   final Color activeColor;
 
-  /// 标题文字
+  /// titletext
   final String label;
 
   AppTabItem({
@@ -19,16 +19,16 @@ class AppTabItem {
   });
 }
 
-/// AppBottomNavBar: 底部导航栏
-/// 毛玻璃半透明效果，4个Tab切换
+/// AppBottomNavBar: bottomnavbar
+/// frosted glasstranslucent effect，4eachTabtoggle
 class AppBottomNavBar extends StatelessWidget {
-  /// 当前选中索引
+  /// whenbeforeselectedindex
   final int currentIndex;
 
-  /// Tab项列表
+  /// Tabitem list
   final List<AppTabItem> items;
 
-  /// 切换回调
+  /// togglecallback
   final ValueChanged<int> onTabChanged;
 
   AppBottomNavBar({

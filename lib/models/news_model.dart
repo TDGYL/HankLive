@@ -1,44 +1,44 @@
-/// NewsType: 资讯类型枚举
-/// feature: 深度大图样式 | compact: 左右图文快讯样式
+/// NewsType: newstypeenum
+/// feature: darkdepthbigimagestyle | compact: left-rightArticlenews flashstyle
 enum NewsType { feature, compact }
 
-/// NewsModel: 资讯文章模型
-/// 包含标题、图片、分类标签、来源、时间、阅读数等
+/// NewsModel: newsarticlemodel
+/// containstitle、image、categorytypetag、source、Time、readingcountetc
 class NewsModel {
-  /// 文章唯一ID
+  /// articleuniqueID
   final String newsId;
 
-  /// 展示类型（大图/小图）
+  /// displaytype（bigimage/underimage）
   final NewsType type;
 
-  /// 文章标题
+  /// articletitle
   final String title;
 
-  /// 封面大图URL（feature样式用）
+  /// coverbigimageURL（featurestyleuse）
   final String? coverImageUrl;
 
-  /// 缩略图URL（compact样式用）
+  /// abbrevthumbnailimageURL（compactstyleuse）
   final String? thumbnailUrl;
 
-  /// 分类标签文字
+  /// categorytypetagtext
   final String categoryTag;
 
-  /// 分类标签背景颜色
+  /// categorytypetagbackgroundcolor
   final int categoryBgColor;
 
-  /// 分类标签文字颜色
+  /// categorytypetagtextcolor
   final int categoryTextColor;
 
-  /// 来源/作者
+  /// source/author
   final String source;
 
-  /// 发布时间描述（如：2小时前）
+  /// PostTimedescription（e.g.：2underwhenbefore）
   final String timeDesc;
 
-  /// 阅读量描述（如：1.8万阅读）
+  /// readingcountdescription（e.g.：1.80k views）
   final String readCountDesc;
 
-  /// 评论数
+  /// Commentcount
   final int commentCount;
 
   NewsModel({
@@ -56,7 +56,7 @@ class NewsModel {
     this.commentCount = 0,
   });
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory NewsModel.fromJson(Map<String, dynamic> json) {
     return NewsModel(
       newsId: json['newsId'] ?? '',

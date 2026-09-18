@@ -8,15 +8,15 @@ import '../../services/hank_community_detail_api_service.dart';
 import '../../utils/hank_auth_manager.dart';
 import '../match/match_detail_page.dart';
 
-/// HankCommunityDetailPage: 社区帖子详情页面
-/// 接收帖子ID，请求详情和评论数据
-/// 差异化布局：浅紫色+白色主题，卡片式作者信息，横向标签滚动，圆角评论卡片
-/// 功能：点赞、评论、回复、关注作者、删除帖子
+/// HankCommunityDetailPage: CommunityPostDetailspage
+/// receivePostID，requestDetailsandCommentData
+/// differentiatedlayoutmatch：lightpurple+whitecolorhometheme，cardstyleauthorinfo，horizontaltagscroll，roundedCommentcard
+/// feature：Like、Comment、Reply、Followauthor、DeletePost
 class HankCommunityDetailPage extends StatefulWidget {
-  /// 帖子ID - int类型，从社区列表传入
+  /// PostID - inttype，fromCommunitylistpassed in
   final int postId;
 
-  /// 帖子数据（可选） - HankPostItem?类型，从列表预传入减少首屏等待
+  /// PostData（optional） - HankPostItem?type，fromlistprepassed inreducefewfirstscreenetcwait
   final HankPostItem? initialPost;
 
   HankCommunityDetailPage({
@@ -31,47 +31,47 @@ class HankCommunityDetailPage extends StatefulWidget {
 }
 
 class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
-  /// 接口服务实例
+  /// API serviceinstance
   final HankCommunityDetailApiService _apiService =
       HankCommunityDetailApiService();
 
-  /// 帖子详情数据 - HankPostItem?类型，懒加载
+  /// PostDetailsData - HankPostItem?type，lazy load
   HankPostItem? _post;
 
-  /// 评论列表数据 - List<HankCommentItem>类型
+  /// CommentlistData - List<HankCommentItem>type
   List<HankCommentItem> _comments = [];
 
-  /// 评论总数 - int类型
+  /// Commenttotalcount - inttype
   int _commentTotal = 0;
 
-  /// 是否正在加载详情
+  /// whetherLoadingDetails
   bool _isLoadingDetail = false;
 
-  /// 是否正在加载评论
+  /// whetherLoadingComment
   bool _isLoadingComments = false;
 
-  /// 是否已点赞 - bool类型，本地缓存状态
+  /// whetheralreadyLike - booltype，localcachestatus
   bool _isLiked = false;
 
-  /// 点赞数 - int类型，本地缓存
+  /// Likecount - inttype，localcache
   int _likeCount = 0;
 
-  /// 是否已关注作者 - bool类型
+  /// whetheralreadyFollowauthor - booltype
   bool _isFollowing = false;
 
-  /// 输入框控制器
+  /// inputfieldcontroller
   final TextEditingController _inputController = TextEditingController();
 
-  /// 输入框焦点
+  /// inputfieldfocus
   final FocusNode _inputFocusNode = FocusNode();
 
-  /// 当前回复的评论 - HankCommentItem?类型，null表示直接评论帖子
+  /// whenbeforeReplyComment - HankCommentItem?type，nullmeansdirectlyCommentPost
   HankCommentItem? _replyingTo;
 
-  /// 滚动控制器
+  /// scrollcontroller
   final ScrollController _scrollController = ScrollController();
 
-  /// 是否为自己的帖子 - bool类型，用于显示删除按钮
+  /// whetherisownPost - booltype，usedisplayDeletebutton
   bool _isOwnPost = false;
 
   @override
@@ -88,7 +88,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     super.dispose();
   }
 
-  /// 初始化数据：优先使用传入的帖子数据，再请求详情和评论
+  /// initData：preferuseusepassed inPostData，againrequestDetailsandComment
   void _initData() {
     if (widget.initialPost != null) {
       _post = widget.initialPost;
@@ -102,7 +102,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     _fetchComments();
   }
 
-  /// 检查是否为自己的帖子
+  /// checksearchwhetherisownPost
   void _checkOwnPost() {
     final currentUserId = HankAuthManager().currentUser?.id;
     final authorId = _post?.author?.id;
@@ -111,8 +111,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     }
   }
 
-  /// 请求帖子详情
-  /// 接口：GET /api/livespeed/community/detail
+  /// requestPostDetails
+  /// API：GET /api/livespeed/community/detail
   Future<void> _fetchPostDetail() async {
     setState(() {
       _isLoadingDetail = true;
@@ -134,8 +134,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     }
   }
 
-  /// 请求评论列表
-  /// 接口：GET /api/livespeed/community/comment/list
+  /// requestCommentlist
+  /// API：GET /api/livespeed/community/comment/list
   Future<void> _fetchComments() async {
     setState(() {
       _isLoadingComments = true;
@@ -156,8 +156,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     }
   }
 
-  /// 帖子点赞/取消点赞
-  /// 接口：POST /api/livespeed/community/like
+  /// PostLike/CancelLike
+  /// API：POST /api/livespeed/community/like
   Future<void> _toggleLike() async {
     if (!HankAuthManager().isLoggedIn) {
       _showLoginPrompt();
@@ -165,7 +165,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     }
 
     final newIsLiked = !_isLiked;
-    final newLikeCount = newIsLiked ? _likeCount + 1 : (_likeCount > 0 ? _likeCount - 1 : 0);
+    final newLikeCount =
+        newIsLiked ? _likeCount + 1 : (_likeCount > 0 ? _likeCount - 1 : 0);
 
     setState(() {
       _isLiked = newIsLiked;
@@ -182,13 +183,13 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
         _isLiked = !newIsLiked;
         _likeCount = newIsLiked ? newLikeCount - 1 : newLikeCount + 1;
       });
-      _showToast('操作失败，请重试');
+      _showToast('Failed，please retry');
     }
   }
 
-  /// 评论点赞/取消点赞
-  /// [comment] - 被操作的评论
-  /// 接口：POST /api/livespeed/support
+  /// CommentLike/CancelLike
+  /// [comment] - byactionComment
+  /// API：POST /api/livespeed/support
   Future<void> _toggleCommentSupport(HankCommentItem comment) async {
     if (!HankAuthManager().isLoggedIn) {
       _showLoginPrompt();
@@ -215,14 +216,15 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     if (!success && mounted) {
       setState(() {
         comment.isSupport = !newIsSupport;
-        comment.support = newIsSupport ? newSupportCount - 1 : newSupportCount + 1;
+        comment.support =
+            newIsSupport ? newSupportCount - 1 : newSupportCount + 1;
       });
-      _showToast('操作失败，请重试');
+      _showToast('Failed，please retry');
     }
   }
 
-  /// 关注/取消关注作者
-  /// 接口：POST /api/livespeed/imchat/subscribe
+  /// Follow/CancelFollowauthor
+  /// API：POST /api/livespeed/imchat/subscribe
   Future<void> _toggleFollowAuthor() async {
     if (!HankAuthManager().isLoggedIn) {
       _showLoginPrompt();
@@ -247,29 +249,33 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       setState(() {
         _isFollowing = !newFollowing;
       });
-      _showToast('操作失败，请重试');
+      _showToast('Failed，please retry');
     } else if (mounted) {
-      _showToast(newFollowing ? '已关注' : '已取消关注');
+      _showToast(newFollowing ? 'alreadyFollow' : 'alreadyCancelFollow');
     }
   }
 
-  /// 删除帖子
-  /// 接口：POST /api/livespeed/community/delete
+  /// DeletePost
+  /// API：POST /api/livespeed/community/delete
   Future<void> _deletePost() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('删除帖子', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('确定要删除这篇帖子吗？', style: TextStyle(fontSize: 13, color: AppColors.slate600)),
+        title: const Text('DeletePost',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text('OKneedDeletethis postPost?？',
+            style: TextStyle(fontSize: 13, color: AppColors.slate600)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消', style: TextStyle(color: AppColors.slate500)),
+            child: const Text('Cancel',
+                style: TextStyle(color: AppColors.slate500)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('删除', style: TextStyle(color: AppColors.rose500)),
+            child: const Text('Delete',
+                style: TextStyle(color: AppColors.rose500)),
           ),
         ],
       ),
@@ -280,15 +286,15 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     final success = await _apiService.deletePost(postId: widget.postId);
 
     if (success && mounted) {
-      _showToast('帖子已删除');
+      _showToast('PostalreadyDelete');
       Navigator.pop(context, true);
     } else if (mounted) {
-      _showToast('删除失败，请重试');
+      _showToast('Deletefailed，please retry');
     }
   }
 
-  /// 开始回复某条评论
-  /// [comment] - 被回复的评论
+  /// startReplysomeitemComment
+  /// [comment] - byReplyComment
   void _startReply(HankCommentItem comment) {
     if (!HankAuthManager().isLoggedIn) {
       _showLoginPrompt();
@@ -300,7 +306,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     FocusScope.of(context).requestFocus(_inputFocusNode);
   }
 
-  /// 取消回复模式
+  /// CancelReplymodestyle
   void _cancelReply() {
     setState(() {
       _replyingTo = null;
@@ -309,10 +315,10 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     _inputFocusNode.unfocus();
   }
 
-  /// 提交评论或回复
-  /// 直接评论帖子：commentId = null
-  /// 回复评论：commentId = 一级评论ID
-  /// 接口：POST /api/livespeed/community/comment/add
+  /// SubmitCommentorReply
+  /// directlyCommentPost：commentId = null
+  /// ReplyComment：commentId = alevelCommentID
+  /// API：POST /api/livespeed/community/comment/add
   Future<void> _submitComment() async {
     final words = _inputController.text.trim();
     if (words.isEmpty) return;
@@ -324,7 +330,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
 
     int? commentId;
     if (_replyingTo != null) {
-      // 回复一级评论时用 parent_id，如果回复的是子评论则用父评论ID
+      // ReplyalevelCommentwhenuse parent_id，e.g.ifReplyischildCommentthenuseparentCommentID
       commentId = _replyingTo!.parentId != null && _replyingTo!.parentId != 0
           ? _replyingTo!.parentId
           : _replyingTo!.id;
@@ -345,19 +351,19 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       });
       _inputFocusNode.unfocus();
     } else if (mounted) {
-      _showToast('评论失败，请重试');
+      _showToast('Commentfailed，please retry');
     }
   }
 
-  /// 将新评论插入列表
-  /// [newComment] - 新评论数据
-  /// [commentId] - 非null表示回复，插入到对应一级评论的 showChildComments
+  /// newCommentinsertinlist
+  /// [newComment] - newCommentData
+  /// [commentId] - nonnullmeansReply，insertintomaps toalevelComment showChildComments
   void _insertComment(HankCommentItem newComment, int? commentId) {
     if (commentId == null) {
-      // 直接评论帖子，插入到列表头部
+      // directlyCommentPost，insertintolistheader
       _comments.insert(0, newComment);
     } else {
-      // 回复评论，找到对应的一级评论
+      // ReplyComment，findtomaps toalevelComment
       for (final parent in _comments) {
         if (parent.id == commentId) {
           parent.showChildComments ??= [];
@@ -370,32 +376,36 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     }
   }
 
-  /// 登录提示弹窗
+  /// Loginhintpopup
   void _showLoginPrompt() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('提示', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('请先登录后再操作', style: TextStyle(fontSize: 13, color: AppColors.slate600)),
+        title: const Text('hint',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        content: const Text('please firstLoginafteragainaction',
+            style: TextStyle(fontSize: 13, color: AppColors.slate600)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('取消', style: TextStyle(color: AppColors.slate500)),
+            child: const Text('Cancel',
+                style: TextStyle(color: AppColors.slate500)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               Navigator.pushNamed(context, '/login');
             },
-            child: const Text('去登录', style: TextStyle(color: AppColors.violet600)),
+            child: const Text('goLogin',
+                style: TextStyle(color: AppColors.violet600)),
           ),
         ],
       ),
     );
   }
 
-  /// 显示Toast消息
+  /// displayToastmessage
   void _showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -406,9 +416,9 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 格式化时间戳为可读字符串
-  /// [timestamp] - 秒级时间戳
-  /// 返回：如"2小时前"、"3天前"
+  /// formatTimetimestampiscanreadstring
+  /// [timestamp] - secondslevelTimetimestamp
+  /// Back：e.g."2underwhenbefore"、"3daybefore"
   String _formatTime(int? timestamp) {
     if (timestamp == null || timestamp == 0) return '';
     final now = DateTime.now();
@@ -416,18 +426,18 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     final diff = now.difference(date);
 
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}分钟前';
+      return '${diff.inMinutes}minbefore';
     } else if (diff.inHours < 24) {
-      return '${diff.inHours}小时前';
+      return '${diff.inHours}underwhenbefore';
     } else if (diff.inDays < 30) {
-      return '${diff.inDays}天前';
+      return '${diff.inDays}daybefore';
     } else {
       return '${date.month}-${date.day}';
     }
   }
 
-  /// 跳转到比赛详情
-  /// [match] - 帖子关联的比赛数据
+  /// navigate tomatchDetails
+  /// [match] - PostlinkedmatchData
   void _pushToMatchDetail(HankPostMatch match) {
     final matchModel = MatchModel(
       matchId: match.matchId?.toString() ?? '',
@@ -448,24 +458,30 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       homeScore: match.homeScore,
       awayScore: match.awayScore,
       matchTime: _formatMatchTime(match.startTime),
-      status: match.homeScore != null ? MatchStatus.finished : MatchStatus.upcoming,
+      status:
+          match.homeScore != null ? MatchStatus.finished : MatchStatus.upcoming,
     );
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => MatchDetailPage(match: matchModel)),
+      MaterialPageRoute(
+          builder: (context) => MatchDetailPage(match: matchModel)),
     );
   }
 
-  /// 解析话题标签
-  /// [rawImage] - 接口 image 字段
-  /// 返回：标签数组
+  /// parsetopictag
+  /// [rawImage] - API image field
+  /// Back：tagcountgroup
   List<String> _parseHashtags(String? rawImage) {
     if (rawImage == null || rawImage.isEmpty) return [];
     String raw = rawImage;
     if (raw.contains('com/')) {
       raw = raw.substring(raw.indexOf('com/') + 4);
     }
-    return raw.split(',').map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+    return raw
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
   }
 
   @override
@@ -493,7 +509,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 顶部导航栏：返回 + 标题 + 删除按钮（仅自己的帖子）
+  /// topnavbar：Back + title + Deletebutton（onlyownPost）
   Widget _buildAppBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
@@ -523,7 +539,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
               ),
               const Expanded(
                 child: Text(
-                  '帖子详情',
+                  'PostDetails',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 15,
@@ -554,7 +570,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 主体内容：CustomScrollView
+  /// homebodycontent：CustomScrollView
   Widget _buildBody() {
     if (_isLoadingDetail && _post == null) {
       return const Center(
@@ -572,7 +588,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
           children: const [
             Icon(Icons.error_outline, size: 48, color: AppColors.violet300),
             SizedBox(height: 12),
-            Text('加载失败', style: TextStyle(color: AppColors.slate500, fontSize: 12)),
+            Text('Failed to load',
+                style: TextStyle(color: AppColors.slate500, fontSize: 12)),
           ],
         ),
       );
@@ -599,7 +616,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 作者信息卡片：头像 + 昵称 + 发布时间 + 关注按钮
+  /// authorinfocard：avatar + nickname + PostTime + Followbutton
   Widget _buildAuthorCard() {
     final author = _post!.author;
     return Container(
@@ -619,14 +636,14 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       ),
       child: Row(
         children: [
-          _buildAvatar(author?.avatar, author?.name ?? '球友', 44),
+          _buildAvatar(author?.avatar, author?.name ?? 'goalfan', 44),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  author?.name ?? '匿名球友',
+                  author?.name ?? 'anonymousnamegoalfan',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -650,7 +667,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 关注/已关注按钮
+  /// Follow/alreadyFollowbutton
   Widget _buildFollowButton() {
     return GestureDetector(
       onTap: _toggleFollowAuthor,
@@ -664,12 +681,10 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
                 ),
           color: _isFollowing ? AppColors.violet100 : null,
           borderRadius: BorderRadius.circular(999),
-          border: _isFollowing
-              ? Border.all(color: AppColors.violet200)
-              : null,
+          border: _isFollowing ? Border.all(color: AppColors.violet200) : null,
         ),
         child: Text(
-          _isFollowing ? '已关注' : '+ 关注',
+          _isFollowing ? 'Followed' : '+ Follow',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
@@ -680,7 +695,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 帖子正文区域
+  /// Postcontentarea
   Widget _buildContentSection() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -701,11 +716,11 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 图片画廊（网格布局）
-  /// 图片画廊已移除，images字段第一个数据用于话题标签分割
+  /// imagegallery（gridlayoutmatch）
+  /// imagegalleryalreadyremove，imagesfieldaeachDatausetopictagcategorysplit
 
-  /// 话题标签区域（横向滚动）
-  /// 优先取 images 第一个字符串分割，兜底用 image 字段
+  /// topictagarea（horizontal scroll）
+  /// preferget images aeachstringcategorysplit，fallbackuse image field
   Widget _buildTagsSection() {
     final tags = _parseHashtags(
       (_post!.images != null && _post!.images!.isNotEmpty)
@@ -745,7 +760,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 关联比赛卡片（浅紫色风格，区别于ZogoLive的深色卡片）
+  /// linkedmatchcard（lightpurplestyle，areaotherZogoLivedarkcolorcard）
   Widget _buildMatchCard() {
     final match = _post!.match!;
     return Container(
@@ -760,7 +775,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       ),
       child: Column(
         children: [
-          // 赛事名称
+          // matchname
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -781,7 +796,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
             ],
           ),
           const SizedBox(height: 16),
-          // 对阵双方
+          // two sides
           Row(
             children: [
               Expanded(
@@ -802,7 +817,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
             ],
           ),
           const SizedBox(height: 12),
-          // 比赛状态
+          // matchstatus
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -823,7 +838,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 比赛卡片中的球队信息
+  /// matchcardinTeaminfo
   Widget _buildTeamSide(
     String? name,
     String? logo, {
@@ -848,7 +863,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 比分盒子
+  /// scoreboxchild
   Widget _buildScoreBox(int? homeScore, int? awayScore) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -874,7 +889,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 互动数据行：点赞数 + 评论数
+  /// interactanimationDatarow：Likecount + Commentcount
   Widget _buildStatsRow() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -903,7 +918,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
             activeColor: AppColors.violet600,
           ),
           const Spacer(),
-          // 比赛时间
+          // matchTime
           if (_post!.match?.startTime != null)
             Text(
               _formatMatchTime(_post!.match!.startTime),
@@ -917,7 +932,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 统计项
+  /// stat item
   Widget _buildStatItem({
     required IconData icon,
     required String label,
@@ -932,13 +947,14 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
         const SizedBox(width: 4),
         Text(
           label,
-          style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w500),
+          style: TextStyle(
+              fontSize: 12, color: color, fontWeight: FontWeight.w500),
         ),
       ],
     );
   }
 
-  /// 评论区域头部
+  /// Commentareaheader
   Widget _buildCommentsHeader() {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 20, 16, 8),
@@ -954,7 +970,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
           ),
           const SizedBox(width: 8),
           Text(
-            '全部评论 $_commentTotal 条',
+            'AllComment $_commentTotal item',
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
@@ -966,7 +982,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 评论列表 SliverList
+  /// Commentlist SliverList
   Widget _buildCommentsList() {
     if (_isLoadingComments && _comments.isEmpty) {
       return const SliverToBoxAdapter(
@@ -992,7 +1008,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
           padding: EdgeInsets.all(32),
           child: Center(
             child: Text(
-              '暂无评论，快来评论吧~',
+              'NoComment，come quickComment~',
               style: TextStyle(fontSize: 12, color: AppColors.slate400),
             ),
           ),
@@ -1008,7 +1024,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 单条评论卡片
+  /// singleCommentcard
   Widget _buildCommentCard(HankCommentItem comment) {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -1016,7 +1032,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.violet100.withOpacity(0.6), width: 1),
+        border:
+            Border.all(color: AppColors.violet100.withOpacity(0.6), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1034,18 +1051,18 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 评论头部：头像 + 昵称 + 时间
+  /// Commentheader：avatar + nickname + Time
   Widget _buildCommentHeader(HankCommentItem comment) {
     return Row(
       children: [
-        _buildAvatar(comment.userPic, comment.userName ?? '球友', 28),
+        _buildAvatar(comment.userPic, comment.userName ?? 'goalfan', 28),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                comment.userName ?? '匿名球友',
+                comment.userName ?? 'anonymousnamegoalfan',
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -1064,12 +1081,15 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 评论正文内容
+  /// Commentcontentcontent
   Widget _buildCommentContent(HankCommentItem comment) {
     if (comment.deletedAt != null) {
       return const Text(
-        '该评论已删除',
-        style: TextStyle(fontSize: 12, color: AppColors.slate400, fontStyle: FontStyle.italic),
+        'thisCommentalreadyDelete',
+        style: TextStyle(
+            fontSize: 12,
+            color: AppColors.slate400,
+            fontStyle: FontStyle.italic),
       );
     }
     return Text(
@@ -1082,7 +1102,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 子评论（回复）
+  /// childComment（Reply）
   Widget _buildChildComment(HankCommentItem child, HankCommentItem parent) {
     return Container(
       margin: const EdgeInsets.only(top: 8, left: 36),
@@ -1098,7 +1118,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: child.userName ?? '球友',
+                  text: child.userName ?? 'goalfan',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -1108,7 +1128,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
                 if (child.replyToUserName != null &&
                     child.replyToUserName!.isNotEmpty) ...[
                   const TextSpan(
-                    text: ' 回复 ',
+                    text: ' Reply ',
                     style: TextStyle(fontSize: 12, color: AppColors.slate400),
                   ),
                   TextSpan(
@@ -1122,7 +1142,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
                 ],
                 TextSpan(
                   text: '：${child.words ?? ''}',
-                  style: const TextStyle(fontSize: 12, color: AppColors.slate700),
+                  style:
+                      const TextStyle(fontSize: 12, color: AppColors.slate700),
                 ),
               ],
             ),
@@ -1137,7 +1158,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
               GestureDetector(
                 onTap: () => _startReply(child),
                 child: const Text(
-                  '回复',
+                  'Reply',
                   style: TextStyle(fontSize: 10, color: AppColors.violet500),
                 ),
               ),
@@ -1148,7 +1169,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 评论底部：点赞 + 回复
+  /// Commentbottom：Like + Reply
   Widget _buildCommentFooter(HankCommentItem comment) {
     final isSupport = comment.isSupport ?? false;
     final supportCount = comment.support ?? 0;
@@ -1185,7 +1206,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
               children: const [
                 Icon(Icons.reply, size: 13, color: AppColors.slate400),
                 SizedBox(width: 3),
-                Text('回复', style: TextStyle(fontSize: 11, color: AppColors.slate400)),
+                Text('Reply',
+                    style: TextStyle(fontSize: 11, color: AppColors.slate400)),
               ],
             ),
           ),
@@ -1194,7 +1216,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 底部输入栏（含回复模式提示）
+  /// bottominputbar（containsReplymodestylehint）
   Widget _buildBottomInputBar() {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
@@ -1232,8 +1254,8 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
                       ),
                       decoration: InputDecoration(
                         hintText: _replyingTo != null
-                            ? '回复 ${_replyingTo!.userName ?? ''}'
-                            : '写评论...',
+                            ? 'Reply ${_replyingTo!.userName ?? ''}'
+                            : 'writeComment...',
                         hintStyle: const TextStyle(
                           fontSize: 13,
                           color: AppColors.slate400,
@@ -1282,7 +1304,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 回复模式提示栏
+  /// Replymodestylehintbar
   Widget _buildReplyModeBar() {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -1297,7 +1319,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
           const SizedBox(width: 4),
           Expanded(
             child: Text(
-              '回复 ${_replyingTo!.userName ?? ''}',
+              'Reply ${_replyingTo!.userName ?? ''}',
               style: const TextStyle(
                 fontSize: 11,
                 color: AppColors.violet600,
@@ -1317,10 +1339,10 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 构建头像组件
-  /// [url] - 头像URL
-  /// [name] - 昵称（用于生成默认头像）
-  /// [size] - 头像尺寸
+  /// buildavatarcomponent
+  /// [url] - avatarURL
+  /// [name] - nickname（usegeneratecompletedefaultavatar）
+  /// [size] - avatarsize
   Widget _buildAvatar(String? url, String name, double size) {
     return Container(
       width: size,
@@ -1343,7 +1365,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 默认头像（首字母）
+  /// defaultavatar（initial）
   Widget _buildDefaultAvatar(String name, double size) {
     final initial = name.isNotEmpty ? name.characters.first : '?';
     return Container(
@@ -1367,7 +1389,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 球队Logo
+  /// TeamLogo
   Widget _buildTeamLogo(String? url, double size) {
     return Container(
       width: size,
@@ -1396,7 +1418,7 @@ class _HankCommunityDetailPageState extends State<HankCommunityDetailPage> {
     );
   }
 
-  /// 格式化比赛时间
+  /// formatmatchTime
   String _formatMatchTime(int? timestamp) {
     if (timestamp == null || timestamp == 0) return '';
     final dt = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);

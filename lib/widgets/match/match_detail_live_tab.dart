@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/hank_process_model.dart';
 
-/// MatchDetailLiveTab: 图文赛况Tab组件
-/// 展示比赛事件时间线，使用接口 /api/livespeed/football/match/process 的 incidents 数据
-/// UI还原 football_match_details.html 的图文赛况布局：
-///   左侧事件图标圆点 + 右侧白色卡片容器（标题行 + 描述文本 + 附加信息）
-///   每个事件用白色背景圆角卡片圈起来
-/// 筛选标签根据事件类型动态生成，选中时过滤展示对应事件
+/// MatchDetailLiveTab: Articlematch eventsTabcomponent
+/// displaymatchmatchitemTimeline，useAPI /api/livespeed/football/match/process  incidents Data
+/// UIrestore football_match_details.html Articlematch eventslayoutmatch：
+///   left event icon dot + rightwhitecolorcardcontainer（titlerow + descriptiontext + extrainfo）
+///   eacheacheventusewhitecolorbackgroundroundedcardcirclestartto
+/// filtertagrootbased oneventtypedynamicgeneratecomplete，selectedwhenfilterdisplaymaps toevent
 class MatchDetailLiveTab extends StatefulWidget {
-  /// 赛况事件列表（来自接口incidents）
+  /// match event list（fromAPIincidents）
   final List<HankIncidentItem> incidents;
 
   MatchDetailLiveTab({
@@ -23,77 +23,77 @@ class MatchDetailLiveTab extends StatefulWidget {
 }
 
 class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
-  /// 随机生成的温度（10-30度）
+  /// randomgeneratecompletetempdepth（10-30depth）
   late final int _temperature;
 
-  /// 当前选中的筛选类型（null = 全部）
+  /// whenbeforeselectedfiltertype（null = All）
   String? _selectedFilter;
 
   @override
   void initState() {
     super.initState();
-    // 随机生成10-30度的温度
+    // randomgeneratecomplete10-30depthtempdepth
     _temperature = 10 + Random().nextInt(21);
   }
 
-  /// 获取筛选标签列表（根据incidents中实际存在的事件类型动态生成）
-  /// 返回顺序：全部、进球、红黄牌、换人（仅包含有数据的类型）
-  /// 未知事件不计入统计
+  /// getfiltertaglist（rootbased onincidentsinentityactualstoreineventtypedynamicgeneratecomplete）
+  /// Backorderorder：All、Goals、redYellow Cards、substitution（onlycontainshasDatatype）
+  /// unknowneventnotstatsinstats
   List<String> _buildFilterLabels() {
-    final labels = <String>['全部'];
+    final labels = <String>['All'];
 
-    // 过滤掉未知事件
+    // filterremoveunknownevent
     final knownIncidents = widget.incidents.where((incident) {
-      return incident.custTypeName != '未知事件';
+      return incident.custTypeName != 'unknownevent';
     }).toList();
 
-    // 统计事件类型
+    // statseventtype
     bool hasGoal = false;
     bool hasCard = false;
     bool hasSub = false;
 
     for (final incident in knownIncidents) {
       final type = incident.type ?? 0;
-      // 进球类：1=进球, 8=点球进球, 17=乌龙球, 29=点球进球
+      // Goalstype：1=Goals, 8=PENGoals, 17=own goalgoal, 29=PENGoals
       if (type == 1 || type == 8 || type == 17 || type == 29) {
         hasGoal = true;
       }
-      // 红黄牌类：3=黄牌, 4=红牌, 15=两黄变红
+      // redYellow Cardstype：3=Yellow Cards, 4=Red Cards, 15=twoyellow tored
       if (type == 3 || type == 4 || type == 15) {
         hasCard = true;
       }
-      // 换人类：9=换人
+      // substitutiontype：9=substitution
       if (type == 9) {
         hasSub = true;
       }
     }
 
-    if (hasGoal) labels.add('进球');
-    if (hasCard) labels.add('红黄牌');
-    if (hasSub) labels.add('换人');
+    if (hasGoal) labels.add('Goals');
+    if (hasCard) labels.add('redYellow Cards');
+    if (hasSub) labels.add('substitution');
 
     return labels;
   }
 
-  /// 根据当前筛选条件过滤事件列表（过滤掉未知事件）
+  /// rootbased onwhenbeforefilteritemitemfiltereventlist（filterremoveunknownevent）
   List<HankIncidentItem> _getFilteredIncidents() {
-    // 先过滤掉未知事件
+    // firstfilterremoveunknownevent
     final knownIncidents = widget.incidents.where((incident) {
-      return incident.custTypeName != '未知事件';
+      return incident.custTypeName != 'unknownevent';
     }).toList();
 
-    if (_selectedFilter == null || _selectedFilter == '全部') {
+    if (_selectedFilter == null || _selectedFilter == 'All') {
       return knownIncidents;
     }
 
     return knownIncidents.where((incident) {
       final type = incident.type ?? 0;
       switch (_selectedFilter) {
-        case '进球':
+        case 'Goals':
           return type == 1 || type == 8 || type == 17 || type == 29;
-        case '红黄牌':
+        case 'redYellow Cards':
           return type == 3 || type == 4 || type == 15;
-        case '换人':
+        case 'substitution':
           return type == 9;
         default:
           return true;
@@ -108,7 +108,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
         padding: EdgeInsets.all(40),
         child: Center(
           child: Text(
-            '暂无赛况数据',
+            'Nomatch eventsData',
             style: TextStyle(fontSize: 14, color: AppColors.slate500),
           ),
         ),
@@ -131,8 +131,8 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 比赛状态横幅（天气 + 动画直播）
-  /// 温度随机生成（10-30度）
+  /// matchstatusbanner（weather + animationLive）
+  /// tempdepthrandomgeneratecomplete（10-30depth）
   Widget _buildStatusBanner() {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -156,7 +156,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
               const Icon(Icons.thermostat, size: 14, color: AppColors.amber500),
               const SizedBox(width: 8),
               Text(
-                '天气: $_temperature°C 晴朗 · 场地优秀',
+                'weather: $_temperature°C sunny · matchvenueexcellent',
                 style: const TextStyle(fontSize: 12, color: AppColors.slate700),
               ),
             ],
@@ -167,20 +167,20 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 事件筛选标签（动态生成，根据事件统计）
+  /// eventfiltertag（dynamicgeneratecomplete，rootbased oneventstats）
   Widget _buildFilterPills(List<String> labels) {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        const Text('筛选:', style: TextStyle(fontSize: 11, color: AppColors.slate500)),
+        const Text('filter:', style: TextStyle(fontSize: 11, color: AppColors.slate500)),
         ...labels.map((label) {
-          final isActive = (_selectedFilter ?? '全部') == label;
+          final isActive = (_selectedFilter ?? 'All') == label;
           return GestureDetector(
             onTap: () {
               setState(() {
-                _selectedFilter = label == '全部' ? null : label;
+                _selectedFilter = label == 'All' ? null : label;
               });
             },
             child: _buildPill(label, isActive),
@@ -190,7 +190,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 筛选标签
+  /// filtertag
   Widget _buildPill(String label, bool isActive) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -215,15 +215,15 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 时间线事件流
-  /// 左侧竖线 + 每个事件：左侧圆点图标 + 右侧白色卡片
+  /// Timelineeventflow
+  /// leftverticalline + eacheachevent：leftdoticon + rightwhitecolorcard
   Widget _buildTimeline(List<HankIncidentItem> incidents) {
     if (incidents.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(20),
         child: Center(
           child: Text(
-            '该类型暂无事件',
+            'thistypeNoevent',
             style: TextStyle(fontSize: 13, color: AppColors.slate500),
           ),
         ),
@@ -232,7 +232,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
 
     return Stack(
       children: [
-        // 左侧竖线
+        // leftverticalline
         Positioned(
           left: 10,
           top: 8,
@@ -242,7 +242,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
             color: AppColors.violet200,
           ),
         ),
-        // 事件列表
+        // eventlist
         Column(
           children: incidents.map((incident) {
             return _buildEventItem(incident);
@@ -252,19 +252,19 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 单个事件项
-  /// 左侧：事件图标圆点（在竖线上）
-  /// 右侧：白色圆角卡片，包含标题行（时间 + 队名/比分）+ 描述
+  /// singleeacheventitem
+  /// left：eventicondot（inverticallineup）
+  /// right：whitecolorroundedcard，containstitlerow（Time + teamname/score）+ description
   Widget _buildEventItem(HankIncidentItem incident) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 左侧：事件图标圆点
+          // left：eventicondot
           _buildEventIcon(incident),
           const SizedBox(width: 12),
-          // 右侧：白色事件卡片
+          // right：whitecoloreventcard
           Expanded(
             child: _buildEventCard(incident),
           ),
@@ -273,7 +273,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 事件图标圆点（左侧）
+  /// eventicondot（left）
   Widget _buildEventIcon(HankIncidentItem incident) {
     final iconColor = incident.iconColor;
     final isGoal = incident.type == 1 || incident.type == 8 || incident.type == 17;
@@ -306,29 +306,29 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
     );
   }
 
-  /// 事件卡片（右侧白色容器）
+  /// eventcard（rightwhitecolorcontainer）
   Widget _buildEventCard(HankIncidentItem incident) {
     final iconColor = incident.iconColor;
     final isGoal = incident.type == 1 || incident.type == 8 || incident.type == 17;
 
-    // 构建标题：时间 + 事件类型名
+    // buildtitle：Time + eventtypename
     final titleText = "${incident.time ?? 0}' - ${incident.custTypeName}";
 
-    // 构建右侧信息：球队名 或 比分
+    // buildrightinfo：Teamname or score
     String rightText;
     if (incident.homeScore != null && incident.awayScore != null) {
       rightText = '${incident.homeScore} - ${incident.awayScore}';
     } else {
-      rightText = incident.position == 1 ? '主队' : '客队';
+      rightText = incident.position == 1 ? 'Home' : 'Away';
     }
 
-    // 构建描述文本
+    // builddescriptiontext
     final playerName = incident.custPlayerName;
     final typeName = incident.custTypeName;
     String description;
     if (incident.type == 9) {
-      // 换人：出场球员 → 进场球员
-      description = '换人调整：${incident.outPlayerName ?? ''} 替换 ${incident.inPlayerName ?? ''} 登场。';
+      // substitution：appearancePlayer → entermatchPlayer
+      description = 'substitutioncalloverall：${incident.outPlayerName ?? ''} replace ${incident.inPlayerName ?? ''} onmatch。';
     } else if (playerName.isNotEmpty) {
       description = '$playerName - $typeName';
     } else {
@@ -356,7 +356,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 标题行：左 时间+类型名 | 右 球队/比分
+          // titlerow：left Time+typename | right Team/score
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -393,7 +393,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
             ],
           ),
           const SizedBox(height: 6),
-          // 描述文本
+          // descriptiontext
           Text(
             description,
             style: const TextStyle(
@@ -402,7 +402,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
               color: AppColors.slate700,
             ),
           ),
-          // 比分变化行（如有）
+          // score changerow（e.g.has）
           if (incident.homeScore != null && incident.awayScore != null) ...[
             const SizedBox(height: 8),
             Container(
@@ -417,7 +417,7 @@ class _MatchDetailLiveTabState extends State<MatchDetailLiveTab> {
                   Icon(Icons.sports_soccer, size: 10, color: iconColor),
                   const SizedBox(width: 4),
                   Text(
-                    '比分: ${incident.homeScore} - ${incident.awayScore}',
+                    'score: ${incident.homeScore} - ${incident.awayScore}',
                     style: const TextStyle(
                       fontSize: 10,
                       color: AppColors.slate500,

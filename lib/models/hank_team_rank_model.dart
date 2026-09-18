@@ -1,58 +1,58 @@
-/// HankTeamRank: 球队积分榜行模型
-/// 对应接口 GET /api/livespeed/football/team/rank 返回的 groups[].list[] 元素
+/// HankTeamRank: TeamStandingsrowmodel
+/// maps to API GET /api/livespeed/football/team/rank Back groups[].list[] element
 class HankTeamRank {
-  /// 排名位置
+  /// rankPosition
   final int position;
 
-  /// 积分
+  /// points
   final int pts;
 
-  /// 已赛场次
+  /// alreadymatchmatchtime
   final int played;
 
-  /// 胜场
+  /// Wmatch
   final int won;
 
-  /// 平场
+  /// Dmatch
   final int drawn;
 
-  /// 负场
+  /// Lmatch
   final int lost;
 
-  /// 进球数
+  /// Goalscount
   final int goals;
 
-  /// 客场进球数
+  /// awaymatchGoalscount
   final int awayGoals;
 
-  /// 失球数
+  /// concededcount
   final int against;
 
-  /// 净胜球
+  /// netWgoal
   final int diff;
 
-  /// 球队ID
+  /// TeamID
   final int teamId;
 
-  /// 晋级标识ID
+  /// promotion flagID
   final int promotionId;
 
-  /// 分组ID
+  /// groupingID
   final int group;
 
-  /// 晋级名称（英文，如 Qualified）
+  /// promotion name（English，e.g. Qualified）
   final String promotionName;
 
-  /// 分组名称（中文，如 球队）
+  /// groupingname（Chinese，e.g. Team）
   final String groupName;
 
-  /// 球队名称
+  /// Teamname
   final String teamName;
 
-  /// 球队Logo URL
+  /// TeamLogo URL
   final String teamLogo;
 
-  /// 阶段ID
+  /// phaseID
   final int stageId;
 
   HankTeamRank({
@@ -76,7 +76,7 @@ class HankTeamRank {
     required this.stageId,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankTeamRank.fromJson(Map<String, dynamic> json) {
     return HankTeamRank(
       position: json['position'] as int? ?? 0,
@@ -101,13 +101,13 @@ class HankTeamRank {
   }
 }
 
-/// HankTeamRankGroup: 球队积分榜分组模型
-/// 对应接口返回的 groups[] 元素，包含分组名称和球队列表
+/// HankTeamRankGroup: TeamStandingsgroupingmodel
+/// maps to APIBack groups[] element，containsgroupingnameandTeamlist
 class HankTeamRankGroup {
-  /// 分组名称（如欧冠区、降级区等，可能为空）
+  /// groupingname（e.g.Champions League zone、downlevelareaetc，mayisempty）
   final String promotionName;
 
-  /// 球队列表
+  /// Teamlist
   final List<HankTeamRank> list;
 
   HankTeamRankGroup({
@@ -115,7 +115,7 @@ class HankTeamRankGroup {
     required this.list,
   });
 
-  /// 从JSON映射
+  /// fromJSONmapping
   factory HankTeamRankGroup.fromJson(Map<String, dynamic> json) {
     final rawList = json['list'] as List? ?? [];
     return HankTeamRankGroup(

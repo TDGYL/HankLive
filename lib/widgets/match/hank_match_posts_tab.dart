@@ -6,11 +6,11 @@ import '../../utils/hank_auth_manager.dart';
 import '../community/post_card.dart';
 import '../../pages/community/community_detail_page.dart';
 
-/// HankMatchPostsTab: 比赛详情-帖子列表Tab
-/// 请求 /api/livespeed/community/list 接口，type=1 固定推荐
-/// 布局与 community_page 一致：下拉刷新 + 上拉加载 + PostCard 列表
+/// HankMatchPostsTab: matchDetails-PostlistTab
+/// request /api/livespeed/community/list API，type=1 fixedFeatured
+/// layoutmatchwith community_page amatch：Pull to refresh + uppullload + PostCard list
 class HankMatchPostsTab extends StatefulWidget {
-  /// 比赛ID - int类型，用于传递给帖子详情页
+  /// matchID - inttype，useuploadpass toPostDetailspage
   final int matchId;
 
   HankMatchPostsTab({
@@ -23,28 +23,28 @@ class HankMatchPostsTab extends StatefulWidget {
 }
 
 class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
-  /// 帖子数据列表
+  /// PostDatalist
   List<PostModel> _posts = [];
 
-  /// 是否正在下拉刷新
+  /// whetheractiveinPull to refresh
   bool _isRefreshing = false;
 
-  /// 是否正在上拉加载
+  /// whetheractiveinuppullload
   bool _isLoading = false;
 
-  /// 是否没有更多数据
+  /// whethernohasMoreData
   bool _hasNoMore = false;
 
-  /// 分页页码
+  /// categorypagepagecode
   int _page = 1;
 
-  /// 每页条数
+  /// eachpageitemcount
   final int _size = 10;
 
-  /// API服务实例
+  /// APIservice instance
   final HankCommunityApiService _apiService = HankCommunityApiService();
 
-  /// 滚动控制器
+  /// scrollcontroller
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -61,7 +61,7 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
     super.dispose();
   }
 
-  /// 滚动监听：到达底部触发加载更多
+  /// scroll listener：toreachedbottomtriggerloadMore
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 100) {
@@ -71,10 +71,10 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
     }
   }
 
-  /// 请求社区帖子列表数据
-  /// 接口：GET /api/livespeed/community/list
-  /// 参数：type=1（固定推荐），match_type=1
-  /// [isRefresh] - true=刷新（重置page=1），false=加载更多
+  /// requestCommunityPostlistData
+  /// API：GET /api/livespeed/community/list
+  /// paramcount：type=1（fixedFeatured），match_type=1
+  /// [isRefresh] - true=refresh（resetpage=1），false=loadMore
   Future<void> _fetchPosts({required bool isRefresh}) async {
     if (_isLoading || _isRefreshing) return;
 
@@ -117,25 +117,25 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
     }
   }
 
-  /// 拉黑帖子
-  /// [post] - 被拉黑的帖子模型
+  /// blockPost
+  /// [post] - byblockPostmodel
   Future<void> _blockPost(PostModel post) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('拉黑帖子',
+        title: const Text('blockPost',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        content: const Text('确定要拉黑这篇帖子吗？拉黑后将不再显示该帖子。',
+        content: const Text('OKneedblockthis postPost?？blockafterwillnotagaindisplaythisPost。',
             style: TextStyle(fontSize: 13, color: AppColors.slate600)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('取消', style: TextStyle(color: AppColors.slate500)),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.slate500)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('拉黑', style: TextStyle(color: AppColors.rose500)),
+            child: const Text('block', style: TextStyle(color: AppColors.rose500)),
           ),
         ],
       ),
@@ -145,7 +145,7 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
 
     if (!HankAuthManager().isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('请先登录'), duration: Duration(seconds: 1)),
+        const SnackBar(content: Text('please firstLogin'), duration: Duration(seconds: 1)),
       );
       return;
     }
@@ -175,7 +175,7 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
           children: const [
             Icon(Icons.chat_bubble_outline, size: 48, color: AppColors.violet300),
             SizedBox(height: 12),
-            Text('暂无帖子数据', style: TextStyle(color: AppColors.slate500, fontSize: 12)),
+            Text('NoPostData', style: TextStyle(color: AppColors.slate500, fontSize: 12)),
           ],
         ),
       );
@@ -221,7 +221,7 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
     );
   }
 
-  /// 列表底部指示器
+  /// listbottomindicator
   Widget _buildFooter() {
     if (_hasNoMore) {
       return Padding(
@@ -232,7 +232,7 @@ class _HankMatchPostsTabState extends State<HankMatchPostsTab> {
             children: [
               Container(width: 24, height: 1, color: AppColors.violet200),
               const SizedBox(width: 8),
-              const Text('没有更多了',
+              const Text('nohasMore',
                   style: TextStyle(fontSize: 11, color: AppColors.slate500)),
               const SizedBox(width: 8),
               Container(width: 24, height: 1, color: AppColors.violet200),

@@ -1,46 +1,46 @@
-/// HankH2HMatch: 历史交锋比赛模型
-/// 描述两队历史交锋的一场已完赛比赛信息
+/// HankH2HMatch: H2Hmatchmodel
+/// descriptiontwoteamH2Hamatchalreadyfinishedmatchmatchinfo
 class HankH2HMatch {
-  /// 比赛唯一ID
+  /// matchuniqueID
   final int matchId;
 
-  /// 联赛名称
+  /// Leaguename
   final String competitionName;
 
-  /// 联赛Logo
+  /// LeagueLogo
   final String competitionLogo;
 
-  /// 主队ID
+  /// HomeID
   final int homeTeamId;
 
-  /// 主队名称
+  /// Homename
   final String homeTeamName;
 
-  /// 主队Logo
+  /// HomeLogo
   final String homeTeamLogo;
 
-  /// 客队ID
+  /// AwayID
   final int awayTeamId;
 
-  /// 客队名称
+  /// Awayname
   final String awayTeamName;
 
-  /// 客队Logo
+  /// AwayLogo
   final String awayTeamLogo;
 
-  /// 比赛时间戳（秒）
+  /// matchTimetimestamp（seconds）
   final int matchTime;
 
-  /// 主队常规比分
+  /// Homeregularscore
   final int? homeNormalScore;
 
-  /// 客队常规比分
+  /// Awayregularscore
   final int? awayNormalScore;
 
-  /// 主队半场比分
+  /// HomeHTscore
   final int? homeHalfScore;
 
-  /// 客队半场比分
+  /// AwayHTscore
   final int? awayHalfScore;
 
   HankH2HMatch({
@@ -60,14 +60,14 @@ class HankH2HMatch {
     required this.awayHalfScore,
   });
 
-  /// 安全转换为String
+  /// Safeconvert toString
   static String _str(dynamic v) {
     if (v == null) return '';
     if (v is String) return v.trim();
     return v.toString();
   }
 
-  /// 从JSON解析
+  /// fromJSONparse
   factory HankH2HMatch.fromJson(Map<String, dynamic> json) {
     return HankH2HMatch(
       matchId: (json['match_id'] as num?)?.toInt() ?? 0,
@@ -87,19 +87,19 @@ class HankH2HMatch {
     );
   }
 
-  /// 获取格式化的比赛日期（YYYY-MM-DD）
+  /// getformatmatchDate（YYYY-MM-DD）
   String get formattedDate {
     if (matchTime == 0) return '';
     final dt = DateTime.fromMillisecondsSinceEpoch(matchTime * 1000);
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
-  /// 获取半场比分文本
+  /// getHTscoretext
   String get halfScoreText {
     return '${homeHalfScore ?? 0}-${awayHalfScore ?? 0}';
   }
 
-  /// 获取总进球数
+  /// get totalGoalscount
   int get totalGoals {
     return (homeNormalScore ?? 0) + (awayNormalScore ?? 0);
   }

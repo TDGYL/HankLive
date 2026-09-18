@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/news_model.dart';
 
-/// CompactNewsCard: 左右结构高密度图文快讯卡片
+/// CompactNewsCard: left-right compact layoutArticlecompact news card
 class CompactNewsCard extends StatelessWidget {
-  /// 资讯数据
+  /// newsData
   final NewsModel news;
 
-  /// 点击回调
+  /// tapcallback
   final VoidCallback? onTap;
 
   CompactNewsCard({

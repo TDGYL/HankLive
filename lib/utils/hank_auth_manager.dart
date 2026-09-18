@@ -3,53 +3,53 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/hank_user_model.dart';
 import 'hank_network_manager.dart';
 
-/// HankAuthManager: 用户登录状态管理类（单例）
-/// 负责管理 Token 缓存、用户信息缓存、登录状态判断、请求头同步
-/// 使用 SharedPreferences 做本地持久化
+/// HankAuthManager: useaccountLoginstate management class（singleton）
+/// Lmanages Token cache、useaccountinfocache、Loginstatuscheck、request header sync
+/// useuse SharedPreferences dolocalpersistence
 class HankAuthManager {
-  /// 单例实例
+  /// singleton instance
   static final HankAuthManager _instance = HankAuthManager._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankAuthManager() => _instance;
 
-  /// 私有构造
+  /// private constructor
   HankAuthManager._internal();
 
-  /// Token缓存Key
+  /// TokencacheKey
   static const String _kTokenKey = 'hank_user_token';
 
-  /// 用户信息缓存Key
+  /// useaccountinfocacheKey
   static const String _kUserInfoKey = 'hank_user_info';
 
-  /// 内存中的Token - String?类型，登录后缓存，退出后置null
+  /// in memoryToken - String?type，Logincache，Exitaftersetnull
   String? _token;
 
-  /// 内存中的用户信息 - HankUserModel?类型，登录后缓存，退出后置null
+  /// user info in memory - HankUserModel?type，Logincache，Exitaftersetnull
   HankUserModel? _currentUser;
 
-  /// 获取当前Token - String?类型，未登录时为null
+  /// getwhenbeforeToken - String?type，notLoginwhennull
   String? get token => _token;
 
-  /// 获取当前用户信息 - HankUserModel?类型，未登录时为null
+  /// getwhenbeforeuseaccountinfo - HankUserModel?type，notLoginwhennull
   HankUserModel? get currentUser => _currentUser;
 
-  /// 是否已登录 - bool类型，token非空且用户信息非空时为true
+  /// whetheralreadyLogin - booltype，tokennonemptyanduseaccountinfononemptywhentrue
   bool get isLoggedIn => _token != null && _token!.isNotEmpty && _currentUser != null;
 
-  /// 初始化，从本地缓存读取Token和用户信息
-  /// 在App启动时调用，恢复登录状态
+  /// init，fromlocalcachereadgetTokenanduseaccountinfo
+  /// inAppstartupwhencalluse，restoreLoginstatus
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString(_kTokenKey);
     final userInfoJson = prefs.getString(_kUserInfoKey);
 
-    // 恢复Token到请求头
+    // restoreTokentorequestheader
     if (_token != null && _token!.isNotEmpty) {
       HankNetworkManager().setAuthToken(_token!);
     }
 
-    // 恢复用户信息
+    // restoreuseaccountinfo
     if (userInfoJson != null && userInfoJson.isNotEmpty) {
       try {
         final Map<String, dynamic> map = jsonDecode(userInfoJson);
@@ -60,8 +60,8 @@ class HankAuthManager {
     }
   }
 
-  /// 保存Token到内存和本地，同步设置请求头
-  /// [token] - String类型，登录接口返回的refresh_token
+  /// SaveTokentomemoryandlocal，syncSettingsrequestheader
+  /// [token] - Stringtype，LoginAPIBackrefresh_token
   Future<void> saveToken(String token) async {
     _token = token;
     final prefs = await SharedPreferences.getInstance();
@@ -69,8 +69,8 @@ class HankAuthManager {
     HankNetworkManager().setAuthToken(token);
   }
 
-  /// 保存用户信息到内存和本地
-  /// [user] - HankUserModel类型，用户信息接口返回的数据
+  /// Saveuseaccountinfotomemoryandlocal
+  /// [user] - HankUserModeltype，useaccountinfoAPIBackData
   Future<void> saveUserInfo(HankUserModel user) async {
     _currentUser = user;
     final prefs = await SharedPreferences.getInstance();
@@ -78,7 +78,7 @@ class HankAuthManager {
     await prefs.setString(_kUserInfoKey, jsonString);
   }
 
-  /// 退出登录，清除内存和本地的Token和用户信息，移除请求头
+  /// ExitLogin，clear memory and localTokenanduseaccountinfo，removerequestheader
   Future<void> logout() async {
     _token = null;
     _currentUser = null;

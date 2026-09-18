@@ -5,25 +5,25 @@ import '../models/hank_team_rank_model.dart';
 import '../models/hank_news_api_model.dart';
 import '../models/hank_match_api_model.dart';
 
-/// HankTeamApiService: 球队详情接口服务
-/// 封装球队数据、阵容、排名、资讯、赛程接口
-/// 参考ZogoLive的TeamDetailPage请求逻辑
+/// HankTeamApiService: TeamDetailsAPI service
+/// wrapTeamData、Lineup、rank、news、FixturesAPI
+/// referenceZogoLiveTeamDetailPagerequestlogic
 class HankTeamApiService {
-  /// 单例实例
+  /// singleton instance
   static final HankTeamApiService _instance = HankTeamApiService._internal();
 
-  /// 工厂构造，返回单例
+  /// factoryconstructor，Backsingleton
   factory HankTeamApiService() {
     return _instance;
   }
 
-  /// 私有构造
+  /// private constructor
   HankTeamApiService._internal();
 
-  /// 请求球队详情数据
-  /// 接口：GET /api/livespeed/football/team/data
-  /// 参数：team_id - 球队ID
-  /// 返回：HankTeamData 球队详情
+  /// requestTeamDetailsData
+  /// API：GET /api/livespeed/football/team/data
+  /// paramcount：team_id - TeamID
+  /// Back：HankTeamData TeamDetails
   Future<HankTeamData?> fetchTeamData({
     required int teamId,
   }) async {
@@ -39,10 +39,10 @@ class HankTeamApiService {
     return null;
   }
 
-  /// 请求球队阵容数据
-  /// 接口：GET /api/livespeed/football/team/lineup
-  /// 参数：team_id - 球队ID
-  /// 返回：List<HankTeamLineupGroup> 阵容分组列表
+  /// requestTeamLineupData
+  /// API：GET /api/livespeed/football/team/lineup
+  /// paramcount：team_id - TeamID
+  /// Back：List<HankTeamLineupGroup> Lineupgroupinglist
   Future<List<HankTeamLineupGroup>> fetchTeamLineup({
     required int teamId,
   }) async {
@@ -60,10 +60,10 @@ class HankTeamApiService {
     return [];
   }
 
-  /// 请求球队积分榜数据
-  /// 接口：GET /api/livespeed/football/team/rank
-  /// 参数：competition_id - 联赛ID, season_id - 赛季ID
-  /// 返回：List<HankTeamRankGroup> 排名分组列表
+  /// requestTeamStandingsData
+  /// API：GET /api/livespeed/football/team/rank
+  /// paramcount：competition_id - LeagueID, season_id - SeasonID
+  /// Back：List<HankTeamRankGroup> rankgroupinglist
   Future<List<HankTeamRankGroup>> fetchTeamRank({
     required int competitionId,
     int seasonId = 2025,
@@ -85,10 +85,10 @@ class HankTeamApiService {
     return [];
   }
 
-  /// 请求球队相关资讯
-  /// 接口：GET /api/livespeed/info/list
-  /// 参数：competition_id - 联赛ID, page, size
-  /// 返回：HankNewsData 资讯列表
+  /// requestTeamphasematchnews
+  /// API：GET /api/livespeed/info/list
+  /// paramcount：competition_id - LeagueID, page, size
+  /// Back：HankNewsData newslist
   Future<HankNewsData?> fetchTeamNews({
     required int competitionId,
     int page = 1,
@@ -110,10 +110,10 @@ class HankTeamApiService {
     return null;
   }
 
-  /// 请求球队赛程数据
-  /// 接口：POST /api/livespeed/football/matches
-  /// 参数：competition_id - 联赛ID, timestamp - 时间戳
-  /// 返回：HankMatchData 比赛列表
+  /// requestTeamFixturesData
+  /// API：POST /api/livespeed/football/matches
+  /// paramcount：competition_id - LeagueID, timestamp - Timetimestamp
+  /// Back：HankMatchData matchlist
   Future<HankMatchData?> fetchTeamMatches({
     required int competitionId,
   }) async {
