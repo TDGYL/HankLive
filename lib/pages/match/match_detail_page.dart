@@ -12,7 +12,9 @@ import '../../widgets/match/match_detail_live_tab.dart';
 import '../../widgets/match/match_detail_lineup_tab.dart';
 import '../../widgets/match/match_detail_stats_tab.dart';
 import '../../widgets/match/match_detail_odds_tab.dart';
+import '../../widgets/match/match_detail_h2h_tab.dart';
 import '../../widgets/match/hank_match_posts_tab.dart';
+import '../../models/hank_h2h_model.dart';
 import '../community/post_community_page.dart';
 import '../login/login_page.dart';
 
@@ -27,6 +29,8 @@ enum MatchDetailTab {
   stats,
   /// 指数分析
   odds,
+  /// 历史交锋
+  h2h,
   /// 帖子
   posts,
 }
@@ -75,6 +79,15 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   /// 是否正在加载指数数据
   bool _isLoadingOdds = false;
+
+  /// 历史交锋数据列表
+  List<HankH2HMatch> _h2hMatches = [];
+
+  /// 是否正在加载历史交锋数据
+  bool _isLoadingH2H = false;
+
+  /// 是否已请求过历史交锋数据
+  bool _hasFetchedH2H = false;
 
   /// 是否已订阅比赛 - bool类型，true表示已订阅
   bool _isSubscribed = false;
@@ -367,6 +380,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
           _buildTabButton(MatchDetailTab.lineup, '首发阵容'),
           _buildTabButton(MatchDetailTab.stats, '技术统计'),
           _buildTabButton(MatchDetailTab.odds, '指数分析'),
+          _buildTabButton(MatchDetailTab.h2h, '历史交锋'),
         ],
       ),
     );
@@ -413,6 +427,8 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         return _buildStatsTab();
       case MatchDetailTab.odds:
         return _buildOddsTab();
+      case MatchDetailTab.h2h:
+        return _buildH2HTab();
       case MatchDetailTab.posts:
         return const SizedBox.shrink();
     }
@@ -523,5 +539,123 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
         _isLoadingOdds = false;
       });
     }
+  }
+
+  /// 历史交锋Tab（暂用Mock数据，还原h2h.html界面）
+  Widget _buildH2HTab() {
+    return MatchDetailH2HTab(
+      matches: _getMockH2HMatches(),
+      homeTeamId: int.tryParse(widget.match.homeTeam.teamId) ?? 0,
+      homeTeamName: widget.match.homeTeam.teamName,
+      homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+      awayTeamId: int.tryParse(widget.match.awayTeam.teamId) ?? 0,
+      awayTeamName: widget.match.awayTeam.teamName,
+      awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+      isLoading: false,
+    );
+  }
+
+  /// Mock历史交锋数据（参照h2h.html）
+  List<HankH2HMatch> _getMockH2HMatches() {
+    final homeId = int.tryParse(widget.match.homeTeam.teamId) ?? 1;
+    final awayId = int.tryParse(widget.match.awayTeam.teamId) ?? 2;
+    return [
+      HankH2HMatch(
+        matchId: 1,
+        competitionName: '西甲',
+        competitionLogo: '',
+        homeTeamId: homeId,
+        homeTeamName: widget.match.homeTeam.teamName,
+        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        awayTeamId: awayId,
+        awayTeamName: widget.match.awayTeam.teamName,
+        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        matchTime: 1713744000,
+        homeNormalScore: 3,
+        awayNormalScore: 2,
+        homeHalfScore: 1,
+        awayHalfScore: 1,
+      ),
+      HankH2HMatch(
+        matchId: 2,
+        competitionName: '西超杯',
+        competitionLogo: '',
+        homeTeamId: homeId,
+        homeTeamName: widget.match.homeTeam.teamName,
+        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        awayTeamId: awayId,
+        awayTeamName: widget.match.awayTeam.teamName,
+        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        matchTime: 1705276800,
+        homeNormalScore: 4,
+        awayNormalScore: 1,
+        homeHalfScore: 3,
+        awayHalfScore: 1,
+      ),
+      HankH2HMatch(
+        matchId: 3,
+        competitionName: '西甲',
+        competitionLogo: '',
+        homeTeamId: awayId,
+        homeTeamName: widget.match.awayTeam.teamName,
+        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        awayTeamId: homeId,
+        awayTeamName: widget.match.homeTeam.teamName,
+        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        matchTime: 1698470400,
+        homeNormalScore: 1,
+        awayNormalScore: 2,
+        homeHalfScore: 1,
+        awayHalfScore: 0,
+      ),
+      HankH2HMatch(
+        matchId: 4,
+        competitionName: '国王杯',
+        competitionLogo: '',
+        homeTeamId: awayId,
+        homeTeamName: widget.match.awayTeam.teamName,
+        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        awayTeamId: homeId,
+        awayTeamName: widget.match.homeTeam.teamName,
+        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        matchTime: 1680739200,
+        homeNormalScore: 0,
+        awayNormalScore: 4,
+        homeHalfScore: 0,
+        awayHalfScore: 1,
+      ),
+      HankH2HMatch(
+        matchId: 5,
+        competitionName: '西甲',
+        competitionLogo: '',
+        homeTeamId: awayId,
+        homeTeamName: widget.match.awayTeam.teamName,
+        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        awayTeamId: homeId,
+        awayTeamName: widget.match.homeTeam.teamName,
+        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        matchTime: 1679260800,
+        homeNormalScore: 2,
+        awayNormalScore: 1,
+        homeHalfScore: 1,
+        awayHalfScore: 1,
+      ),
+      HankH2HMatch(
+        matchId: 6,
+        competitionName: '国王杯',
+        competitionLogo: '',
+        homeTeamId: homeId,
+        homeTeamName: widget.match.homeTeam.teamName,
+        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
+        awayTeamId: awayId,
+        awayTeamName: widget.match.awayTeam.teamName,
+        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
+        matchTime: 1677782400,
+        homeNormalScore: 0,
+        awayNormalScore: 1,
+        homeHalfScore: 0,
+        awayHalfScore: 1,
+      ),
+    ];
   }
 }

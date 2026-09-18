@@ -1,6 +1,20 @@
 
 
 
+match_detail_h2h_tab界面的数据请求url=/api/livespeed/football/match/analysis，请求方式为get请求，
+请求参数为
+{
+"match_id": 10003908066,int
+}
+参数说明，match_id表示的是比赛id
+
+返回的数据类型参照文件responseFile
+
+
+
+在match_detail_page的菜单增加一个 历史交锋,就追加在指数分析后边,界面严格参照h2h.html，不要导航部分的UI
+
+给我生成一个足球app历史交锋的界面，适配苹果手机界面
 
 
 在match_detail_page的菜单增加一个 历史交锋，就追加在指数分析后边,界面和数据请求参考/Users/guyilin/Desktop/ZogoLive/lib/pages/football_detail_page.dart的H2H菜单部分，舍弃Last 6 H2H部分，只要主队和客队的历史交锋近6场的数据，界面布局要做差异化，不要照搬，界面主题色还是遵守当前app的主题风格

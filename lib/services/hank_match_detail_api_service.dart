@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import '../utils/hank_network_manager.dart';
 import '../models/hank_process_model.dart';
 import '../models/hank_odds_model.dart';
 import '../models/hank_odds_history_model.dart';
 import '../models/hank_lineup_model.dart';
+import '../models/hank_h2h_model.dart';
 
 /// HankMatchDetailApiService: 比赛详情接口服务
 /// 封装 /api/livespeed/football/match/detail 和 /api/livespeed/football/match/process 接口
@@ -117,5 +119,39 @@ class HankMatchDetailApiService {
     }
 
     return null;
+  }
+
+  /// 请求历史交锋数据
+  /// 接口：GET /api/livespeed/football/match/analysis
+  /// 参数：match_id - 比赛ID
+  /// 返回：List<HankH2HMatch> 近6场历史交锋数据
+  Future<List<HankH2HMatch>> fetchH2HData({
+    required int matchId,
+  }) async {
+    try {
+      final response = await HankNetworkManager().getRequest(
+        '/api/livespeed/football/match/analysis',
+        queryParameters: {'match_id': matchId},
+      );
+
+      if (response.isSuccess && response.data != null && response.data is Map) {
+        final data = response.data as Map<String, dynamic>;
+        final history = data['history'];
+        if (history is Map<String, dynamic>) {
+          final vs = history['vs'];
+          if (vs is List) {
+            return vs
+                .whereType<Map<String, dynamic>>()
+                .map((e) => HankH2HMatch.fromJson(e))
+                .take(6)
+                .toList();
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('H2H数据解析异常: $e');
+    }
+
+    return [];
   }
 }

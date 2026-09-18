@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>历史交锋 - 足球数据分析 App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3);
+        }
+        .glow-blue {
+            box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+</head>
+<body class="h-full flex items-center justify-center p-0 sm:p-4 bg-slate-950 font-sans antialiased overflow-hidden">
+
+    <!-- App Container / Phone Mockup Wrapper -->
+    <div id="app" x-data="h2hApp()" class="w-full max-w-[420px] h-full sm:h-[880px] sm:rounded-[48px] bg-slate-900 overflow-hidden relative flex flex-col shadow-2xl border-0 sm:border-[8px] border-slate-800">
+        
+        <!-- iOS Top Status Bar & Dynamic Island -->
+        <div class="glass-header sticky top-0 z-50 pt-3 px-6 pb-2 flex justify-between items-center text-xs font-semibold text-slate-200 shrink-0">
+            <span>09:41</span>
+            
+            <!-- Dynamic Island -->
+            <div class="w-28 h-6 bg-black rounded-full flex items-center justify-between px-2 text-[10px] text-slate-400">
+                <span class="flex items-center gap-1 text-emerald-400"><i class="fa-solid fa-circle text-[6px] animate-pulse"></i> 直播</span>
+                <span class="text-slate-300 font-mono">皇马 2-1 巴萨</span>
+            </div>
+
+            <div class="flex items-center space-x-1.5">
+                <i class="fa-solid fa-signal text-[11px]"></i>
+                <i class="fa-solid fa-wifi text-[11px]"></i>
+                <i class="fa-solid fa-battery-full text-xs"></i>
+            </div>
+        </div>
+
+        <!-- iOS App Navigation Bar -->
+        <div class="glass-header px-4 py-2.5 flex items-center justify-between border-b border-slate-800/60 shrink-0">
+            <button @click="showToast('返回上一级')" class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white active:scale-95 transition">
+                <i class="fa-solid fa-chevron-left text-sm"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-sm font-bold text-slate-100 flex items-center justify-center gap-1.5">
+                    <span>交锋历史分析</span>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full font-medium border border-emerald-500/30">国家德比</span>
+                </h1>
+                <p class="text-[10px] text-slate-400">西甲 第32轮 • 伯纳乌球场</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <button @click="toggleFavorite()" class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center transition active:scale-95" :class="isFav ? 'text-amber-400' : 'text-slate-300'">
+                    <i class="fa-solid fa-star text-sm"></i>
+                </button>
+                <button @click="showShareModal = true" class="w-8 h-8 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-300 hover:text-white active:scale-95 transition">
+                    <i class="fa-solid fa-share-nodes text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto hide-scrollbar pb-20">
+            
+            <!-- Teams Header Visual Card -->
+            <div class="p-4 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 relative overflow-hidden">
+                <!-- Background Glow effects -->
+                <div class="absolute -top-10 -left-10 w-40 h-40 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-rose-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex items-center justify-between mb-4">
+                    <!-- Home Team -->
+                    <div class="flex flex-col items-center w-1/3">
+                        <div class="relative mb-2">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center p-2 shadow-lg glow-blue">
+                                <img src="https://placehold.co/100x100/1e293b/ffffff?text=RMA" alt="Real Madrid" class="w-12 h-12 object-contain">
+                            </div>
+                            <span class="absolute -bottom-1 -right-1 bg-blue-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">主场</span>
+                        </div>
+                        <h2 class="font-bold text-sm text-slate-100 text-center line-clamp-1">皇家马德里</h2>
+                        <div class="flex items-center gap-1 mt-1">
+                            <template x-for="res in homeRecentForm" :key="Math.random()">
+                                <span class="w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white" 
+                                      :class="res === 'W' ? 'bg-emerald-500' : (res === 'D' ? 'bg-amber-500' : 'bg-rose-500')"
+                                      x-text="res"></span>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- VS & H2H Summary Count -->
+                    <div class="flex flex-col items-center w-1/3">
+                        <span class="text-xs font-bold text-slate-500 tracking-wider mb-1">近 <span x-text="matchCountLimit">10</span> 场交锋</span>
+                        <div class="text-2xl font-black italic tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-slate-200 to-rose-400">
+                            VS
+                        </div>
+                        <div class="mt-2 text-center">
+                            <span class="text-xs font-semibold text-slate-300">胜率 <span class="text-emerald-400 font-bold" x-text="homeWinRate + '%'">50%</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Away Team -->
+                    <div class="flex flex-col items-center w-1/3">
+                        <div class="relative mb-2">
+                            <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700/60 flex items-center justify-center p-2 shadow-lg glow-blue">
+                                <img src="https://placehold.co/100x100/1e293b/ffffff?text=BAR" alt="Barcelona" class="w-12 h-12 object-contain">
+                            </div>
+                            <span class="absolute -bottom-1 -right-1 bg-rose-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">客场</span>
+                        </div>
+                        <h2 class="font-bold text-sm text-slate-100 text-center line-clamp-1">巴塞罗那</h2>
+                        <div class="flex items-center gap-1 mt-1">
+                            <template x-for="res in awayRecentForm" :key="Math.random()">
+                                <span class="w-3.5 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center text-white" 
+                                      :class="res === 'W' ? 'bg-emerald-500' : (res === 'D' ? 'bg-amber-500' : 'bg-rose-500')"
+                                      x-text="res"></span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- H2H Summary Bar Progress -->
+                <div class="bg-slate-800/60 rounded-2xl p-3 border border-slate-800">
+                    <div class="flex justify-between items-center text-xs font-bold mb-2">
+                        <span class="text-blue-400">皇马 <span x-text="statsSummary.homeWins">5</span> 胜</span>
+                        <span class="text-amber-400"><span x-text="statsSummary.draws">2</span> 平</span>
+                        <span class="text-rose-400">巴萨 <span x-text="statsSummary.awayWins">3</span> 胜</span>
+                    </div>
+
+                    <!-- Segmented Multi-color Bar -->
+                    <div class="w-full h-2.5 rounded-full bg-slate-700 flex overflow-hidden p-0.5 gap-0.5">
+                        <div class="bg-blue-500 rounded-l-full transition-all duration-500" :style="`width: ${statsSummary.homeWinPct}%`"></div>
+                        <div class="bg-amber-400 transition-all duration-500" :style="`width: ${statsSummary.drawPct}%`"></div>
+                        <div class="bg-rose-500 rounded-r-full transition-all duration-500" :style="`width: ${statsSummary.awayWinPct}%`"></div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 mt-2 pt-2 border-t border-slate-700/40">
+                        <span>进球: <strong class="text-slate-200" x-text="statsSummary.homeGoals">18</strong></span>
+                        <span>场均进球: <strong class="text-slate-200" x-text="statsSummary.avgGoals">3.2</strong></span>
+                        <span>进球: <strong class="text-slate-200" x-text="statsSummary.awayGoals">14</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Segmented Control Tabs (iOS Style) -->
+            <div class="px-4 py-2 sticky top-[57px] z-40 glass-header border-b border-slate-800/80">
+                <div class="bg-slate-800/90 p-1 rounded-xl flex text-xs font-medium text-slate-400">
+                    <button @click="currentTab = 'matches'" 
+                            class="flex-1 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5"
+                            :class="currentTab === 'matches' ? 'bg-slate-700 text-white font-semibold shadow-sm' : 'hover:text-slate-200'">
+                        <i class="fa-solid fa-list-ul text-[11px]"></i> 交锋战绩
+                    </button>
+                    <button @click="currentTab = 'stats'; $nextTick(() => renderCharts())" 
+                            class="flex-1 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5"
+                            :class="currentTab === 'stats' ? 'bg-slate-700 text-white font-semibold shadow-sm' : 'hover:text-slate-200'">
+                        <i class="fa-solid fa-chart-pie text-[11px]"></i> 进球盘路
+                    </button>
+                    <button @click="currentTab = 'insights'" 
+                            class="flex-1 py-1.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-1.5"
+                            :class="currentTab === 'insights' ? 'bg-slate-700 text-white font-semibold shadow-sm' : 'hover:text-slate-200'">
+                        <i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i> AI 看盘
+                    </button>
+                </div>
+
+                <!-- Sub Filter Chips (Only for matches tab) -->
+                <div x-show="currentTab === 'matches'" x-transition class="flex items-center gap-2 mt-2.5 overflow-x-auto hide-scrollbar text-xs pb-0.5">
+                    <button @click="matchCountLimit = 10; filterMatches()" 
+                            class="px-3 py-1 rounded-full whitespace-nowrap transition border"
+                            :class="matchCountLimit === 10 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40 font-semibold' : 'bg-slate-800/60 text-slate-400 border-slate-700/50'">
+                        近10场
+                    </button>
+                    <button @click="matchCountLimit = 6; filterMatches()" 
+                            class="px-3 py-1 rounded-full whitespace-nowrap transition border"
+                            :class="matchCountLimit === 6 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40 font-semibold' : 'bg-slate-800/60 text-slate-400 border-slate-700/50'">
+                        近6场
+                    </button>
+                    <button @click="toggleSameHomeAway()" 
+                            class="px-3 py-1 rounded-full whitespace-nowrap transition border flex items-center gap-1"
+                            :class="sameHomeAway ? 'bg-blue-500/15 text-blue-400 border-blue-500/40 font-semibold' : 'bg-slate-800/60 text-slate-400 border-slate-700/50'">
+                        <i class="fa-solid fa-house-user text-[10px]"></i> 同主客
+                    </button>
+                    <button @click="toggleLeagueOnly()" 
+                            class="px-3 py-1 rounded-full whitespace-nowrap transition border flex items-center gap-1"
+                            :class="leagueOnly ? 'bg-amber-500/15 text-amber-400 border-amber-500/40 font-semibold' : 'bg-slate-800/60 text-slate-400 border-slate-700/50'">
+                        仅联赛
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAB 1: MATCH HISTORY LIST -->
+            <div x-show="currentTab === 'matches'" class="p-4 space-y-3">
+                
+                <template x-for="(match, index) in filteredMatches" :key="match.id">
+                    <div @click="openMatchDetail(match)" 
+                         class="glass-panel rounded-2xl p-3.5 hover:bg-slate-800/80 transition cursor-pointer active:scale-[0.98] relative overflow-hidden group">
+                        
+                        <!-- Left border status color indicator -->
+                        <div class="absolute left-0 top-0 bottom-0 w-1"
+                             :class="match.homeScore > match.awayScore ? 'bg-blue-500' : (match.homeScore < match.awayScore ? 'bg-rose-500' : 'bg-amber-400')"></div>
+
+                        <!-- Match Card Header -->
+                        <div class="flex justify-between items-center text-[11px] text-slate-400 mb-2.5 pl-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-medium" x-text="match.league"></span>
+                                <span x-text="match.date"></span>
+                            </div>
+                            <span class="text-slate-400 font-mono" x-text="'半场 ' + match.halfScore"></span>
+                        </div>
+
+                        <!-- Teams & Score Row -->
+                        <div class="flex items-center justify-between pl-1">
+                            <!-- Home Team -->
+                            <div class="flex items-center gap-2.5 w-5/12">
+                                <img :src="match.homeLogo" class="w-6 h-6 object-contain shrink-0" alt="logo">
+                                <span class="text-xs font-semibold text-slate-100 truncate" 
+                                      :class="{'font-bold text-blue-400': match.homeScore > match.awayScore}"
+                                      x-text="match.homeTeam"></span>
+                            </div>
+
+                            <!-- Score Badge -->
+                            <div class="flex items-center justify-center gap-1 bg-slate-950/80 px-3 py-1 rounded-xl border border-slate-800">
+                                <span class="text-sm font-black font-mono" 
+                                      :class="match.homeScore > match.awayScore ? 'text-blue-400' : 'text-slate-200'" 
+                                      x-text="match.homeScore"></span>
+                                <span class="text-xs text-slate-500 font-bold">-</span>
+                                <span class="text-sm font-black font-mono" 
+                                      :class="match.awayScore > match.homeScore ? 'text-rose-400' : 'text-slate-200'" 
+                                      x-text="match.awayScore"></span>
+                            </div>
+
+                            <!-- Away Team -->
+                            <div class="flex items-center justify-end gap-2.5 w-5/12">
+                                <span class="text-xs font-semibold text-slate-100 truncate text-right" 
+                                      :class="{'font-bold text-rose-400': match.awayScore > match.homeScore}"
+                                      x-text="match.awayTeam"></span>
+                                <img :src="match.awayLogo" class="w-6 h-6 object-contain shrink-0" alt="logo">
+                            </div>
+                        </div>
+
+                        <!-- Match Tags & Quick Stats Footer -->
+                        <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 pl-1">
+                            <div class="flex items-center gap-2">
+                                <span class="flex items-center gap-1 bg-slate-800/50 px-1.5 py-0.5 rounded text-slate-300">
+                                    <i class="fa-solid fa-flag text-[9px] text-amber-400"></i> 角球 <span class="font-mono font-medium" x-text="match.corners"></span>
+                                </span>
+                                <span class="flex items-center gap-1 bg-slate-800/50 px-1.5 py-0.5 rounded text-slate-300">
+                                    <i class="fa-solid fa-square text-[8px] text-amber-500"></i> 黄牌 <span class="font-mono font-medium" x-text="match.cards"></span>
+                                </span>
+                            </div>
+
+                            <!-- Handicap / Over-Under Result badges (Popular in Asian Football Apps) -->
+                            <div class="flex items-center gap-1 font-medium">
+                                <span class="px-1.5 py-0.5 rounded text-[9px]" 
+                                      :class="match.totalGoals >= 3 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'"
+                                      x-text="match.totalGoals >= 3 ? '大球 (3.5)' : '小球 (2.5)'"></span>
+                                <span class="px-1.5 py-0.5 rounded text-[9px]" 
+                                      :class="match.homeWin ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-700/60 text-slate-300'"
+                                      x-text="match.handicapResult"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="filteredMatches.length === 0" class="py-12 text-center text-slate-500 text-xs">
+                    <i class="fa-regular fa-folder-open text-3xl mb-2 block"></i>
+                    暂无符合过滤条件的历史交锋记录
+                </div>
+            </div>
+
+            <!-- TAB 2: STATS & GOAL ANALYTICS -->
+            <div x-show="currentTab === 'stats'" class="p-4 space-y-4" x-transition>
+                
+                <!-- Goals Over/Under & Both Teams Score Card -->
+                <div class="glass-panel rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-slate-200 mb-3 flex items-center justify-between">
+                        <span>进球盘路分布 (近10场)</span>
+                        <span class="text-[10px] text-slate-400 font-normal">平均 3.2 球/场</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-slate-800/60 rounded-xl p-3 border border-slate-700/40 text-center">
+                            <span class="text-[10px] text-slate-400 block mb-0.5">大球率 (≥2.5)</span>
+                            <span class="text-xl font-black text-rose-400">70%</span>
+                            <div class="w-full bg-slate-700 h-1 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-rose-400 h-full w-[70%]"></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800/60 rounded-xl p-3 border border-slate-700/40 text-center">
+                            <span class="text-[10px] text-slate-400 block mb-0.5">双方均有进球 (BTTS)</span>
+                            <span class="text-xl font-black text-emerald-400">80%</span>
+                            <div class="w-full bg-slate-700 h-1 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-emerald-400 h-full w-[80%]"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart JS Container -->
+                    <div class="relative h-48 w-full mt-2">
+                        <canvas id="goalsDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Goal Time Period Distribution Card -->
+                <div class="glass-panel rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-slate-200 mb-3">进球时间段分布</h3>
+                    <div class="relative h-44 w-full">
+                        <canvas id="goalTimelineChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Clean Sheet & Scoring Streak -->
+                <div class="glass-panel rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-slate-200 mb-3">防守与零封对比</h3>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-300">皇家马德里 零封场次</span>
+                                <span class="font-bold text-blue-400">3 场 (30%)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-blue-500 h-full w-[30%]"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-300">巴塞罗那 零封场次</span>
+                                <span class="font-bold text-rose-400">2 场 (20%)</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-rose-500 h-full w-[20%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: AI INSIGHTS & PREDICTION -->
+            <div x-show="currentTab === 'insights'" class="p-4 space-y-4" x-transition>
+                
+                <!-- AI Smart Summary Banner -->
+                <div class="glass-panel rounded-2xl p-4 border border-emerald-500/30 relative overflow-hidden bg-gradient-to-br from-emerald-950/30 via-slate-900 to-slate-900">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-emerald-400">AI 历史交锋大数据研判</h3>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed mb-3">
+                        根据双方近10次交锋数据建模，两队场均产生 <strong class="text-white">3.2 个进球</strong>，半场有球率高达 <strong class="text-emerald-400">90%</strong>。皇马在伯纳乌主场对阵巴萨胜率保持在 <strong class="text-blue-400">60%</strong>。
+                    </p>
+                    <div class="grid grid-cols-3 gap-2 text-center pt-2 border-t border-slate-800/80">
+                        <div class="p-2 rounded-xl bg-slate-800/40">
+                            <span class="text-[10px] text-slate-400 block">预测热度</span>
+                            <span class="text-xs font-bold text-rose-400">大球倾向高</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-800/40">
+                            <span class="text-[10px] text-slate-400 block">主场优势</span>
+                            <span class="text-xs font-bold text-blue-400">+0.4 净胜</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-800/40">
+                            <span class="text-[10px] text-slate-400 block">最频繁比分</span>
+                            <span class="text-xs font-bold text-amber-400">2-1 / 3-1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Pattern Bullet points -->
+                <div class="glass-panel rounded-2xl p-4">
+                    <h3 class="text-xs font-bold text-slate-200 mb-3 flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb text-amber-400"></i> 交锋核心规律
+                    </h3>
+                    <ul class="space-y-2.5 text-xs text-slate-300">
+                        <li class="flex items-start gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                            <span><strong>首粒进球关键：</strong> 过去7次先进球的一方，最终有6次保持不败（5胜1平）。</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                            <span><strong>下半场进球偏多：</strong> 双方在 60-90 分钟内产生的进球占总进球数的 <strong>54%</strong>。</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
+                            <span><strong>红黄牌高发：</strong> 国家德比近6场场均黄牌数达 <strong>5.8 张</strong>，包含 2 张红牌。</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- iOS Bottom Sheet Modal (Match Detail View) -->
+        <div x-show="selectedMatch !== null" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="translate-y-full"
+             x-transition:enter-end="translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="translate-y-0"
+             x-transition:leave-end="translate-y-full"
+             class="absolute inset-x-0 bottom-0 z-50 bg-slate-900 border-t border-slate-700/80 rounded-t-[32px] p-5 shadow-2xl max-h-[85%] overflow-y-auto hide-scrollbar"
+             style="display: none;">
+            
+            <!-- iOS Pull Handle Indicator -->
+            <div class="w-12 h-1 bg-slate-700 rounded-full mx-auto mb-4"></div>
+
+            <template x-if="selectedMatch">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs text-slate-400" x-text="selectedMatch.league + ' • ' + selectedMatch.date"></span>
+                        <button @click="selectedMatch = null" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Match Big Score Header -->
+                    <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800 text-center mb-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-center w-1/3">
+                                <img :src="selectedMatch.homeLogo" class="w-10 h-10 object-contain mx-auto mb-1">
+                                <span class="text-xs font-bold text-slate-200" x-text="selectedMatch.homeTeam"></span>
+                            </div>
+                            <div class="text-center w-1/3">
+                                <span class="text-2xl font-black font-mono text-white" x-text="selectedMatch.homeScore + ' - ' + selectedMatch.awayScore"></span>
+                                <span class="block text-[10px] text-slate-400 mt-0.5" x-text="'(半场 ' + selectedMatch.halfScore + ')'"></span>
+                            </div>
+                            <div class="text-center w-1/3">
+                                <img :src="selectedMatch.awayLogo" class="w-10 h-10 object-contain mx-auto mb-1">
+                                <span class="text-xs font-bold text-slate-200" x-text="selectedMatch.awayTeam"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Match Timeline / Scorers -->
+                    <h4 class="text-xs font-bold text-slate-300 mb-2">进球事件</h4>
+                    <div class="space-y-2 mb-4 bg-slate-800/40 rounded-xl p-3 border border-slate-800/80">
+                        <template x-for="event in selectedMatch.events" :key="event.time">
+                            <div class="flex items-center text-xs justify-between">
+                                <div class="w-5/12 text-right">
+                                    <span x-show="event.team === 'home'" class="font-medium text-slate-200" x-text="event.player"></span>
+                                </div>
+                                <div class="w-2/12 text-center">
+                                    <span class="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 font-bold" x-text="event.time + '\''"></span>
+                                </div>
+                                <div class="w-5/12 text-left">
+                                    <span x-show="event.team === 'away'" class="font-medium text-slate-200" x-text="event.player"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Mini Stat Comparison Bars -->
+                    <h4 class="text-xs font-bold text-slate-300 mb-2">比赛技术统计</h4>
+                    <div class="space-y-2 text-xs">
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-1">
+                                <span>58%</span>
+                                <span class="text-slate-400">控球率</span>
+                                <span>42%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full flex overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width: 58%"></div>
+                                <div class="bg-rose-500 h-full" style="width: 42%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[11px] mb-1">
+                                <span>14</span>
+                                <span class="text-slate-400">射门(射正)</span>
+                                <span>9</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full flex overflow-hidden">
+                                <div class="bg-blue-500 h-full" style="width: 60%"></div>
+                                <div class="bg-rose-500 h-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- App Toast Notification -->
+        <div x-show="toastMsg !== ''" 
+             x-transition
+             class="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-800/90 text-white text-xs px-4 py-2 rounded-full border border-slate-700 shadow-xl backdrop-blur-md"
+             x-text="toastMsg"
+             style="display: none;">
+        </div>
+
+        <!-- iOS Bottom Tab Navigation Bar -->
+        <div class="glass-header absolute bottom-0 inset-x-0 z-40 border-t border-slate-800/80 px-6 py-2 flex justify-between items-center text-[10px] text-slate-400">
+            <button class="flex flex-col items-center text-emerald-400">
+                <i class="fa-solid fa-futbol text-base mb-0.5"></i>
+                <span>赛事</span>
+            </button>
+            <button @click="showToast('跳转方案')" class="flex flex-col items-center hover:text-slate-200">
+                <i class="fa-solid fa-lightbulb text-base mb-0.5"></i>
+                <span>方案</span>
+            </button>
+            <button @click="showToast('数据中心')" class="flex flex-col items-center hover:text-slate-200">
+                <i class="fa-solid fa-chart-simple text-base mb-0.5"></i>
+                <span>数据</span>
+            </button>
+            <button @click="showToast('个人中心')" class="flex flex-col items-center hover:text-slate-200">
+                <i class="fa-solid fa-user text-base mb-0.5"></i>
+                <span>我的</span>
+            </button>
+        </div>
+
+        <!-- iOS Bottom Home Indicator Bar -->
+        <div class="absolute bottom-1 inset-x-0 flex justify-center pointer-events-none z-50">
+            <div class="w-32 h-1 bg-slate-400/40 rounded-full"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function h2hApp() {
+            return {
+                currentTab: 'matches',
+                isFav: false,
+                toastMsg: '',
+                selectedMatch: null,
+                showShareModal: false,
+                matchCountLimit: 10,
+                sameHomeAway: false,
+                leagueOnly: false,
+                
+                homeRecentForm: ['W', 'W', 'D', 'W', 'L'],
+                awayRecentForm: ['W', 'L', 'W', 'W', 'D'],
+
+                // Mock H2H Matches Data
+                matches: [
+                    {
+                        id: 1,
+                        league: "西甲",
+                        date: "2024-04-22",
+                        homeTeam: "皇家马德里",
+                        awayTeam: "巴塞罗那",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        homeScore: 3,
+                        awayScore: 2,
+                        halfScore: "1-1",
+                        totalGoals: 5,
+                        corners: "6-4",
+                        cards: "3-2",
+                        homeWin: true,
+                        handicapResult: "赢盘",
+                        events: [
+                            { time: 6, team: "away", player: "克里斯滕森 ⚽" },
+                            { time: 18, team: "home", player: "维尼修斯 ⚽ (点)" },
+                            { time: 69, team: "away", player: "费尔明 ⚽" },
+                            { time: 73, team: "home", player: "巴斯克斯 ⚽" },
+                            { time: 91, team: "home", player: "贝林厄姆 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        league: "西超杯",
+                        date: "2024-01-15",
+                        homeTeam: "皇家马德里",
+                        awayTeam: "巴塞罗那",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        homeScore: 4,
+                        awayScore: 1,
+                        halfScore: "3-1",
+                        totalGoals: 5,
+                        corners: "4-5",
+                        cards: "2-4",
+                        homeWin: true,
+                        handicapResult: "赢盘",
+                        events: [
+                            { time: 7, team: "home", player: "维尼修斯 ⚽" },
+                            { time: 10, team: "home", player: "维尼修斯 ⚽" },
+                            { time: 33, team: "away", player: "莱万多夫斯基 ⚽" },
+                            { time: 39, team: "home", player: "维尼修斯 ⚽ (点)" },
+                            { time: 64, team: "home", player: "罗德里戈 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        league: "西甲",
+                        date: "2023-10-28",
+                        homeTeam: "巴塞罗那",
+                        awayTeam: "皇家马德里",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        homeScore: 1,
+                        awayScore: 2,
+                        halfScore: "1-0",
+                        totalGoals: 3,
+                        corners: "3-7",
+                        cards: "1-2",
+                        homeWin: false,
+                        handicapResult: "输盘",
+                        events: [
+                            { time: 6, team: "home", player: "京多安 ⚽" },
+                            { time: 68, team: "away", player: "贝林厄姆 ⚽" },
+                            { time: 92, team: "away", player: "贝林厄姆 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 4,
+                        league: "国王杯",
+                        date: "2023-04-06",
+                        homeTeam: "巴塞罗那",
+                        awayTeam: "皇家马德里",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        homeScore: 0,
+                        awayScore: 4,
+                        halfScore: "0-1",
+                        totalGoals: 4,
+                        corners: "3-3",
+                        cards: "4-3",
+                        homeWin: false,
+                        handicapResult: "输盘",
+                        events: [
+                            { time: 45, team: "away", player: "维尼修斯 ⚽" },
+                            { time: 50, team: "away", player: "本泽马 ⚽" },
+                            { time: 58, team: "away", player: "本泽马 ⚽ (点)" },
+                            { time: 80, team: "away", player: "本泽马 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 5,
+                        league: "西甲",
+                        date: "2023-03-20",
+                        homeTeam: "巴塞罗那",
+                        awayTeam: "皇家马德里",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        homeScore: 2,
+                        awayScore: 1,
+                        halfScore: "1-1",
+                        totalGoals: 3,
+                        corners: "8-2",
+                        cards: "3-2",
+                        homeWin: true,
+                        handicapResult: "赢盘",
+                        events: [
+                            { time: 9, team: "away", player: "阿劳霍 ⚽ (乌龙)" },
+                            { time: 45, team: "home", player: "罗贝托 ⚽" },
+                            { time: 92, team: "home", player: "凯西 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 6,
+                        league: "国王杯",
+                        date: "2023-03-03",
+                        homeTeam: "皇家马德里",
+                        awayTeam: "巴塞罗那",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        homeScore: 0,
+                        awayScore: 1,
+                        halfScore: "0-1",
+                        totalGoals: 1,
+                        corners: "11-2",
+                        cards: "2-4",
+                        homeWin: false,
+                        handicapResult: "走盘",
+                        events: [
+                            { time: 26, team: "away", player: "米利唐 ⚽ (乌龙)" }
+                        ]
+                    },
+                    {
+                        id: 7,
+                        league: "西超杯",
+                        date: "2023-01-16",
+                        homeTeam: "皇家马德里",
+                        awayTeam: "巴塞罗那",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        homeScore: 1,
+                        awayScore: 3,
+                        halfScore: "0-2",
+                        totalGoals: 4,
+                        corners: "5-4",
+                        cards: "2-2",
+                        homeWin: false,
+                        handicapResult: "输盘",
+                        events: [
+                            { time: 33, team: "away", player: "加维 ⚽" },
+                            { time: 45, team: "away", player: "莱万 ⚽" },
+                            { time: 69, team: "away", player: "佩德里 ⚽" },
+                            { time: 93, team: "home", player: "本泽马 ⚽" }
+                        ]
+                    },
+                    {
+                        id: 8,
+                        league: "西甲",
+                        date: "2022-10-16",
+                        homeTeam: "皇家马德里",
+                        awayTeam: "巴塞罗那",
+                        homeLogo: "https://placehold.co/100x100/1e293b/ffffff?text=RMA",
+                        awayLogo: "https://placehold.co/100x100/1e293b/ffffff?text=BAR",
+                        homeScore: 3,
+                        awayScore: 1,
+                        halfScore: "2-0",
+                        totalGoals: 4,
+                        corners: "4-5",
+                        cards: "2-2",
+                        homeWin: true,
+                        handicapResult: "赢盘",
+                        events: [
+                            { time: 12, team: "home", player: "本泽马 ⚽" },
+                            { time: 35, team: "home", player: "巴尔韦德 ⚽" },
+                            { time: 83, team: "away", player: "费兰·托雷斯 ⚽" },
+                            { time: 91, team: "home", player: "罗德里戈 ⚽ (点)" }
+                        ]
+                    }
+                ],
+
+                filteredMatches: [],
+
+                init() {
+                    this.filterMatches();
+                },
+
+                // Compute summary statistics dynamically
+                get statsSummary() {
+                    const list = this.filteredMatches;
+                    if (!list.length) return { homeWins: 0, draws: 0, awayWins: 0, homeWinPct: 33, drawPct: 33, awayWinPct: 34, homeGoals: 0, awayGoals: 0, avgGoals: 0 };
+                    
+                    let homeWins = 0, draws = 0, awayWins = 0;
+                    let homeGoals = 0, awayGoals = 0;
+
+                    list.forEach(m => {
+                        if (m.homeTeam === "皇家马德里") {
+                            homeGoals += m.homeScore;
+                            awayGoals += m.awayScore;
+                            if (m.homeScore > m.awayScore) homeWins++;
+                            else if (m.homeScore === m.awayScore) draws++;
+                            else awayWins++;
+                        } else {
+                            homeGoals += m.awayScore;
+                            awayGoals += m.homeScore;
+                            if (m.awayScore > m.homeScore) homeWins++;
+                            else if (m.homeScore === m.awayScore) draws++;
+                            else awayWins++;
+                        }
+                    });
+
+                    const total = list.length;
+                    return {
+                        homeWins,
+                        draws,
+                        awayWins,
+                        homeWinPct: Math.round((homeWins / total) * 100),
+                        drawPct: Math.round((draws / total) * 100),
+                        awayWinPct: Math.round((awayWins / total) * 100),
+                        homeGoals,
+                        awayGoals,
+                        avgGoals: ((homeGoals + awayGoals) / total).toFixed(1)
+                    };
+                },
+
+                get homeWinRate() {
+                    return this.statsSummary.homeWinPct;
+                },
+
+                filterMatches() {
+                    let result = [...this.matches];
+
+                    if (this.sameHomeAway) {
+                        result = result.filter(m => m.homeTeam === "皇家马德里");
+                    }
+
+                    if (this.leagueOnly) {
+                        result = result.filter(m => m.league === "西甲");
+                    }
+
+                    this.filteredMatches = result.slice(0, this.matchCountLimit);
+                },
+
+                toggleSameHomeAway() {
+                    this.sameHomeAway = !this.sameHomeAway;
+                    this.filterMatches();
+                },
+
+                toggleLeagueOnly() {
+                    this.leagueOnly = !this.leagueOnly;
+                    this.filterMatches();
+                },
+
+                toggleFavorite() {
+                    this.isFav = !this.isFav;
+                    this.showToast(this.isFav ? '已关注本场对决' : '已取消关注');
+                },
+
+                openMatchDetail(match) {
+                    this.selectedMatch = match;
+                },
+
+                showToast(msg) {
+                    this.toastMsg = msg;
+                    setTimeout(() => {
+                        this.toastMsg = '';
+                    }, 2000);
+                },
+
+                // Render Chart.js Analytics
+                renderCharts() {
+                    setTimeout(() => {
+                        // Goals Bar Chart
+                        const ctx1 = document.getElementById('goalsDistributionChart');
+                        if (ctx1 && !ctx1.chartInstance) {
+                            ctx1.chartInstance = new Chart(ctx1, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['>1.5球', '>2.5球', '>3.5球', '双方进球', '半场有球'],
+                                    datasets: [{
+                                        label: '出现概率 (%)',
+                                        data: [90, 70, 50, 80, 90],
+                                        backgroundColor: [
+                                            'rgba(59, 130, 246, 0.7)',
+                                            'rgba(244, 63, 94, 0.7)',
+                                            'rgba(245, 158, 11, 0.7)',
+                                            'rgba(16, 185, 129, 0.7)',
+                                            'rgba(168, 85, 247, 0.7)'
+                                        ],
+                                        borderRadius: 6
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: { legend: { display: false } },
+                                    scales: {
+                                        y: { beginAtZero: true, max: 100, ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+                                    }
+                                }
+                            });
+                        }
+
+                        // Goal Time distribution chart
+                        const ctx2 = document.getElementById('goalTimelineChart');
+                        if (ctx2 && !ctx2.chartInstance) {
+                            ctx2.chartInstance = new Chart(ctx2, {
+                                type: 'line',
+                                data: {
+                                    labels: ['0-15\'', '16-30\'', '31-45\'', '46-60\'', '61-75\'', '76-90\''],
+                                    datasets: [{
+                                        label: '进球分布',
+                                        data: [4, 3, 6, 2, 7, 10],
+                                        borderColor: '#10b981',
+                                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                        fill: true,
+                                        tension: 0.4
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: { legend: { display: false } },
+                                    scales: {
+                                        y: { ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                        x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } }
+                                    }
+                                }
+                            });
+                        }
+                    }, 50);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
