@@ -124,7 +124,7 @@ class HankMatchDetailApiService {
   /// 请求历史交锋数据
   /// 接口：GET /api/livespeed/football/match/analysis
   /// 参数：match_id - 比赛ID
-  /// 返回：List<HankH2HMatch> 近6场历史交锋数据
+  /// 返回：List<HankH2HMatch> 全部历史交锋数据，由调用方根据筛选条件截取
   Future<List<HankH2HMatch>> fetchH2HData({
     required int matchId,
   }) async {
@@ -143,7 +143,6 @@ class HankMatchDetailApiService {
             return vs
                 .whereType<Map<String, dynamic>>()
                 .map((e) => HankH2HMatch.fromJson(e))
-                .take(6)
                 .toList();
           }
         }

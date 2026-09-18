@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/hank_auth_manager.dart';
 
@@ -17,8 +19,11 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
   /// 昵称输入控制器
   final TextEditingController _nicknameController = TextEditingController();
 
-  /// 用户头像URL
+  /// 用户头像URL（网络地址或本地文件路径）
   String? _avatar;
+
+  /// 是否为本地选中的图片文件
+  bool _isLocalAvatar = false;
 
   /// 性别（1=男 2=女，null=未设置）
   int? _sex;
@@ -39,23 +44,42 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
   }
 
   /// 保存个人资料
-  /// 提交后Toast提示"已提交审核"
+  /// 提交后Toast提示"已提交，等待后台审核"，不请求接口
   void _saveProfile() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('已提交审核'),
-        duration: Duration(seconds: 1),
+        content: Text('已提交，等待后台审核'),
+        duration: Duration(seconds: 2),
       ),
     );
+    Navigator.pop(context);
   }
 
-  /// 点击更换头像（提示功能暂未开放）
+  /// 点击更换头像，从相册选择图片
+  /// 使用image_picker插件，选择后本地展示，提交时不请求上传接口
   Future<void> _pickAvatar() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('头像更换功能暂未开放'),
-          duration: Duration(seconds: 1)),
-    );
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+      if (pickedFile != null) {
+        setState(() {
+          _avatar = pickedFile.path;
+          _isLocalAvatar = true;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('选择图片失败，请重试'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+    }
   }
 
   /// 显示性别选择弹窗
@@ -173,11 +197,16 @@ class _HankEditProfilePageState extends State<HankEditProfilePage> {
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: (_avatar != null && _avatar!.isNotEmpty)
-                          ? Image.network(_avatar!,
-                              width: 84, height: 84, fit: BoxFit.cover,
-                              errorBuilder: (c, e, s) => const Icon(
-                                  Icons.person, size: 40,
-                                  color: AppColors.violet400))
+                          ? _isLocalAvatar
+                              ? Image.file(File(_avatar!),
+                                  width: 84,
+                                  height: 84,
+                                  fit: BoxFit.cover)
+                              : Image.network(_avatar!,
+                                  width: 84, height: 84, fit: BoxFit.cover,
+                                  errorBuilder: (c, e, s) => const Icon(
+                                      Icons.person, size: 40,
+                                      color: AppColors.violet400))
                           : const Icon(Icons.person, size: 40,
                               color: AppColors.violet400),
                     ),

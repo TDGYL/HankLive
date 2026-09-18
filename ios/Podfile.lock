@@ -6,6 +6,8 @@ PODS:
   - fluttertoast (0.0.2):
     - Flutter
     - Toast
+  - image_picker_ios (0.0.1):
+    - Flutter
   - NTESVerifyCode (3.7.2)
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -18,6 +20,7 @@ DEPENDENCIES:
   - captcha_plugin_flutter (from `.symlinks/plugins/captcha_plugin_flutter/ios`)
   - Flutter (from `Flutter`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
@@ -33,6 +36,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   fluttertoast:
     :path: ".symlinks/plugins/fluttertoast/ios"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   webview_flutter_wkwebview:
@@ -42,6 +47,7 @@ SPEC CHECKSUMS:
   captcha_plugin_flutter: 44176174ea88736593c329e9ef2f25a2df1a3e1a
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   fluttertoast: eaafdac812d1d69931004e881c87a8643b1c9111
+  image_picker_ios: a768de0d44b0925de635738f5030f9f2727eb996
   NTESVerifyCode: d394da36ac4e56ed2787bf462b1099e81ea5e69a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../models/hank_lineup_model.dart';
+import '../../pages/league/hank_player_detail_page.dart';
 
 /// MatchDetailLineupTab: 首发阵容Tab组件
 /// 使用接口数据 /api/livespeed/football/match/lineup
@@ -229,29 +230,47 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
   }
 
   /// 球员节点（头像 + 号码 + 姓名 + 事件标记）
+  /// 点击球员跳转到球员详情页
   Widget _buildPlayerNode(HankLineupPlayer player, {required bool isHome}) {
     final teamColor = isHome ? const Color(0xFFE11D48) : const Color(0xFF3B82F6);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // 球员头像 + 号码
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: teamColor, width: 2),
-              ),
-              child: ClipOval(
-                child: player.playerLogo.isNotEmpty
-                    ? Image.network(
-                        player.playerLogo,
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, e, s) => Container(
+    return GestureDetector(
+      onTap: () => _navigateToPlayerDetail(player),
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 球员头像 + 号码
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: teamColor, width: 2),
+                ),
+                child: ClipOval(
+                  child: player.playerLogo.isNotEmpty
+                      ? Image.network(
+                          player.playerLogo,
+                          fit: BoxFit.cover,
+                          errorBuilder: (c, e, s) => Container(
+                            color: teamColor.withOpacity(0.3),
+                            child: Center(
+                              child: Text(
+                                '${player.shirtNumber}',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
                           color: teamColor.withOpacity(0.3),
                           child: Center(
                             child: Text(
@@ -264,51 +283,38 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
                             ),
                           ),
                         ),
-                      )
-                    : Container(
-                        color: teamColor.withOpacity(0.3),
-                        child: Center(
-                          child: Text(
-                            '${player.shirtNumber}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                ),
+              ),
+              // 事件标记（进球/黄牌/红牌）
+              if (player.incidents.isNotEmpty)
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: _buildIncidentBadge(player.incidents),
+                ),
+            ],
+          ),
+          const SizedBox(height: 2),
+          // 球员姓名
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.85),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              player.playerName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 9,
+                color: AppColors.slate700,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            // 事件标记（进球/黄牌/红牌）
-            if (player.incidents.isNotEmpty)
-              Positioned(
-                right: -2,
-                top: -2,
-                child: _buildIncidentBadge(player.incidents),
-              ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        // 球员姓名
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(4),
           ),
-          child: Text(
-            player.playerName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 9,
-              color: AppColors.slate700,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -434,67 +440,88 @@ class _MatchDetailLineupTabState extends State<MatchDetailLineupTab> {
   }
 
   /// 替补球员行（球衣号码 + Logo + 姓名，单行排列）
+  /// 点击球员跳转到球员详情页
   Widget _buildSubPlayerChip(HankLineupPlayer player) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.violet50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.violet200.withOpacity(0.4)),
-      ),
-      child: Row(
-        children: [
-          // 球衣号码
-          Text(
-            '${player.shirtNumber}',
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.violet600,
-            ),
-          ),
-          const SizedBox(width: 6),
-          // 球员Logo
-          Container(
-            width: 20,
-            height: 20,
-            decoration: const BoxDecoration(
-              color: AppColors.violet100,
-              shape: BoxShape.circle,
-            ),
-            child: player.playerLogo != null && player.playerLogo!.isNotEmpty
-                ? ClipOval(
-                    child: Image.network(
-                      player.playerLogo!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (c, e, s) => const Icon(
-                        Icons.person,
-                        size: 12,
-                        color: AppColors.violet300,
-                      ),
-                    ),
-                  )
-                : const Icon(
-                    Icons.person,
-                    size: 12,
-                    color: AppColors.violet300,
-                  ),
-          ),
-          const SizedBox(width: 6),
-          // 球员姓名
-          Expanded(
-            child: Text(
-              player.playerName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+    return GestureDetector(
+      onTap: () => _navigateToPlayerDetail(player),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.violet50,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.violet200.withOpacity(0.4)),
+        ),
+        child: Row(
+          children: [
+            // 球衣号码
+            Text(
+              '${player.shirtNumber}',
               style: const TextStyle(
                 fontSize: 11,
-                color: AppColors.slate700,
+                fontWeight: FontWeight.w700,
+                color: AppColors.violet600,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 6),
+            // 球员Logo
+            Container(
+              width: 20,
+              height: 20,
+              decoration: const BoxDecoration(
+                color: AppColors.violet100,
+                shape: BoxShape.circle,
+              ),
+              child: player.playerLogo != null && player.playerLogo!.isNotEmpty
+                  ? ClipOval(
+                      child: Image.network(
+                        player.playerLogo!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, e, s) => const Icon(
+                          Icons.person,
+                          size: 12,
+                          color: AppColors.violet300,
+                        ),
+                      ),
+                    )
+                  : const Icon(
+                      Icons.person,
+                      size: 12,
+                      color: AppColors.violet300,
+                    ),
+            ),
+            const SizedBox(width: 6),
+            // 球员姓名
+            Expanded(
+              child: Text(
+                player.playerName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.slate700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 跳转到球员详情页
+  /// [player] 阵容球员数据
+  void _navigateToPlayerDetail(HankLineupPlayer player) {
+    if (player.playerId == 0) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HankPlayerDetailPage(
+          playerId: player.playerId,
+          playerName: player.playerName,
+          playerLogo: player.playerLogo,
+        ),
       ),
     );
   }

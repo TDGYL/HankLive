@@ -38,6 +38,7 @@ dependencies:
   fluttertoast: ^8.2.4
   webview_flutter: ^4.8.0
   captcha_plugin_flutter: '1.2.6'
+  image_picker: ^1.0.7
 dev_dependencies:
   flutter_test:
     sdk: flutter

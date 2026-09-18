@@ -541,121 +541,41 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
     }
   }
 
-  /// 历史交锋Tab（暂用Mock数据，还原h2h.html界面）
+  /// 历史交锋Tab（懒加载接口数据）
+  /// 接口：GET /api/livespeed/football/match/analysis
   Widget _buildH2HTab() {
+    if (!_hasFetchedH2H && !_isLoadingH2H) {
+      _fetchH2HData();
+    }
     return MatchDetailH2HTab(
-      matches: _getMockH2HMatches(),
+      matches: _h2hMatches,
       homeTeamId: int.tryParse(widget.match.homeTeam.teamId) ?? 0,
       homeTeamName: widget.match.homeTeam.teamName,
       homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
       awayTeamId: int.tryParse(widget.match.awayTeam.teamId) ?? 0,
       awayTeamName: widget.match.awayTeam.teamName,
       awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-      isLoading: false,
+      isLoading: _isLoadingH2H,
     );
   }
 
-  /// Mock历史交锋数据（参照h2h.html）
-  List<HankH2HMatch> _getMockH2HMatches() {
-    final homeId = int.tryParse(widget.match.homeTeam.teamId) ?? 1;
-    final awayId = int.tryParse(widget.match.awayTeam.teamId) ?? 2;
-    return [
-      HankH2HMatch(
-        matchId: 1,
-        competitionName: '西甲',
-        competitionLogo: '',
-        homeTeamId: homeId,
-        homeTeamName: widget.match.homeTeam.teamName,
-        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        awayTeamId: awayId,
-        awayTeamName: widget.match.awayTeam.teamName,
-        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        matchTime: 1713744000,
-        homeNormalScore: 3,
-        awayNormalScore: 2,
-        homeHalfScore: 1,
-        awayHalfScore: 1,
-      ),
-      HankH2HMatch(
-        matchId: 2,
-        competitionName: '西超杯',
-        competitionLogo: '',
-        homeTeamId: homeId,
-        homeTeamName: widget.match.homeTeam.teamName,
-        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        awayTeamId: awayId,
-        awayTeamName: widget.match.awayTeam.teamName,
-        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        matchTime: 1705276800,
-        homeNormalScore: 4,
-        awayNormalScore: 1,
-        homeHalfScore: 3,
-        awayHalfScore: 1,
-      ),
-      HankH2HMatch(
-        matchId: 3,
-        competitionName: '西甲',
-        competitionLogo: '',
-        homeTeamId: awayId,
-        homeTeamName: widget.match.awayTeam.teamName,
-        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        awayTeamId: homeId,
-        awayTeamName: widget.match.homeTeam.teamName,
-        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        matchTime: 1698470400,
-        homeNormalScore: 1,
-        awayNormalScore: 2,
-        homeHalfScore: 1,
-        awayHalfScore: 0,
-      ),
-      HankH2HMatch(
-        matchId: 4,
-        competitionName: '国王杯',
-        competitionLogo: '',
-        homeTeamId: awayId,
-        homeTeamName: widget.match.awayTeam.teamName,
-        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        awayTeamId: homeId,
-        awayTeamName: widget.match.homeTeam.teamName,
-        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        matchTime: 1680739200,
-        homeNormalScore: 0,
-        awayNormalScore: 4,
-        homeHalfScore: 0,
-        awayHalfScore: 1,
-      ),
-      HankH2HMatch(
-        matchId: 5,
-        competitionName: '西甲',
-        competitionLogo: '',
-        homeTeamId: awayId,
-        homeTeamName: widget.match.awayTeam.teamName,
-        homeTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        awayTeamId: homeId,
-        awayTeamName: widget.match.homeTeam.teamName,
-        awayTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        matchTime: 1679260800,
-        homeNormalScore: 2,
-        awayNormalScore: 1,
-        homeHalfScore: 1,
-        awayHalfScore: 1,
-      ),
-      HankH2HMatch(
-        matchId: 6,
-        competitionName: '国王杯',
-        competitionLogo: '',
-        homeTeamId: homeId,
-        homeTeamName: widget.match.homeTeam.teamName,
-        homeTeamLogo: widget.match.homeTeam.logoUrl ?? '',
-        awayTeamId: awayId,
-        awayTeamName: widget.match.awayTeam.teamName,
-        awayTeamLogo: widget.match.awayTeam.logoUrl ?? '',
-        matchTime: 1677782400,
-        homeNormalScore: 0,
-        awayNormalScore: 1,
-        homeHalfScore: 0,
-        awayHalfScore: 1,
-      ),
-    ];
+  /// 请求历史交锋数据
+  /// 接口：GET /api/livespeed/football/match/analysis
+  /// 参数：match_id - 比赛ID
+  Future<void> _fetchH2HData() async {
+    final matchId = int.tryParse(widget.match.matchId) ?? 0;
+    if (matchId == 0) return;
+
+    setState(() => _isLoadingH2H = true);
+
+    final data = await _apiService.fetchH2HData(matchId: matchId);
+
+    if (mounted) {
+      setState(() {
+        _h2hMatches = data;
+        _isLoadingH2H = false;
+        _hasFetchedH2H = true;
+      });
+    }
   }
 }

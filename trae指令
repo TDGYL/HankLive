@@ -1,6 +1,6 @@
 
 
-
+===============================================数据请求---历史交锋
 match_detail_h2h_tab界面的数据请求url=/api/livespeed/football/match/analysis，请求方式为get请求，
 请求参数为
 {
@@ -8,7 +8,7 @@ match_detail_h2h_tab界面的数据请求url=/api/livespeed/football/match/analy
 }
 参数说明，match_id表示的是比赛id
 
-返回的数据类型参照文件responseFile
+返回的数据结构参照文件responseFile
 
 
 
