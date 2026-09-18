@@ -45,7 +45,7 @@ class HankNetworkManager {
         'Accept': 'application/json',
         'x-platform': 'IOS',
         'Accept-Language': 'en-US',
-        'x-version': '6.0.0'
+        'x-version': '1.0.0'
       },
     ));
 

@@ -8,6 +8,7 @@ import '../../models/hank_player_rank_key_model.dart';
 import '../../models/hank_player_rank_model.dart';
 import '../match/team_detail_page.dart';
 import '../match/match_detail_page.dart';
+import 'hank_player_detail_page.dart';
 import '../search/search_page.dart';
 import '../../services/hank_match_api_service.dart';
 import '../../models/hank_match_api_model.dart';
@@ -1164,21 +1165,23 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
       children: order.map((p) {
         final isFirst = p.position == 1;
         return Expanded(
-          child: Container(
-            margin: EdgeInsets.fromLTRB(4, isFirst ? 0 : 8, 4, 0),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isFirst ? AppColors.amber400 : AppColors.violet200,
-                width: isFirst ? 1.5 : 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                    color: (isFirst ? AppColors.amber400 : AppColors.violet400)
-                        .withOpacity(0.15),
-                    blurRadius: 8,
+          child: GestureDetector(
+            onTap: () => _navigateToPlayerDetail(p),
+            child: Container(
+          margin: EdgeInsets.fromLTRB(4, isFirst ? 0 : 8, 4, 0),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isFirst ? AppColors.amber400 : AppColors.violet200,
+              width: isFirst ? 1.5 : 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                  color: (isFirst ? AppColors.amber400 : AppColors.violet400)
+                      .withOpacity(0.15),
+                  blurRadius: 8,
                     offset: const Offset(0, 2)),
               ],
             ),
@@ -1232,7 +1235,8 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
               ],
             ),
           ),
-        );
+        ),
+      );
       }).toList(),
     );
   }
@@ -1240,7 +1244,9 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
   /// 构建球员列表行
   /// [p] - 球员排行数据
   Widget _buildPlayerListRow(HankPlayerRank p) {
-    return Container(
+    return GestureDetector(
+      onTap: () => _navigateToPlayerDetail(p),
+      child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         border: Border(
@@ -1298,6 +1304,22 @@ class _HankLeaguePageState extends State<HankLeaguePage> {
                   fontWeight: FontWeight.w800,
                   color: AppColors.violet600)),
         ],
+      ),
+    ),
+    );
+  }
+
+  /// 跳转到球员详情页
+  /// [p] - 球员排行数据
+  void _navigateToPlayerDetail(HankPlayerRank p) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => HankPlayerDetailPage(
+          playerId: p.playerId,
+          playerName: p.playerName,
+          playerLogo: p.playerLogo,
+        ),
       ),
     );
   }

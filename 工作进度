@@ -7,6 +7,9 @@
 4、将项目的本底中文修改成英文
 
 
+❌：football/info球员信息. 请求头只支持x-version=1.0.0，如果这样其他接口会请求到中文的文案
+
+
 
 offical@livespeeds.com 默认验证码 1086
 api.livespeeds.com
