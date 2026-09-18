@@ -2,6 +2,14 @@
 
 
 
+
+在match_detail_page的菜单增加一个 历史交锋，就追加在指数分析后边,界面和数据请求参考/Users/guyilin/Desktop/ZogoLive/lib/pages/football_detail_page.dart的H2H菜单部分，舍弃Last 6 H2H部分，只要主队和客队的历史交锋近6场的数据，界面布局要做差异化，不要照搬，界面主题色还是遵守当前app的主题风格
+
+
+
+'x-version': '5.0.0'
+https://api.livespeeds.com/api/livespeed/football/info
+
 hank_league_page点击球员能push到球员详情，球员详情的界面参考接口数据元素布局，接口url=/api/livespeed/football/info，请求方式为get请求，
 请求参数为
 {

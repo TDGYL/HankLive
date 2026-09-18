@@ -238,11 +238,11 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
   /// 博彩公司水平芯片选择器
   Widget _buildCompanyChips() {
     return Container(
-      height: 40,
+      height: 47,
       color: Colors.white,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         itemCount: widget.allCompanies.length,
         itemBuilder: (context, index) {
           final comp = widget.allCompanies[index];
@@ -259,7 +259,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
             },
             child: Container(
               margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.violet100 : AppColors.violet50,
                 borderRadius: BorderRadius.circular(20),
@@ -271,6 +271,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     comp.name ?? '--',
@@ -282,7 +283,7 @@ class _HankOddsHistoryPageState extends State<HankOddsHistoryPage> {
                           isSelected ? AppColors.violet700 : AppColors.slate500,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   Text(
                     comp.spot?.draw ?? comp.pre?.draw ?? comp.ini?.draw ?? '-',
                     style: const TextStyle(

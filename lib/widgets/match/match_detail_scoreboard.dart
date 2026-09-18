@@ -245,37 +245,41 @@ class MatchDetailScoreboard extends StatelessWidget {
     final awayScore = match.awayScore ?? 0;
     return Column(
       children: [
-        // 比分
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$homeScore',
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
+        // 比分（用FittedBox防止溢出）
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '$homeScore',
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            const Text(
-              ':',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w300,
-                color: Colors.white54,
+              const SizedBox(width: 4),
+              const Text(
+                ':',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w300,
+                  color: Colors.white54,
+                ),
               ),
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '$awayScore',
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
+              const SizedBox(width: 4),
+              Text(
+                '$awayScore',
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 4),
         // 半场比分
