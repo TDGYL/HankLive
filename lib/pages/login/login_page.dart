@@ -6,6 +6,7 @@ import '../../theme/app_colors.dart';
 import '../../utils/hank_network_manager.dart';
 import '../../utils/hank_auth_manager.dart';
 import '../../models/hank_user_model.dart';
+import '../common/hank_local_web_page.dart';
 
 /// HankLoginPage: 登录/注册界面
 /// 与ZogoLive差异化布局：浅紫色+白色主题、卡片式表单、圆角输入框
@@ -616,14 +617,36 @@ class _HankLoginPageState extends State<HankLoginPage> {
                     text: '服务条款',
                     style: const TextStyle(color: AppColors.violet600),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => _showSnackBar('服务条款'),
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HankLocalWebPage(
+                              assetPath:
+                                  'assets/htmlSource/user-agreement.html',
+                              title: '服务条款',
+                            ),
+                          ),
+                        );
+                      },
                   ),
                   const TextSpan(text: ' 和 '),
                   TextSpan(
                     text: '隐私政策',
                     style: const TextStyle(color: AppColors.violet600),
                     recognizer: TapGestureRecognizer()
-                      ..onTap = () => _showSnackBar('隐私政策'),
+                      ..onTap = () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const HankLocalWebPage(
+                              assetPath:
+                                  'assets/htmlSource/privacy-agreement.html',
+                              title: '隐私政策',
+                            ),
+                          ),
+                        );
+                      },
                   ),
                 ],
               ),
